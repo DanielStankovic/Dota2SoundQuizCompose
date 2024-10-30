@@ -1,0 +1,43 @@
+package com.dsapps2018.dota2guessthesound.di
+
+import android.content.Context
+import androidx.room.Room
+import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
+import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
+import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
+import com.dsapps2018.dota2guessthesound.data.db.DotaDatabase
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+    @Singleton
+    @Provides
+    fun provideRoomDb(@ApplicationContext context: Context): DotaDatabase =
+        Room.databaseBuilder(context, DotaDatabase::class.java, "dota_database").build()
+
+    @Singleton
+    @Provides
+    fun provideCasterTypeDao(database: DotaDatabase): CasterTypeDao {
+        return database.casterTypeDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCasterDao(database: DotaDatabase): CasterDao {
+        return database.casterDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideSoundDao(database: DotaDatabase): SoundDao {
+        return database.soundDao()
+    }
+
+}

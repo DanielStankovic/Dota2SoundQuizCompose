@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "275175705511",
+    "firebase_url": "https://spell-sound-for-dota-2-2018.firebaseio.com",
+    "project_id": "spell-sound-for-dota-2-2018",
+    "storage_bucket": "spell-sound-for-dota-2-2018.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275175705511:android:5ecff4cd3b6d6bd2",
+        "android_client_info": {
+          "package_name": "com.dsapps2018.dota2guessthesound"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275175705511-6klo42ond3migoqim2p2hsu7pminprst.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dsapps2018.dota2guessthesound",
+            "certificate_hash": "2e89de34b02e99abe4adf2104b8ad59f207b1c5c"
+          }
+        },
+        {
+          "client_id": "275175705511-6uepasikc27vh886ua2r4afo4tk9focc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0DxpUwqAZtHckNujgb3Dscisolo3dmrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275175705511-6uepasikc27vh886ua2r4afo4tk9focc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-2701841893001237~2192936151"
+    }
+  ],
+  "configuration_version": "1"
+}
