@@ -27,12 +27,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedImages
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import kotlin.random.Random
@@ -43,6 +45,8 @@ fun QuizScreen(
     quizViewModel: QuizViewModel = hiltViewModel(),
     onPlayAgain: (Int, Boolean) -> Unit
 ) {
+
+    val context = LocalContext.current
     val animationTrigger by quizViewModel.triggerAnimation.collectAsStateWithLifecycle()
 
     var buttonOptionsList: List<String> by remember {
@@ -65,11 +69,15 @@ fun QuizScreen(
                 }
 
                 QuizEventState.WrongSound -> {
-                    onPlayAgain(score, false)
+                    showInterstitial(context){
+                        onPlayAgain(score, false)
+                    }
                 }
 
                 QuizEventState.NoMoreSounds -> {
-                    onPlayAgain(score, true)
+                    showInterstitial(context){
+                        onPlayAgain(score, true)
+                    }
                 }
             }
         }
