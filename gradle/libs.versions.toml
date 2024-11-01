@@ -19,6 +19,7 @@ play-services_ads = "23.4.0"
 googleGmsGoogleServices = "4.4.2"
 googleFirebaseCrashlytics = "3.0.2"
 firebaseBom = "33.5.1"
+accompanistPermisions = "0.36.0"
 
 
 [libraries]
@@ -56,6 +57,7 @@ firebase-bom  = {group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics"}
+accompanist-permissions = {module ="com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermisions"}
 
 
 

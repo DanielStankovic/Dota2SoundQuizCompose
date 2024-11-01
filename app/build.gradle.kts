@@ -153,6 +153,9 @@ dependencies {
     //Admob
     implementation (libs.play.services.ads)
 
+    //Permissions
+    implementation (libs.accompanist.permissions)
+
 }
 
 kapt {

@@ -17,4 +17,10 @@ object AppModule {
     @Singleton
     fun provideSoundPlayer(@ApplicationContext context: Context) =
         SoundPlayer(context = context)
+
+    @Provides
+    @Singleton
+    fun provideSharedPrefs(@ApplicationContext context: Context) =
+        context.getSharedPreferences("Dota2SharedPrefs", Context.MODE_PRIVATE)
+
 }

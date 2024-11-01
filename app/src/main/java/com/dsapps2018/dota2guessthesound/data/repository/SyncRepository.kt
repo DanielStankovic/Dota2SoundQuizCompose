@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import androidx.core.content.ContextCompat
 import androidx.core.os.EnvironmentCompat
+import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.data.api.response.CasterDto
 import com.dsapps2018.dota2guessthesound.data.api.response.CasterTypeDto
 import com.dsapps2018.dota2guessthesound.data.api.response.ConfigDto
@@ -105,10 +106,16 @@ class SyncRepository @Inject constructor(
         }
     }
 
-    suspend fun syncSound(): Flow<Pair<Float, String>> {
+    fun syncSound(): Flow<Pair<Float, String>> {
         return flow {
             try {
-                val modifiedDate = soundDao.getModifiedDate() ?: getInitialModifiedDate()
+                val modifiedDate = if(!BuildConfig.DEBUG) soundDao.getModifiedDate() ?: getInitialModifiedDate()
+                else{
+                    //Ovde za slucaj testa mozemo da fetchujemo samo neke i ovo samo u slucaju debuga. Koristim
+                    //ovaj uslov za debug cisto kao osiguranje da ne ode ovaj kod na produkciju
+                    soundDao.getModifiedDate() ?: getInitialModifiedDate()
+//                    "2024-10-29 17:38:45.593298" //Ovo je 5 modified_at iz baze na serveru sortirano DESC, tako da ce da vrati samo 5 zvuka uvek na svez sync
+                }
                 val soundList = postgrest
                     .from(Constants.TABLE_SOUNDS)
                     .select(
