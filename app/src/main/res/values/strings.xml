@@ -1,3 +1,6 @@
 <resources>
 
+    <string name="sync_error_title">Error syncing data</string>
+    <string name="sync_error_message">App encountered error while getting data from the Internet.\n\nCheck your Internet Connection.</string>
+    <string name="lbl_retry">Retry</string>
 </resources>

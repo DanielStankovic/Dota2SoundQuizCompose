@@ -22,11 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.ProgressColor
 
 @Composable
@@ -39,12 +41,14 @@ fun SyncScreen(
     var currentProgress by remember {
         mutableStateOf(ProgressUpdateEvent.ProgressUpdate(0f, 0f, ""))
     }
+    var showDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         syncScreenViewModel.progressStatus.collect { progressStatusEvent ->
             when (progressStatusEvent) {
                 is ProgressUpdateEvent.ProgressError -> {
-
+                    showDialog = true
                 }
 
                 is ProgressUpdateEvent.ProgressUpdate -> {
@@ -65,6 +69,19 @@ fun SyncScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         content = { padding ->
+            if (showDialog) SingleOptionDialog(
+                onDismiss = {
+                    showDialog = false
+                },
+                onOptionClick = {
+                    syncScreenViewModel.restartSync()
+                },
+                titleText = context.getString(R.string.sync_error_title),
+                messageText = context.getString(R.string.sync_error_message),
+                optionText= context.getString(R.string.lbl_retry),
+                dismissible = false
+            )
+
             Box(
                 modifier
                     .fillMaxSize()

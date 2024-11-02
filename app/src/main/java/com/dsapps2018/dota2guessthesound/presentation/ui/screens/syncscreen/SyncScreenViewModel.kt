@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.data.repository.SyncRepository
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncScreenViewModel @Inject constructor(
-    private val syncRepository: SyncRepository
+    private val syncRepository: SyncRepository,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
     private val _progressStatus = MutableSharedFlow<ProgressUpdateEvent>(10)
@@ -40,6 +42,7 @@ class SyncScreenViewModel @Inject constructor(
     val coroutineExceptionHandler: CoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, throwable ->
             viewModelScope.launch {
+                firebaseCrashlytics.recordException(throwable)
                 _progressStatus.emit(
                     ProgressUpdateEvent.ProgressError(
                         throwable.message
@@ -86,7 +89,6 @@ class SyncScreenViewModel @Inject constructor(
                 )
                 _progressStatus.emit(ProgressUpdateEvent.SyncFinished)
             }.collect()
-//            syncRepository.downloadSound()
         }
     }
 
@@ -99,5 +101,10 @@ class SyncScreenViewModel @Inject constructor(
             )
         )
         syncIndex++
+    }
+
+    fun restartSync(){
+        syncIndex = 0
+        startSync()
     }
 }

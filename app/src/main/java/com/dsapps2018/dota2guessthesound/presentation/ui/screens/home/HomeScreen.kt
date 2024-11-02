@@ -45,7 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ComingSoonButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
-import com.dsapps2018.dota2guessthesound.presentation.ui.composables.PermissionDialog
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState

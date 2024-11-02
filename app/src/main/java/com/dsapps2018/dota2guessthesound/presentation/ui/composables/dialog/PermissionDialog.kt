@@ -1,4 +1,4 @@
-package com.dsapps2018.dota2guessthesound.presentation.ui.composables
+package com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog
 
 
 import androidx.compose.foundation.background
