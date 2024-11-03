@@ -2,6 +2,7 @@ package com.dsapps2018.dota2guessthesound.di
 
 import android.content.Context
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayer
+import com.dsapps2018.dota2guessthesound.data.util.connectivity.NetworkConnectivityObserver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +23,10 @@ object AppModule {
     @Singleton
     fun provideSharedPrefs(@ApplicationContext context: Context) =
         context.getSharedPreferences("Dota2SharedPrefs", Context.MODE_PRIVATE)
+
+    @Provides
+    @Singleton
+    fun provideNetworkConnectivityObserver(@ApplicationContext context: Context) =
+        NetworkConnectivityObserver(context)
 
 }

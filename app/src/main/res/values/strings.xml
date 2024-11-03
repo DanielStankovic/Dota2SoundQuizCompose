@@ -3,4 +3,7 @@
     <string name="sync_error_title">Error syncing data</string>
     <string name="sync_error_message">App encountered error while getting data from the Internet.\n\nCheck your Internet Connection.</string>
     <string name="lbl_retry">Retry</string>
+    <string name="error_connection_lost_title">Connection lost</string>
+    <string name="error_connection_lost_msg">Internet connection is needed to be able to play the quiz.\n\nCheck Internet Connection.</string>
+    <string name="lbl_ok">Ok</string>
 </resources>

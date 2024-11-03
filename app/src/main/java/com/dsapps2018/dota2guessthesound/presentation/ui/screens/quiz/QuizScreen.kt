@@ -37,6 +37,7 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedImages
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
 import kotlin.random.Random
 
 @Composable
@@ -55,6 +56,8 @@ fun QuizScreen(
     var score: Int by remember {
         mutableIntStateOf(0)
     }
+
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         quizViewModel.quizEvent.collect { quizEvent ->
@@ -79,12 +82,29 @@ fun QuizScreen(
                         onPlayAgain(score, true)
                     }
                 }
+
+                QuizEventState.ConnectionLost -> {
+                    showDialog = true
+                }
             }
         }
     }
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         content = { padding ->
+            if (showDialog) SingleOptionDialog(
+                onDismiss = {
+                    showDialog = false
+                },
+                onOptionClick = {
+                    showDialog = false
+                },
+                titleText = context.getString(R.string.error_connection_lost_title),
+                messageText = context.getString(R.string.error_connection_lost_msg),
+                optionText= context.getString(R.string.lbl_ok),
+                dismissible = false
+            )
+
             Box(
                 modifier
                     .fillMaxSize()

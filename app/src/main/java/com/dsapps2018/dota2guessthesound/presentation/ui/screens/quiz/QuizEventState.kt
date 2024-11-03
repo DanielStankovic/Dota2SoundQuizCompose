@@ -5,4 +5,5 @@ sealed interface QuizEventState {
     data object CorrectSound: QuizEventState
     data object WrongSound: QuizEventState
     data object NoMoreSounds: QuizEventState
+    data object ConnectionLost: QuizEventState
 }

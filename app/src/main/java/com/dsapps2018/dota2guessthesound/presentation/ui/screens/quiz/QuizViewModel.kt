@@ -1,12 +1,12 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz
 
-import android.media.MediaPlayer
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
 import com.dsapps2018.dota2guessthesound.data.repository.QuizRepository
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayer
+import com.dsapps2018.dota2guessthesound.data.util.connectivity.ConnectivityObserver
+import com.dsapps2018.dota2guessthesound.data.util.connectivity.NetworkConnectivityObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class QuizViewModel @Inject constructor(
     private val quizRepository: QuizRepository,
-    private var soundPlayer: SoundPlayer,
+    private val soundPlayer: SoundPlayer,
+    private val networkConnectivityObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
     private val fullList = mutableListOf<SoundModel>()
@@ -45,6 +46,9 @@ class QuizViewModel @Inject constructor(
     }
 
     private suspend fun playNextSound(){
+        if(networkConnectivityObserver.isConnected() != ConnectivityObserver.Status.Available){
+            _quizEvent.emit(QuizEventState.ConnectionLost)
+        }
         currentSound = getNextSound()
         if(currentSound == null){
             _quizEvent.emit(QuizEventState.NoMoreSounds)
