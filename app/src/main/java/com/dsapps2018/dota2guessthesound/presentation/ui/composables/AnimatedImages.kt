@@ -1,6 +1,5 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.composables
 
-import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image

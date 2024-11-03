@@ -1,11 +1,13 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.data.repository.SyncRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,9 +18,11 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dsapps2018.dota2guessthesound.R
 
 @HiltViewModel
 class SyncScreenViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val syncRepository: SyncRepository,
     private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
@@ -46,7 +50,7 @@ class SyncScreenViewModel @Inject constructor(
                 _progressStatus.emit(
                     ProgressUpdateEvent.ProgressError(
                         throwable.message
-                            ?: "Unknown Error Message when syncing ${syncList[syncIndex - 1]}"
+                            ?: context.getString(R.string.sync_unknown_error, syncList[syncIndex - 1])
                     )
                 )
             }
@@ -76,7 +80,7 @@ class SyncScreenViewModel @Inject constructor(
             syncRepository.syncCaster()
 
             syncRepository.syncSound().onEach { progressUpdate ->
-                val prog = ProgressUpdateEvent.ProgressUpdate((syncIndex + progressUpdate.first).toFloat(), syncList.size.toFloat(), "Downloading: ${progressUpdate.second}")
+                val prog = ProgressUpdateEvent.ProgressUpdate((syncIndex + progressUpdate.first).toFloat(), syncList.size.toFloat(), context.getString(R.string.downloading_msg, progressUpdate.second))
 
                _progressStatus.emit(prog)
             }.onCompletion {

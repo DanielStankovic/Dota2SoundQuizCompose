@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.ProgressColor
 
@@ -39,7 +40,7 @@ fun SyncScreen(
     onUpdateRequired: () -> Unit
 ) {
     var currentProgress by remember {
-        mutableStateOf(ProgressUpdateEvent.ProgressUpdate(0f, 0f, ""))
+        mutableStateOf(ProgressUpdateEvent.ProgressUpdate(0f, 0f, Constants.EMPTY_STRING))
     }
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current

@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -30,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dsapps2018.dota2guessthesound.BuildConfig
@@ -69,14 +68,16 @@ fun ForceUpdateScreen() {
                         .fillMaxSize()
                         .padding(horizontal = 36.dp)
                 ) {
-                    Text("New Version Available", textAlign = TextAlign.Center, color = Color.White)
+                    Text(context.getString(R.string.new_version_available), textAlign = TextAlign.Center, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("There are new features available, please update your app to continue using it", textAlign = TextAlign.Center, color = Color.White)
+                    Text(stringResource(R.string.please_update_msg), textAlign = TextAlign.Center, color = Color.White)
                     Spacer(modifier = Modifier.height(16.dp))
                     MenuButton(
-                        modifier = Modifier.height(100.dp).width(200.dp),
+                        modifier = Modifier
+                            .height(100.dp)
+                            .width(200.dp),
                         paddingValues = PaddingValues(horizontal = 40.dp, vertical = 10.dp),
-                        text = "Update", textColor = Color.White,
+                        text = stringResource(R.string.lbl_update), textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
                         goToAppStore(context)

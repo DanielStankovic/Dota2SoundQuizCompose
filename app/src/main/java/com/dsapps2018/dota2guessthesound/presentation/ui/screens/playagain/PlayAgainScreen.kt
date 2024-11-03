@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,7 +60,7 @@ fun PlayAgainScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "You score is",
+                        stringResource(R.string.you_score_lbl),
                         textAlign = TextAlign.Center,
                         fontSize = 30.sp,
                         color = Color.White
@@ -78,7 +79,7 @@ fun PlayAgainScreen(
                     if(answeredAll){
                         Spacer(modifier = Modifier.height(20.dp))
                         Text(
-                            "You have guessed all the sounds that are currently implemented.\n\nWe will add more very soon! Keep an eye for the update!",
+                            stringResource(R.string.no_more_sounds_msg),
                             textAlign = TextAlign.Center,
                             fontSize = 26.sp,
                             color = Color.White,
@@ -87,9 +88,11 @@ fun PlayAgainScreen(
                     Spacer(modifier = Modifier.height(40.dp))
 
                     MenuButton(
-                        modifier = Modifier.wrapContentHeight().width(200.dp),
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .width(200.dp),
                         paddingValues = PaddingValues(),
-                        text = "Play again", textColor = Color.White,
+                        text = stringResource(R.string.play_again_lbl), textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
                         onPlayAgain()

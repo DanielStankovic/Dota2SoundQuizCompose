@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
+import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedImages
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
@@ -51,7 +52,7 @@ fun QuizScreen(
     val animationTrigger by quizViewModel.triggerAnimation.collectAsStateWithLifecycle()
 
     var buttonOptionsList: List<String> by remember {
-        mutableStateOf(listOf("", "", "", ""))
+        mutableStateOf(listOf(Constants.EMPTY_STRING, Constants.EMPTY_STRING, Constants.EMPTY_STRING, Constants.EMPTY_STRING))
     }
     var score: Int by remember {
         mutableIntStateOf(0)
@@ -133,7 +134,7 @@ fun QuizScreen(
                             .padding(top = 100.dp, end = 40.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        Text("Score: $score", fontSize = 30.sp, color = Color.White)
+                        Text(context.getString(R.string.score, score), fontSize = 30.sp, color = Color.White)
                     }
 
                     Spacer(modifier = Modifier.height(40.dp))

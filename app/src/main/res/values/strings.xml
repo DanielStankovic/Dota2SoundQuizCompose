@@ -6,4 +6,37 @@
     <string name="error_connection_lost_title">Connection lost</string>
     <string name="error_connection_lost_msg">Internet connection is needed to be able to play the quiz.\n\nCheck Internet Connection.</string>
     <string name="lbl_ok">Ok</string>
+
+    //Sync Repo
+    <string name="error_media_storage_not_mounted">Error - Can not download sounds to device storage</string>
+    <string name="error_can_not_create_directory">Error - Can not create download directory</string>
+
+    //Sync ViewModel
+    <string name="sync_unknown_error">Unknown Error Message when syncing %1$s</string>
+    <string name="downloading_msg">Downloading: %1$s</string>
+
+    //ForceUpdate Screen
+    <string name="new_version_available">New Version Available</string>
+    <string name="please_update_msg">There are new features available, please update your app to continue using it</string>
+    <string name="lbl_update">Update</string>
+
+    //Quiz Screen
+    <string name="score">Score: %1$d</string>
+    <string name="you_score_lbl">You score is</string>
+
+    //Play Again Screen
+    <string name="no_more_sounds_msg">You have guessed all the sounds that are currently implemented.\n\nWe will add more very soon! Keep an eye for the update!</string>
+    <string name="play_again_lbl">Play again</string>
+
+    //Home Screen
+    <string name="quiz_lbl">Quiz</string>
+    <string name="fast_finger_lbl">Fast Finger</string>
+    <string name="invoker_lbl">Invoker</string>
+    <string name="permission_required_lbl">Permission Required</string>
+    <string name="permission_msg">Notification Permission is required if you want to the receive latest news about the Dota 2 Sound Quiz and its updates.</string>
+    <string name="permission_msg_rationale">You can Allow notifications from Settings if you want to receive the latest news about the Dota 2 Sound Quiz and its updates.</string>
+    <string name="grant_permission_lbl">Grant Permission</string>
+    <string name="go_to_settings_lbl">Go to Settings</string>
+
+
 </resources>

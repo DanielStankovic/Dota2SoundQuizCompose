@@ -20,8 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogOnBackground
 
@@ -46,7 +48,7 @@ fun PermissionDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Permission Required",
+                    stringResource(R.string.permission_required_lbl),
                     modifier = Modifier.padding(12.dp),
                     fontWeight = FontWeight.Medium,
                     color = Color.White
@@ -54,9 +56,9 @@ fun PermissionDialog(
             }
             Text(
                 if(!showRationale)
-                "Notification Permission is required if you want to the receive latest news about the Dota 2 Sound Quiz and its updates."
+                    stringResource(R.string.permission_msg)
                 else
-                    "You can Allow notifications from Settings if you want to receive the latest news about the Dota 2 Sound Quiz and its updates.",
+                    stringResource(R.string.permission_msg_rationale),
                 modifier = Modifier.padding(12.dp),
                 fontWeight = FontWeight.Normal,
                 color = Color.White
@@ -79,7 +81,9 @@ fun PermissionDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text =  if(!showRationale) "Grant Permission" else "Go to Settings",
+                    text =  if(!showRationale) stringResource(R.string.grant_permission_lbl) else stringResource(
+                        R.string.go_to_settings_lbl
+                    ),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(12.dp),
                     color = DialogOnBackground

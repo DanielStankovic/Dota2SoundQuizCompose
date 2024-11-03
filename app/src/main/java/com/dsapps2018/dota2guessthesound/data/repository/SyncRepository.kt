@@ -26,6 +26,7 @@ import io.github.jan.supabase.storage.downloadPublicTo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
+import com.dsapps2018.dota2guessthesound.R
 import javax.inject.Inject
 
 class SyncRepository @Inject constructor(
@@ -109,13 +110,14 @@ class SyncRepository @Inject constructor(
     fun syncSound(): Flow<Pair<Float, String>> {
         return flow {
             try {
-                val modifiedDate = if(!BuildConfig.DEBUG) soundDao.getModifiedDate() ?: getInitialModifiedDate()
-                else{
-                    //Ovde za slucaj testa mozemo da fetchujemo samo neke i ovo samo u slucaju debuga. Koristim
-                    //ovaj uslov za debug cisto kao osiguranje da ne ode ovaj kod na produkciju
-                    soundDao.getModifiedDate() ?: getInitialModifiedDate()
+                val modifiedDate =
+                    if (!BuildConfig.DEBUG) soundDao.getModifiedDate() ?: getInitialModifiedDate()
+                    else {
+                        //Ovde za slucaj testa mozemo da fetchujemo samo neke i ovo samo u slucaju debuga. Koristim
+                        //ovaj uslov za debug cisto kao osiguranje da ne ode ovaj kod na produkciju
+                        soundDao.getModifiedDate() ?: getInitialModifiedDate()
 //                    "2024-10-29 17:38:45.593298" //Ovo je 5. modified_at iz baze na serveru sortirano DESC, tako da ce da vrati samo 4 zvuka uvek na svez sync
-                }
+                    }
                 val soundList = postgrest
                     .from(Constants.TABLE_SOUNDS)
                     .select(
@@ -145,19 +147,15 @@ class SyncRepository @Inject constructor(
                         )
                     }
 
-            soundDao.deleteAll(soundList)
-//            val a = storage.from("sounds").list("spell_sounds"){
-//                limit = 1000
-//            }
-//            val b = a
+                soundDao.deleteAll(soundList)
                 val directory = getAppExternalStorage()
                 directory?.let { dir ->
                     val filteredList = soundList.filter { x -> x.isActive }
                     val progressPortion = 1f / filteredList.size
-                    filteredList.forEachIndexed {index, sound ->
+                    filteredList.forEachIndexed { index, sound ->
                         val file = File(dir, sound.soundFileName)
-                        storage.from("sounds").downloadPublicTo(
-                            "spell_sounds/${sound.soundFileName}",
+                        storage.from(Constants.BUCKET_NAME).downloadPublicTo(
+                            "${Constants.BUCKET_FOLDER_NAME}/${sound.soundFileName}",
                             file
                         )
                         sound.soundFileLink = file.path
@@ -200,8 +198,8 @@ class SyncRepository @Inject constructor(
             directory = ringtonesDirectory
         }
 
-        if (!isMediaMounted) throw Exception("Error - Can not download sounds to device storage")
-        if (!directoryCreated) throw Exception("Error - Can not create download directory")
+        if (!isMediaMounted) throw Exception(applicationContext.getString(R.string.error_media_storage_not_mounted))
+        if (!directoryCreated) throw Exception(applicationContext.getString(R.string.error_can_not_create_directory))
         return directory
     }
 }

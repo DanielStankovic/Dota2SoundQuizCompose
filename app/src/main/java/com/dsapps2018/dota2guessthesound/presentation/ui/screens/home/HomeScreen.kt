@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -98,7 +99,7 @@ fun HomeScreen(
                     MenuButton(
                         modifier = Modifier.wrapContentHeight(),
                         paddingValues = PaddingValues(horizontal = 40.dp, vertical = 10.dp),
-                        text = "Quiz", textColor = Color.White,
+                        text = stringResource(R.string.quiz_lbl), textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
                         onQuizClicked()
@@ -107,7 +108,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     ComingSoonButton(
-                        text = "Fast Finger",
+                        text = stringResource(R.string.fast_finger_lbl),
                         textColor = Color.White,
                         enabled = false,
                         resId = R.drawable.fast_finger_coming_soon
@@ -116,7 +117,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     ComingSoonButton(
-                        text = "Invoker",
+                        text = stringResource(R.string.invoker_lbl),
                         textColor = Color.White,
                         enabled = false,
                         resId = R.drawable.invoker_coming_soon
