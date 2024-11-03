@@ -24,9 +24,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
@@ -42,6 +44,9 @@ fun SyncScreen(
     var currentProgress by remember {
         mutableStateOf(ProgressUpdateEvent.ProgressUpdate(0f, 0f, Constants.EMPTY_STRING))
     }
+
+    val triviaData by syncScreenViewModel.triviaData.collectAsStateWithLifecycle()
+
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -102,6 +107,19 @@ fun SyncScreen(
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
+                    Spacer(modifier = Modifier.height(100.dp))
+
+                    Text(
+                        modifier = Modifier.padding(horizontal = 30.dp),
+                        text = triviaData,
+                        fontSize = 18.sp,
+                        color = Color.White,
+                        textAlign = TextAlign.Justify
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
                     Text(
                         text = "${currentProgress.progressName}...",
                         fontSize = 22.sp,
