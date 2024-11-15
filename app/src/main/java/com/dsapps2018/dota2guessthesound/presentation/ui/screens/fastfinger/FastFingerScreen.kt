@@ -1,4 +1,4 @@
-package com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz
+package com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,48 +40,65 @@ import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedImages
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz.QuizEventState
+import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 @Composable
-fun QuizScreen(
+fun FastFingerScreen(
     modifier: Modifier = Modifier,
-    quizViewModel: QuizViewModel = hiltViewModel(),
-    onPlayAgain: (Int, Boolean) -> Unit
+    initialTime: Int,
+    fastFingerViewModel: FastFingerViewModel = hiltViewModel(),
+    onPlayAgain: (Int, Int, Int, Boolean) -> Unit
 ) {
 
     val context = LocalContext.current
-    val animationTrigger by quizViewModel.triggerAnimation.collectAsStateWithLifecycle()
+    val animationTriggerCorrect by fastFingerViewModel.triggerCorrectAnimation.collectAsStateWithLifecycle()
+    val animationTriggerWrong by fastFingerViewModel.triggerWrongAnimation.collectAsStateWithLifecycle()
 
     var buttonOptionsList: List<String> by remember {
         mutableStateOf(listOf(Constants.EMPTY_STRING, Constants.EMPTY_STRING, Constants.EMPTY_STRING, Constants.EMPTY_STRING))
     }
-    var score: Int by remember {
-        mutableIntStateOf(0)
+
+    var score: Pair<Int, Int> by remember {
+        mutableStateOf(0 to 0)
     }
 
     var showDialog by remember { mutableStateOf(false) }
 
+    var timeLeft by remember { mutableIntStateOf(initialTime) }
+
+    LaunchedEffect(timeLeft) {
+        if (timeLeft > 0) {
+            delay(1000L)
+            timeLeft--
+        } else {
+            showInterstitial(context){
+                onPlayAgain(score.first, score.second, initialTime, false)
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
-        quizViewModel.quizEvent.collect { quizEvent ->
+        fastFingerViewModel.quizEvent.collect { quizEvent ->
             when (quizEvent) {
                 is QuizEventState.SoundReady -> {
                     buttonOptionsList = quizEvent.buttonOptions
                 }
 
                 QuizEventState.CorrectSound -> {
-                    score++
-                    quizViewModel.triggerImageAnimation()
+                    score = (score.first + 1 to score.second + 1)
+                    fastFingerViewModel.triggerCorrectImageAnimation()
                 }
 
                 QuizEventState.WrongSound -> {
-                    showInterstitial(context){
-                        onPlayAgain(score, false)
-                    }
+                    score = (score.first to score.second + 1)
+                    fastFingerViewModel.triggerWrongImageAnimation()
                 }
 
                 QuizEventState.NoMoreSounds -> {
                     showInterstitial(context){
-                        onPlayAgain(score, true)
+                        onPlayAgain(score.first, score.second, initialTime, true)
                     }
                 }
 
@@ -90,6 +108,7 @@ fun QuizScreen(
             }
         }
     }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         content = { padding ->
@@ -117,9 +136,7 @@ fun QuizScreen(
                         painterResource(id = R.drawable.quiz_background),
                         contentScale = ContentScale.Crop
                     ),
-
-                ) {
-
+                ){
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -131,10 +148,11 @@ fun QuizScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 100.dp, end = 40.dp),
-                        horizontalArrangement = Arrangement.End
+                            .padding(top = 100.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(context.getString(R.string.score, score), fontSize = 30.sp, color = Color.White)
+                        Text("${timeLeft}s", fontSize = 30.sp, color = Color.White)
+                        Text(context.getString(R.string.score_fast_finger, score.first, score.second), fontSize = 30.sp, color = Color.White)
                     }
 
                     Spacer(modifier = Modifier.height(70.dp))
@@ -145,11 +163,15 @@ fun QuizScreen(
                         smallImageCorrect = painterResource(id = R.drawable.gj),
                         smallImageWrong = painterResource(id = R.drawable.wrong),
                         onImageClick = {
-                            quizViewModel.playSound()
+                            fastFingerViewModel.playSound()
                         },
-                        animationTriggerCorrect = animationTrigger,
+                        animationTriggerCorrect = animationTriggerCorrect,
                         resetAnimationTriggerCorrect = {
-                            quizViewModel.resetAnimationTrigger()
+                            fastFingerViewModel.resetCorrectAnimationTrigger()
+                        },
+                        animationTriggerWrong =  animationTriggerWrong,
+                        resetAnimationTriggerWrong = {
+                            fastFingerViewModel.resetWrongAnimationTrigger()
                         },
                         floatOffsetCorrect = if (Random.nextBoolean()) (-130f) else (150f)
 
@@ -170,7 +192,7 @@ fun QuizScreen(
                             textColor = Color.White,
                             contentScale = ContentScale.FillBounds
                         ) {
-                            quizViewModel.onAnswerClicked(buttonOptionsList[0])
+                            fastFingerViewModel.onAnswerClicked(buttonOptionsList[0])
                         }
                         Spacer(modifier = Modifier.width(24.dp))
                         MenuButton(
@@ -182,7 +204,7 @@ fun QuizScreen(
                             textColor = Color.White,
                             contentScale = ContentScale.FillBounds
                         ) {
-                            quizViewModel.onAnswerClicked(buttonOptionsList[1])
+                            fastFingerViewModel.onAnswerClicked(buttonOptionsList[1])
                         }
                     }
 
@@ -202,7 +224,7 @@ fun QuizScreen(
                             textColor = Color.White,
                             contentScale = ContentScale.FillBounds
                         ) {
-                            quizViewModel.onAnswerClicked(buttonOptionsList[2])
+                            fastFingerViewModel.onAnswerClicked(buttonOptionsList[2])
                         }
                         Spacer(modifier = Modifier.width(24.dp))
                         MenuButton(
@@ -214,14 +236,14 @@ fun QuizScreen(
                             textColor = Color.White,
                             contentScale = ContentScale.FillBounds
                         ) {
-                            quizViewModel.onAnswerClicked(buttonOptionsList[3])
+                            fastFingerViewModel.onAnswerClicked(buttonOptionsList[3])
                         }
                     }
 
                     Spacer(modifier = Modifier.weight(0.6f))
                 }
-
             }
+
         }
     )
 }

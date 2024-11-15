@@ -19,25 +19,31 @@ import kotlinx.coroutines.launch
 fun AnimatedImages(
     modifier: Modifier,
     bigImage: Painter,
-    smallImage: Painter,
-    animationTrigger: Boolean,
-    resetAnimationTrigger: () -> Unit,
+    smallImageCorrect: Painter,
+    smallImageWrong: Painter,
+    animationTriggerCorrect: Boolean,
+    resetAnimationTriggerCorrect: () -> Unit,
+    animationTriggerWrong: Boolean = false,
+    resetAnimationTriggerWrong: () -> Unit = {},
     onImageClick: () -> Unit,
-    floatOffset: Float
+    floatOffsetCorrect: Float
 ) {
     val scope = rememberCoroutineScope()
 
     // Animatable for handling the x-axis offset
     val offsetX = remember { Animatable(0f) }
 
+    // Animatable for handling the y-axis offset
+    val offsetY = remember { Animatable(0f) }
 
-    LaunchedEffect(key1 = animationTrigger) {
+
+    LaunchedEffect(key1 = animationTriggerCorrect) {
         // Check if animation is triggered
-        if (animationTrigger) {
+        if (animationTriggerCorrect) {
             scope.launch {
                 // Start the animation
                 offsetX.animateTo(
-                    targetValue = floatOffset, // Move left by 100.dp
+                    targetValue = floatOffsetCorrect, // Move left by 100.dp
                     animationSpec = tween(durationMillis = 1000) // Duration of 1.5 seconds
                 )
                 offsetX.animateTo(
@@ -46,7 +52,27 @@ fun AnimatedImages(
                 )
 
                 // Reset the animation trigger in ViewModel
-                resetAnimationTrigger()
+                resetAnimationTriggerCorrect()
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = animationTriggerWrong) {
+        // Check if animation is triggered
+        if (animationTriggerWrong) {
+            scope.launch {
+                // Start the animation
+                offsetY.animateTo(
+                    targetValue = -120f, // Move up by 100.dp
+                    animationSpec = tween(durationMillis = 1000) // Duration of 1.5 seconds
+                )
+                offsetY.animateTo(
+                    targetValue = 0f, // Return to original position
+                    animationSpec = tween(durationMillis = 1000)
+                )
+
+                // Reset the animation trigger in ViewModel
+                resetAnimationTriggerWrong()
             }
         }
     }
@@ -55,13 +81,24 @@ fun AnimatedImages(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        // Small image behind (initially offset to the right)
+        // Small image correct behind (initially offset to the right)
         Image(
-            painter = smallImage,
-            contentDescription = "Small Image",
+            painter = smallImageCorrect,
+            contentDescription = "Small Image Correct",
             modifier = Modifier
                 .size(150.dp)
                 .offset(x = offsetX.value.dp)
+                .background(Color.Transparent),
+            contentScale = ContentScale.Inside
+        )
+
+        // Small image wrong behind (initially offset to the bottom)
+        Image(
+            painter = smallImageWrong,
+            contentDescription = "Small Image Wrong",
+            modifier = Modifier
+                .size(150.dp)
+                .offset(y = offsetY.value.dp)
                 .background(Color.Transparent),
             contentScale = ContentScale.Inside
         )

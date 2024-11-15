@@ -38,5 +38,13 @@
     <string name="grant_permission_lbl">Grant Permission</string>
     <string name="go_to_settings_lbl">Go to Settings</string>
 
+    //FastFinger Screen
+    <string name="play_lbl">Play</string>
+    <string name="pick_a_timer_option">Pick a timer option</string>
+    <string name="score_fast_finger">Score: %1$d/%2$d</string>
+
+    //Play Again Fast Finger Screen
+    <string name="time_picked">"Time: %1$d seconds"</string>
+
 
 </resources>

@@ -18,7 +18,10 @@ object HomeDestination
 object QuizModeDestination
 
 @Serializable
-object FastFingerModeDestination
+data class FastFingerModeDestination(val time: Int)
+
+@Serializable
+object PickTimeDestination
 
 @Serializable
 object InvokerDestination
@@ -28,3 +31,6 @@ object ForceUpdateDestination
 
 @Serializable
 data class PlayAgainDestination (val score: Int, val answeredAll: Boolean)
+
+@Serializable
+data class PlayAgainFastFingerDestination (val scoreGuessed:Int, val scoreTotal: Int, val time: Int, val answeredAll: Boolean)

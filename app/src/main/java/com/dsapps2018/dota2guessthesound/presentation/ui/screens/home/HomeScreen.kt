@@ -57,6 +57,7 @@ import com.google.android.gms.ads.AdView
 @Composable
 fun HomeScreen(
     onQuizClicked: () -> Unit,
+    onFastFingerClicked: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -107,12 +108,14 @@ fun HomeScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    ComingSoonButton(
-                        text = stringResource(R.string.fast_finger_lbl),
-                        textColor = Color.White,
-                        enabled = false,
-                        resId = R.drawable.fast_finger_coming_soon
-                    ) { }
+                    MenuButton(
+                        modifier = Modifier.wrapContentHeight(),
+                        paddingValues = PaddingValues(horizontal = 40.dp, vertical = 10.dp),
+                        text = stringResource(R.string.fast_finger_lbl), textColor = Color.White,
+                        contentScale = ContentScale.Fit
+                    ) {
+                        onFastFingerClicked()
+                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
 
