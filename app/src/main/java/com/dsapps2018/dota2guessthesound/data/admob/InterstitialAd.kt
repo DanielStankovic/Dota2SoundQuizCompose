@@ -33,6 +33,7 @@ fun showInterstitial(context: Context, onAdDismissed: () -> Unit) {
     //In case user do not have internet connection or something happened to the ads API,
     //we still want to let user proceed with using the app
     if(mInterstitialAd == null){
+        loadInterstitial(context)
         onAdDismissed()
         return
     }
@@ -42,6 +43,8 @@ fun showInterstitial(context: Context, onAdDismissed: () -> Unit) {
         mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdFailedToShowFullScreenContent(e: AdError) {
                 mInterstitialAd = null
+                loadInterstitial(context)
+                onAdDismissed()
             }
 
             override fun onAdDismissedFullScreenContent() {

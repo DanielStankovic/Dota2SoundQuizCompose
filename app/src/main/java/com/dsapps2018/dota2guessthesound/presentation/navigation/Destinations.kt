@@ -24,6 +24,9 @@ data class FastFingerModeDestination(val time: Int)
 object PickTimeDestination
 
 @Serializable
+object InvokerExplanationDestination
+
+@Serializable
 object InvokerDestination
 
 @Serializable
@@ -34,3 +37,6 @@ data class PlayAgainDestination (val score: Int, val answeredAll: Boolean)
 
 @Serializable
 data class PlayAgainFastFingerDestination (val scoreGuessed:Int, val scoreTotal: Int, val time: Int, val answeredAll: Boolean)
+
+@Serializable
+data class PlayAgainInvokerDestination (val score: Int)

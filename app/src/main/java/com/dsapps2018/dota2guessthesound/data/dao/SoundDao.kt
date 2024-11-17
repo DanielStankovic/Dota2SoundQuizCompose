@@ -29,4 +29,6 @@ interface SoundDao {
     @Query("SELECT id, spellName, soundFileLink FROM Sound WHERE isActive = 1")
     fun getAllSounds(): Flow<List<SoundModel>>
 
+    @Query("SELECT s.id, s.spellName, s.soundFileLink FROM Sound s INNER JOIN Caster c ON c.id = s.casterId WHERE c.name LIKE '%Invoker%' AND s.spellName NOT LIKE '%Invoke%'")
+    fun getInvokerSounds(): Flow<List<SoundModel>>
 }

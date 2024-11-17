@@ -9,7 +9,10 @@ import androidx.navigation.toRoute
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.FastFingerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.PickTimeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainFastFingerScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainInvokerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz.QuizScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen.SyncScreen
@@ -52,6 +55,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onFastFingerClicked = {
                     navController.navigate(PickTimeDestination)
+                },
+                onInvokerClicked = {
+                    navController.navigate(InvokerExplanationDestination)
                 }
             )
         }
@@ -73,15 +79,24 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         composable<FastFingerModeDestination> { backStackEntry ->
             val fastFingerDestination: FastFingerModeDestination = backStackEntry.toRoute()
 
-            FastFingerScreen(initialTime = fastFingerDestination.time, onPlayAgain = { scoreGuessed, scoreTotal, time, answeredAll ->
-                navController.navigate(route = PlayAgainFastFingerDestination(scoreGuessed, scoreTotal, time, answeredAll)) {
-                    popUpTo<HomeDestination> {
-                        inclusive = false
-                        saveState = false
+            FastFingerScreen(
+                initialTime = fastFingerDestination.time,
+                onPlayAgain = { scoreGuessed, scoreTotal, time, answeredAll ->
+                    navController.navigate(
+                        route = PlayAgainFastFingerDestination(
+                            scoreGuessed,
+                            scoreTotal,
+                            time,
+                            answeredAll
+                        )
+                    ) {
+                        popUpTo<HomeDestination> {
+                            inclusive = false
+                            saveState = false
+                        }
+                        restoreState = false
                     }
-                    restoreState = false
-                }
-            })
+                })
         }
 
         composable<PickTimeDestination> {
@@ -98,8 +113,28 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        composable<InvokerDestination> {
+        composable<InvokerExplanationDestination> {
+            InvokerExplanationScreen {
+                navController.navigate(route = InvokerDestination) {
+                    popUpTo<HomeDestination> {
+                        inclusive = false
+                        saveState = false
+                    }
+                    restoreState = false
+                }
+            }
+        }
 
+        composable<InvokerDestination> {
+            InvokerScreen{ score ->
+                    navController.navigate(route = PlayAgainInvokerDestination(score)) {
+                        popUpTo<HomeDestination> {
+                            inclusive = false
+                            saveState = false
+                        }
+                        restoreState = false
+                    }
+            }
         }
 
         composable<ForceUpdateDestination> {
@@ -134,6 +169,22 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 time = playAgainFastFingerDestination.time,
                 onPlayAgain = {
                     navController.navigate(route = PickTimeDestination) {
+                        popUpTo<HomeDestination> {
+                            inclusive = false
+                            saveState = false
+                        }
+                        restoreState = false
+                    }
+                })
+        }
+
+        composable<PlayAgainInvokerDestination> { backStackEntry ->
+            val playAgainInvokerDestination: PlayAgainInvokerDestination = backStackEntry.toRoute()
+
+            PlayAgainInvokerScreen(
+                score = playAgainInvokerDestination.score,
+                onPlayAgain = {
+                    navController.navigate(route = HomeDestination) {
                         popUpTo<HomeDestination> {
                             inclusive = false
                             saveState = false

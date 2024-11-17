@@ -22,7 +22,7 @@
 
     //Quiz Screen
     <string name="score">Score: %1$d</string>
-    <string name="you_score_lbl">You score is</string>
+    <string name="you_score_lbl">Your score is</string>
 
     //Play Again Screen
     <string name="no_more_sounds_msg">You have guessed all the sounds that are currently implemented.\n\nWe will add more very soon! Keep an eye for the update!</string>
@@ -45,6 +45,18 @@
 
     //Play Again Fast Finger Screen
     <string name="time_picked">"Time: %1$d seconds"</string>
+    <string name="invoker_explanation">Welcome to the Invoker Mode. The rules are simple.  Listen and Invoke the sounds that you hear in the correct order.  As the time goes on, you will have to Invoke faster. Survive as long as you can! Good luck!</string>
+
+    //Invoker Explanation Screen
+    <string name="explanation_1">Welcome to the\n\n</string>
+    <string name="explanation_2">The rules are simple.  Listen and Invoke the sounds that you hear in the correct order.  As the time goes on, you will have to Invoke faster. Survive as long as you can! Good luck!</string>
+    <string name="invoker_game_mode_1">Invoker</string>
+    <string name="invoker_game_mode_2">Game</string>
+    <string name="invoker_game_mode_3">Mode</string>
+
+    //Play Again Invoker Screen
+    <string name="you_survived_for">You survived for</string>
+    <string name="score_invoker">%1$d seconds</string>
 
 
 </resources>

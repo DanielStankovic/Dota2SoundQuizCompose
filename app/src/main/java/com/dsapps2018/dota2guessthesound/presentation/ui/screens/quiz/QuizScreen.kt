@@ -141,7 +141,7 @@ fun QuizScreen(
 
                     AnimatedImages(
                         modifier = Modifier.size(160.dp),
-                        bigImage = painterResource(id = R.drawable.sound_button_cut),
+                        bigImage = painterResource(id = R.drawable.sound_button),
                         smallImageCorrect = painterResource(id = R.drawable.gj),
                         smallImageWrong = painterResource(id = R.drawable.wrong),
                         onImageClick = {

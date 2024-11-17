@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ComingSoonButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -58,6 +57,7 @@ import com.google.android.gms.ads.AdView
 fun HomeScreen(
     onQuizClicked: () -> Unit,
     onFastFingerClicked: () -> Unit,
+    onInvokerClicked: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -119,12 +119,14 @@ fun HomeScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    ComingSoonButton(
-                        text = stringResource(R.string.invoker_lbl),
-                        textColor = Color.White,
-                        enabled = false,
-                        resId = R.drawable.invoker_coming_soon
-                    ) { }
+                    MenuButton(
+                        modifier = Modifier.wrapContentHeight(),
+                        paddingValues = PaddingValues(horizontal = 40.dp, vertical = 10.dp),
+                        text = stringResource(R.string.invoker_lbl), textColor = Color.White,
+                        contentScale = ContentScale.Fit
+                    ) {
+                        onInvokerClicked()
+                    }
                 }
                 AndroidView(
                     // on below line specifying width for ads.

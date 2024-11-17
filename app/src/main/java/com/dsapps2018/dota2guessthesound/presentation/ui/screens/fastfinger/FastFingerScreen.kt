@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -159,7 +158,7 @@ fun FastFingerScreen(
 
                     AnimatedImages(
                         modifier = Modifier.size(160.dp),
-                        bigImage = painterResource(id = R.drawable.sound_button_cut),
+                        bigImage = painterResource(id = R.drawable.sound_button),
                         smallImageCorrect = painterResource(id = R.drawable.gj),
                         smallImageWrong = painterResource(id = R.drawable.wrong),
                         onImageClick = {

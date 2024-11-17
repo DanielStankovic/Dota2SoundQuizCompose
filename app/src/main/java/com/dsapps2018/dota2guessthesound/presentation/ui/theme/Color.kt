@@ -13,3 +13,7 @@ val Pink40 = Color(0xFF7D5260)
 val ProgressColor = Color(0xFFA2342E)
 val DialogBackground = Color(0xFF303030)
 val DialogOnBackground = Color(0xFFA1BBFA)
+
+val Exort = Color(0xFFFA8D4E)
+val Wex = Color(0xFFEC6BB1)
+val Quas = Color(0xFF22D9E5)
