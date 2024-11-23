@@ -61,7 +61,8 @@ import com.google.firebase.crashlytics.crashlytics
 fun OptionsScreen(
     modifier: Modifier = Modifier,
     onPrivacyPolicyClick: () -> Unit,
-    onChangelogClick: () -> Unit
+    onChangelogClick: () -> Unit,
+    onAttributionsClicked: () -> Unit
 ) {
     val context = LocalContext.current
     val window = (LocalView.current.context as Activity).window
@@ -117,6 +118,14 @@ fun OptionsScreen(
                         optionText = stringResource(R.string.privacy_policy)
                     ) {
                         onPrivacyPolicyClick()
+                    }
+
+                    OptionsItem(
+                        leadingIcon = R.drawable.ic_privacy,
+                        trailingIcon = R.drawable.ic_arrow_right,
+                        optionText = stringResource(R.string.attributions)
+                    ) {
+                        onAttributionsClicked()
                     }
 
                     OptionsItem(

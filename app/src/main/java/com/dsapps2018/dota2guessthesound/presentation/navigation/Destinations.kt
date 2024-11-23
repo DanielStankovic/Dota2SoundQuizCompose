@@ -49,3 +49,6 @@ object PrivacyDestination
 
 @Serializable
 object ChangelogDestination
+
+@Serializable
+object AttributionDestination
