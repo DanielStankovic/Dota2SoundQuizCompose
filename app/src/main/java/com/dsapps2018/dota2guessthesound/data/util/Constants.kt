@@ -2,10 +2,14 @@ package com.dsapps2018.dota2guessthesound.data.util
 
 object Constants {
 
+    const val DATABASE_NAME = "dota_database"
+    const val DATABASE_VERSION = 2
+
     const val TABLE_CASTER_TYPE = "caster_type"
     const val TABLE_CASTERS = "casters"
     const val TABLE_SOUNDS = "sounds"
     const val TABLE_CONFIG = "config"
+    const val TABLE_CHANGELOG = "changelog"
 
     const val PERMISSION_CHECK_TAG = "permissionCheck"
 

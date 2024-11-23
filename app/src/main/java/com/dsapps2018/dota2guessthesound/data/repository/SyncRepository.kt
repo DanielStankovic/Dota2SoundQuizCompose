@@ -27,6 +27,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.api.response.ChangelogDto
+import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
+import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
 import javax.inject.Inject
 
 class SyncRepository @Inject constructor(
@@ -35,6 +38,7 @@ class SyncRepository @Inject constructor(
     private val storage: Storage,
     private val casterTypeDao: CasterTypeDao,
     private val casterDao: CasterDao,
+    private val changelogDao: ChangelogDao,
     private val soundDao: SoundDao
 ) {
 
@@ -102,6 +106,34 @@ class SyncRepository @Inject constructor(
 
             casterDao.deleteAll(casterList)
             casterDao.insertAll(casterList.filter { x -> x.isActive })
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun syncChangelog() {
+        try {
+            val modifiedDate = changelogDao.getModifiedDate() ?: getInitialModifiedDate()
+            val changelogList = postgrest
+                .from(Constants.TABLE_CHANGELOG)
+                .select(
+                    columns = Columns.list(
+                        "id",
+                        "version",
+                        "log",
+                        "modified_at"
+                    )
+                ) {
+                    filter {
+                        gt("modified_at", modifiedDate)
+                    }
+                    order("modified_at", Order.ASCENDING)
+                }.decodeList<ChangelogDto>().map { x ->
+                    ChangelogEntity(x.id, x.modifiedAt, x.version, x.log)
+                }
+
+            changelogDao.deleteAll(changelogList)
+            changelogDao.insertAll(changelogList)
         } catch (e: Exception) {
             throw e
         }

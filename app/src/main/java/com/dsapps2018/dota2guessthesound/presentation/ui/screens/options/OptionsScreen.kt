@@ -144,7 +144,7 @@ fun OptionsScreen(
                     }
 
                     Spacer(Modifier.weight(0.8f))
-                    
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

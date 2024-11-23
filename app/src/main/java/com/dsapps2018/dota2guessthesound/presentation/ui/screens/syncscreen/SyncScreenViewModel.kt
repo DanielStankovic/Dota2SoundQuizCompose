@@ -57,6 +57,7 @@ class SyncScreenViewModel @Inject constructor(
             "Downloading config files",
             "Syncing caster type",
             "Syncing casters",
+            "Syncing changelog",
             "Syncing sounds",
             "Sync finished"
         )
@@ -114,6 +115,9 @@ class SyncScreenViewModel @Inject constructor(
 
             sendNextEvent()
             syncRepository.syncCaster()
+
+            sendNextEvent()
+            syncRepository.syncChangelog()
 
             syncRepository.syncSound().onEach { progressUpdate ->
                 val prog = ProgressUpdateEvent.ProgressUpdate(

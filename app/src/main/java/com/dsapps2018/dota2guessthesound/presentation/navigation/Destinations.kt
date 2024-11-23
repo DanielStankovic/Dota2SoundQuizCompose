@@ -46,3 +46,6 @@ object OptionsDestination
 
 @Serializable
 object PrivacyDestination
+
+@Serializable
+object ChangelogDestination

@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
+import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.db.DotaDatabase
+import com.dsapps2018.dota2guessthesound.data.util.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +22,7 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideRoomDb(@ApplicationContext context: Context): DotaDatabase =
-        Room.databaseBuilder(context, DotaDatabase::class.java, "dota_database").build()
+        Room.databaseBuilder(context, DotaDatabase::class.java, Constants.DATABASE_NAME).build()
 
     @Singleton
     @Provides
@@ -38,6 +40,12 @@ object DatabaseModule {
     @Provides
     fun provideSoundDao(database: DotaDatabase): SoundDao {
         return database.soundDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideChangelogDao(database: DotaDatabase): ChangelogDao {
+        return database.changelogDao()
     }
 
 }

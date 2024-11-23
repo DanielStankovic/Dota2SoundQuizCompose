@@ -11,6 +11,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.Pick
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.changelog.ChangelogScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.OptionsScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.PrivacyScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainFastFingerScreen
@@ -205,12 +206,16 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                     navController.navigate(route = PrivacyDestination)
                 },
                 onChangelogClick = {
-
+                    navController.navigate(route = ChangelogDestination)
                 })
         }
 
         composable<PrivacyDestination> {
             PrivacyScreen()
+        }
+
+        composable<ChangelogDestination> {
+            ChangelogScreen()
         }
     }
 }
