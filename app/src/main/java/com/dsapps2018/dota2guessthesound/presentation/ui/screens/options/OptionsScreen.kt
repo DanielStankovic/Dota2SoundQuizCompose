@@ -17,13 +17,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -38,9 +42,13 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AutoSizeText
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.OptionsItem
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -93,6 +101,8 @@ fun OptionsScreen(
                     verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Spacer(Modifier.weight(1f))
+
                     OptionsItem(
                         leadingIcon = R.drawable.ic_notification,
                         trailingIcon = R.drawable.ic_arrow_right,
@@ -133,6 +143,28 @@ fun OptionsScreen(
                         launchInAppReview(context)
                     }
 
+                    Spacer(Modifier.weight(0.8f))
+                    
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 80.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AutoSizeText(
+                            stringResource(
+                                R.string.game_version,
+                                BuildConfig.VERSION_NAME
+                            ), minTextSize = 12.sp, maxTextSize = 18.sp, maxLines = 1
+                        )
+                        AutoSizeText(
+                            stringResource(R.string.dota_version, Constants.DOTA_VERSION),
+                            minTextSize = 12.sp,
+                            maxTextSize = 18.sp,
+                            maxLines = 1
+                        )
+                    }
                 }
 
                 AndroidView(
