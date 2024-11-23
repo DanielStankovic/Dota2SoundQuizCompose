@@ -9,10 +9,13 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -58,6 +62,7 @@ fun HomeScreen(
     onQuizClicked: () -> Unit,
     onFastFingerClicked: () -> Unit,
     onInvokerClicked: () -> Unit,
+    onOptionsClicked: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -99,7 +104,8 @@ fun HomeScreen(
 
                     MenuButton(
                         modifier = Modifier.wrapContentHeight(),
-                        paddingValues = PaddingValues(horizontal = 40.dp, vertical = 10.dp),
+                        paddingValues = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+                        maxLines = 1,
                         text = stringResource(R.string.quiz_lbl), textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
@@ -110,7 +116,8 @@ fun HomeScreen(
 
                     MenuButton(
                         modifier = Modifier.wrapContentHeight(),
-                        paddingValues = PaddingValues(horizontal = 40.dp, vertical = 10.dp),
+                        paddingValues = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+                        maxLines = 1,
                         text = stringResource(R.string.fast_finger_lbl), textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
@@ -121,12 +128,30 @@ fun HomeScreen(
 
                     MenuButton(
                         modifier = Modifier.wrapContentHeight(),
-                        paddingValues = PaddingValues(horizontal = 40.dp, vertical = 10.dp),
+                        paddingValues = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+                        maxLines = 1,
                         text = stringResource(R.string.invoker_lbl), textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
                         onInvokerClicked()
                     }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .padding(top = 100.dp, end = 50.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_cogwheel),
+                        modifier = Modifier.size(50.dp).clickable{
+                            onOptionsClicked()
+                        },
+                        contentDescription = null,
+                        contentScale = ContentScale.FillBounds
+                    )
                 }
                 AndroidView(
                     // on below line specifying width for ads.
@@ -171,7 +196,10 @@ fun HomeScreen(
 @OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-private fun HandlePermissionRequest(setPermissionCheckTimestamp: () -> Unit, shouldShowRationaleAgain: () -> Boolean) {
+private fun HandlePermissionRequest(
+    setPermissionCheckTimestamp: () -> Unit,
+    shouldShowRationaleAgain: () -> Boolean
+) {
     var showDialog by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
@@ -182,7 +210,7 @@ private fun HandlePermissionRequest(setPermissionCheckTimestamp: () -> Unit, sho
 
     when (val status = permissionState.status) {
         is PermissionStatus.Granted -> {}
-        is PermissionStatus.Denied -> if(shouldShowRationaleAgain()){
+        is PermissionStatus.Denied -> if (shouldShowRationaleAgain()) {
             if (showDialog) PermissionDialog(
                 onDismiss = {
                     setPermissionCheckTimestamp()

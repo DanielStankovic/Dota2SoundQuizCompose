@@ -168,6 +168,7 @@ fun QuizScreen(
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[0],
                             textColor = Color.White,
+                            maxLines = 2,
                             contentScale = ContentScale.FillBounds
                         ) {
                             quizViewModel.onAnswerClicked(buttonOptionsList[0])
@@ -179,6 +180,7 @@ fun QuizScreen(
                                 .height(100.dp),
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[1],
+                            maxLines = 2,
                             textColor = Color.White,
                             contentScale = ContentScale.FillBounds
                         ) {
@@ -200,6 +202,7 @@ fun QuizScreen(
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[2],
                             textColor = Color.White,
+                            maxLines = 2,
                             contentScale = ContentScale.FillBounds
                         ) {
                             quizViewModel.onAnswerClicked(buttonOptionsList[2])
@@ -212,6 +215,7 @@ fun QuizScreen(
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[3],
                             textColor = Color.White,
+                            maxLines = 2,
                             contentScale = ContentScale.FillBounds
                         ) {
                             quizViewModel.onAnswerClicked(buttonOptionsList[3])

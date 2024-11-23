@@ -208,7 +208,7 @@ fun InvokerScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
                     ) {
                         orbList.forEach { value ->
                             val imageRes = when (value) {
@@ -233,7 +233,7 @@ fun InvokerScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
 
                         ) {
                         val imageModifier = Modifier
@@ -280,7 +280,7 @@ fun InvokerScreen(
                             contentDescription = "",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .size(100.dp)
+                                .size(80.dp)
                                 .clickable {
                                     invokerViewModel.checkAnswer()
                                 }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,7 +11,6 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dsapps2018.dota2guessthesound.R
@@ -24,6 +22,7 @@ fun MenuButton(
     textColor: Color,
     paddingValues: PaddingValues,
     enabled: Boolean = true,
+    maxLines: Int = Int.MAX_VALUE,
     contentScale: ContentScale,
     onClick: () -> Unit
 ) {
@@ -45,6 +44,15 @@ fun MenuButton(
             .padding(paddingValues),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = text, fontSize = 22.sp, color = textColor, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp))
+        AutoSizeText(
+            text = text,
+            maxTextSize = 22.sp,
+            minTextSize = 12.sp,
+            color = textColor,
+            maxLines = maxLines,
+            alignment = Alignment.Center,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+//        Text(text = text, fontSize = 22.sp, color = textColor, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp))
     }
 }

@@ -11,6 +11,8 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.Pick
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.OptionsScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.PrivacyScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainFastFingerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainInvokerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainScreen
@@ -58,6 +60,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onInvokerClicked = {
                     navController.navigate(InvokerExplanationDestination)
+                },
+                onOptionsClicked = {
+                    navController.navigate(OptionsDestination)
                 }
             )
         }
@@ -126,14 +131,14 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         }
 
         composable<InvokerDestination> {
-            InvokerScreen{ score ->
-                    navController.navigate(route = PlayAgainInvokerDestination(score)) {
-                        popUpTo<HomeDestination> {
-                            inclusive = false
-                            saveState = false
-                        }
-                        restoreState = false
+            InvokerScreen { score ->
+                navController.navigate(route = PlayAgainInvokerDestination(score)) {
+                    popUpTo<HomeDestination> {
+                        inclusive = false
+                        saveState = false
                     }
+                    restoreState = false
+                }
             }
         }
 
@@ -192,6 +197,20 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                         restoreState = false
                     }
                 })
+        }
+
+        composable<OptionsDestination> {
+            OptionsScreen(
+                onPrivacyPolicyClick = {
+                    navController.navigate(route = PrivacyDestination)
+                },
+                onChangelogClick = {
+
+                })
+        }
+
+        composable<PrivacyDestination> {
+            PrivacyScreen()
         }
     }
 }

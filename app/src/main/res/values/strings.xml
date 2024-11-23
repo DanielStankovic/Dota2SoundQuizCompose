@@ -57,6 +57,17 @@
     //Play Again Invoker Screen
     <string name="you_survived_for">You survived for</string>
     <string name="score_invoker">%1$d seconds</string>
+    <string name="notifications">Notifications</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="changelog">Changelog</string>
+    <string name="report_problem">Report a problem</string>
+    <string name="rate_app">Rate app</string>
+    <string name="mail_to_email">mailto:dsapps2018@gmail.com</string>
+    <string name="email">dsapps2018@gmail.com</string>
+    <string name="problem_lbl">"Problem: "</string>
+    <string name="choose_an_email_client">Choose an Email client :</string>
+    <string name="legal_disclaimer">Legal Disclaimer</string>
+    <string name="policy_text">THIS APP IS NOT CREATED, SPONSORED OR ENDORSED BY VALVE CORPORATION. This app does not reflect the views or opinions of Valve Corporation or anyone officially involved in producing or managing Dota 2. Dota 2 is a registered trademark of Valve Corporation. All of the in-game imagery, hero icons, hero names, sounds, spell names, launcher icon, promo video cinematic and Dota name are copyright and/or registered trademarks of their respective owners. Usage for this app falls under fair use guidelines.</string>
 
 
 </resources>

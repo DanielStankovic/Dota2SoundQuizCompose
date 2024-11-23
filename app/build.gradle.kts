@@ -156,6 +156,10 @@ dependencies {
     //Permissions
     implementation (libs.accompanist.permissions)
 
+    //Play Review
+    implementation (libs.play.review)
+    implementation (libs.play.review.ktx)
+
 }
 
 kapt {

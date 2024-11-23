@@ -40,3 +40,9 @@ data class PlayAgainFastFingerDestination (val scoreGuessed:Int, val scoreTotal:
 
 @Serializable
 data class PlayAgainInvokerDestination (val score: Int)
+
+@Serializable
+object OptionsDestination
+
+@Serializable
+object PrivacyDestination

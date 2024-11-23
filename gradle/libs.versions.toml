@@ -20,6 +20,8 @@ googleGmsGoogleServices = "4.4.2"
 googleFirebaseCrashlytics = "3.0.2"
 firebaseBom = "33.5.1"
 accompanistPermisions = "0.36.0"
+playReview = "2.0.2"
+playReviewKtx = "2.0.2"
 
 
 [libraries]
@@ -58,6 +60,8 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics"}
 accompanist-permissions = {module ="com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermisions"}
+play-review = {module ="com.google.android.play:review", version.ref = "playReview"}
+play-review-ktx = {module ="com.google.android.play:review-ktx", version.ref = "playReviewKtx"}
 
 
 

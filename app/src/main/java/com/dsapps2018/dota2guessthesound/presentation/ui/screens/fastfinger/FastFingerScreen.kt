@@ -189,6 +189,7 @@ fun FastFingerScreen(
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[0],
                             textColor = Color.White,
+                            maxLines = 2,
                             contentScale = ContentScale.FillBounds
                         ) {
                             fastFingerViewModel.onAnswerClicked(buttonOptionsList[0])
@@ -201,6 +202,7 @@ fun FastFingerScreen(
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[1],
                             textColor = Color.White,
+                            maxLines = 2,
                             contentScale = ContentScale.FillBounds
                         ) {
                             fastFingerViewModel.onAnswerClicked(buttonOptionsList[1])
@@ -221,6 +223,7 @@ fun FastFingerScreen(
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[2],
                             textColor = Color.White,
+                            maxLines = 2,
                             contentScale = ContentScale.FillBounds
                         ) {
                             fastFingerViewModel.onAnswerClicked(buttonOptionsList[2])
@@ -233,6 +236,7 @@ fun FastFingerScreen(
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[3],
                             textColor = Color.White,
+                            maxLines = 2,
                             contentScale = ContentScale.FillBounds
                         ) {
                             fastFingerViewModel.onAnswerClicked(buttonOptionsList[3])
