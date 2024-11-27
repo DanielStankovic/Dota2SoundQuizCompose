@@ -13,6 +13,8 @@ object Constants {
 
     const val PERMISSION_CHECK_TAG = "permissionCheck"
 
+    const val USER_AVATAR_URL_KEY = "avatar_url"
+
     const val TEN_DAYS_MILLIS = 10 * 24 * 60 * 60 * 1000L
 
     const val EMPTY_STRING = ""

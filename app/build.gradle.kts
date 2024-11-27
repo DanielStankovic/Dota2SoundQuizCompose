@@ -58,6 +58,7 @@ android {
                 "ANON_KEY",
                 "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6bXNubXFiYWpwZ3djdm5va2dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg5ODU0MDQsImV4cCI6MjA0NDU2MTQwNH0.9tEc6usKR6k1HmSnoq4CHNcVLKMMDXjBYuFC7fHTRTk\""
             )
+            buildConfigField("String", "WEB_CLIENT_ID", "\"275175705511-v4v35jvr9og8ffjgtpb6na4b3s2np73o.apps.googleusercontent.com\"")
 
             resValue("string", "AdMob_App_Id", "ca-app-pub-2701841893001237~2192936151")
             resValue("string", "banner_id", "ca-app-pub-2701841893001237/7964137584")
@@ -78,6 +79,7 @@ android {
                 "ANON_KEY",
                 "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdXlsZ2VqaG1tdHh1bHlmb2pkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAyMTY2NTMsImV4cCI6MjA0NTc5MjY1M30.OmSctnEaZE0oedK90iWz3sJdSZ4UJhjJOZxIPwyhBko\""
             )
+            buildConfigField("String", "WEB_CLIENT_ID", "\"275175705511-o29d6dlbbfnik2rnd1ec3oo6pft33ie5.apps.googleusercontent.com\"")
 
             resValue("string", "AdMob_App_Id", "ca-app-pub-3940256099942544~3347511713")
             resValue("string", "banner_id", "ca-app-pub-3940256099942544/9214589741")
@@ -164,6 +166,15 @@ dependencies {
     //Play Review
     implementation (libs.play.review)
     implementation (libs.play.review.ktx)
+
+    //Authentication
+    implementation (libs.androidx.credentials)
+    implementation (libs.androidx.credentials.service.auth)
+    implementation (libs.google.identity)
+
+    //Coil
+    implementation (libs.coil)
+    implementation (libs.coil.okhttp)
 
 }
 

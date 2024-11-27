@@ -77,6 +77,8 @@
     <string name="policy_text">THIS APP IS NOT CREATED, SPONSORED OR ENDORSED BY VALVE CORPORATION. This app does not reflect the views or opinions of Valve Corporation or anyone officially involved in producing or managing Dota 2. Dota 2 is a registered trademark of Valve Corporation. All of the in-game imagery, hero icons, hero names, sounds, spell names, launcher icon, promo video cinematic and Dota name are copyright and/or registered trademarks of their respective owners. Usage for this app falls under fair use guidelines.</string>
     <string name="attr_wallpapers">Various background images used in this app are sourced from Wallpapers.com. These images are provided under the terms and conditions outlined on the Wallpapers.com website. All rights belong to their respective creators.</string>
     <string name="attr_freepik">Several game assets are designed by Freepik authors, sourced from Freepik.com. Licensed under the Freepik Free License. Attribution required as per license terms.</string>
+    <string name="login_error">Error logging in. Check internet connection or try again using different Google account.</string>
+    <string name="login_success">Successful login!</string>
 
 
 </resources>
