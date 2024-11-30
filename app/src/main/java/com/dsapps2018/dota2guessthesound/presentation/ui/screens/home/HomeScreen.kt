@@ -25,8 +25,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Snackbar
@@ -42,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -56,28 +53,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.data.util.Constants
-import com.dsapps2018.dota2guessthesound.presentation.ui.composables.GoogleSignInButton
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatusComposable
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.profile.AuthEvent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogBackground
-import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogOnBackground
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import io.github.jan.supabase.auth.status.SessionStatus
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
-import kotlin.Boolean
-import kotlin.OptIn
-import kotlin.Unit
-import kotlin.apply
 
 @Composable
 fun HomeScreen(
@@ -157,9 +144,6 @@ fun HomeScreen(
 
                     Spacer(modifier = Modifier.height(150.dp))
 
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Spacer(modifier = Modifier.height(20.dp))
                     MenuButton(
                         modifier = Modifier.wrapContentHeight(),
                         paddingValues = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
@@ -202,7 +186,18 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LoginStatusComposable(authState, homeViewModel)
+                    LoginStatusComposable(
+                        sessionStatus = authState,
+                        noncePair = homeViewModel.getNoncePair(),
+                        onUserImageClick = {
+
+                        },
+                        onSignInToSupabase = { googleIdToken, rawNonce ->
+                            homeViewModel.signInToSupabase(googleIdToken, rawNonce)
+                        },
+                        onLoginError = { e ->
+                            homeViewModel.onErrorEvent(e)
+                        })
                     Image(
                         painter = painterResource(R.drawable.ic_cogwheel),
                         modifier = Modifier
@@ -284,48 +279,6 @@ private fun HandlePermissionRequest(
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     intent.data = Uri.fromParts("package", packageName, null)
                     launcher.launch(intent)
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun LoginStatusComposable(
-    sessionStatus: SessionStatus,
-    homeViewModel: HomeViewModel
-) {
-    when (sessionStatus) {
-        is SessionStatus.Authenticated -> {
-            AsyncImage(
-                model = sessionStatus.session.user?.userMetadata?.get(Constants.USER_AVATAR_URL_KEY)?.jsonPrimitive?.contentOrNull
-                    ?: "",
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(shape = CircleShape)
-                    .clickable{
-                        homeViewModel.signOut()
-                    },
-                error = painterResource(R.drawable.user)
-            )
-        }
-
-        SessionStatus.Initializing -> {
-            CircularProgressIndicator(
-                modifier = Modifier.size(40.dp),
-                color = DialogOnBackground
-            )
-        }
-
-        is SessionStatus.NotAuthenticated, is SessionStatus.RefreshFailure -> {
-            GoogleSignInButton(
-                noncePair = homeViewModel.getNoncePair(),
-                signInToSupabase = { googleIdToken, rawNonce ->
-                    homeViewModel.signInToSupabase(googleIdToken, rawNonce)
-                },
-                errorLogin = { e ->
-                    homeViewModel.onErrorEvent(e)
                 }
             )
         }
