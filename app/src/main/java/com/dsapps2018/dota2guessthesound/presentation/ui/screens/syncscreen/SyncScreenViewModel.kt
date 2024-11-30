@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
+import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.repository.SyncRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,17 +12,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.dsapps2018.dota2guessthesound.R
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class SyncScreenViewModel @Inject constructor(

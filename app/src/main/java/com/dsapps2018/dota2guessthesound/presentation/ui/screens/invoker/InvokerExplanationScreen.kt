@@ -116,7 +116,8 @@ fun InvokerExplanationScreen(
                     Text(
                         stringResource(R.string.explanation_2),
                         fontSize = 26.sp,
-                        textAlign = TextAlign.Justify
+                        textAlign = TextAlign.Justify,
+                        color = Color.White
                     )
                     Spacer(Modifier.height(40.dp))
 

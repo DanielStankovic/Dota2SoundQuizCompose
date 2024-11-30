@@ -55,6 +55,7 @@ fun OptionsItem(
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 optionText,
+                color = Color.White,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold

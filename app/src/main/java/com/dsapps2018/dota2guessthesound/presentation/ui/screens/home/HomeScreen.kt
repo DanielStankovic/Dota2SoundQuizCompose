@@ -1,7 +1,6 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.home
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -25,6 +24,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Snackbar
@@ -32,7 +32,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,11 +41,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -58,6 +55,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatus
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.profile.AuthEvent
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.profile.AuthViewModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogBackground
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
@@ -72,24 +70,19 @@ fun HomeScreen(
     onFastFingerClicked: () -> Unit,
     onInvokerClicked: () -> Unit,
     onOptionsClicked: () -> Unit,
+    onProfileClicked: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    val window = (LocalView.current.context as Activity).window
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
     val snackbarHostState = remember { SnackbarHostState() }
-    val authState by homeViewModel.authStatus.collectAsStateWithLifecycle()
+    val authState by authViewModel.authStatus.collectAsStateWithLifecycle()
 
-    DisposableEffect(Unit) {
-        window.navigationBarColor = Color.Black.toArgb()
-        onDispose {
-            window.navigationBarColor = Color.Transparent.toArgb()
-        }
 
-    }
 
     LaunchedEffect(Unit) {
-        homeViewModel.authEventStatus.collect { authEvent ->
+        authViewModel.authEventStatus.collect { authEvent ->
             when (authEvent) {
                 is AuthEvent.Success -> {
                     snackbarHostState.showSnackbar(authEvent.message)
@@ -188,16 +181,22 @@ fun HomeScreen(
                 ) {
                     LoginStatusComposable(
                         sessionStatus = authState,
-                        noncePair = homeViewModel.getNoncePair(),
+                        noncePair = authViewModel.getNoncePair(),
                         onUserImageClick = {
-
+                            onProfileClicked()
                         },
                         onSignInToSupabase = { googleIdToken, rawNonce ->
-                            homeViewModel.signInToSupabase(googleIdToken, rawNonce)
+                            authViewModel.signInToSupabase(googleIdToken, rawNonce)
                         },
                         onLoginError = { e ->
-                            homeViewModel.onErrorEvent(e)
-                        })
+                            authViewModel.onErrorEvent(e)
+                        },
+                        signInButtonModifier = Modifier
+                            .wrapContentWidth()
+                            .height(50.dp),
+                        profileImageSize = 40.dp,
+                        showLoginLabel = false
+                    )
                     Image(
                         painter = painterResource(R.drawable.ic_cogwheel),
                         modifier = Modifier

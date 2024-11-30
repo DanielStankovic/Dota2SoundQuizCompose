@@ -67,5 +67,5 @@ fun HyperlinkText(
             ), start = 0, end = text.length
         )
     }
-    Text(text = annotatedString, modifier = modifier, textAlign = textAlign)
+    Text(text = annotatedString, modifier = modifier, textAlign = textAlign, color = Color.White)
 }

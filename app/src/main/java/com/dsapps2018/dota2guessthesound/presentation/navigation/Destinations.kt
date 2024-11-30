@@ -6,12 +6,6 @@ import kotlinx.serialization.Serializable
 object SyncDestination
 
 @Serializable
-object LoginDestination
-
-@Serializable
-object SignUpDestination
-
-@Serializable
 object HomeDestination
 
 @Serializable
@@ -52,3 +46,6 @@ object ChangelogDestination
 
 @Serializable
 object AttributionDestination
+
+@Serializable
+object ProfileDestination

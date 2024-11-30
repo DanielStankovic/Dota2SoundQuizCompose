@@ -6,13 +6,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,7 +47,7 @@ fun SingleOptionDialog(
             dismissOnBackPress = dismissible,
             dismissOnClickOutside = dismissible
         )
-        ) {
+    ) {
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
@@ -50,7 +55,7 @@ fun SingleOptionDialog(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = if (dismissible) Arrangement.SpaceBetween else Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -59,6 +64,24 @@ fun SingleOptionDialog(
                     fontWeight = FontWeight.Medium,
                     color = Color.White
                 )
+                if (dismissible) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .padding(end = 6.dp),
+                        onClick = {
+                            onDismiss()
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
             }
             Text(
                 messageText,

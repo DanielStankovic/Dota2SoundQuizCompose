@@ -62,11 +62,11 @@ import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastFilter
-import com.dsapps2018.dota2guessthesound.presentation.ui.composables.SuggestedFontSizesStatus.Companion.validSuggestedFontSizes
 import com.dsapps2018.dota2guessthesound.data.util.dpSizeRoundToIntSize
 import com.dsapps2018.dota2guessthesound.data.util.intPxToSp
 import com.dsapps2018.dota2guessthesound.data.util.spRoundToPx
 import com.dsapps2018.dota2guessthesound.data.util.spToIntPx
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.SuggestedFontSizesStatus.Companion.validSuggestedFontSizes
 import kotlin.math.min
 
 private const val TAG = "AutoSizeText"

@@ -6,18 +6,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.changelog.ChangelogScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.FastFingerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.PickTimeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
-import com.dsapps2018.dota2guessthesound.presentation.ui.screens.changelog.ChangelogScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.AttributionScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.OptionsScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.PrivacyScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainFastFingerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainInvokerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.profile.ProfileScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz.QuizScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen.SyncScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen.forceupdate.ForceUpdateScreen
@@ -44,14 +45,6 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        composable<LoginDestination> {
-
-        }
-
-        composable<SignUpDestination> {
-
-        }
-
         composable<HomeDestination> {
             HomeScreen(
                 onQuizClicked = {
@@ -65,6 +58,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onOptionsClicked = {
                     navController.navigate(OptionsDestination)
+                },
+                onProfileClicked = {
+                    navController.navigate(ProfileDestination)
                 }
             )
         }
@@ -203,6 +199,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
 
         composable<OptionsDestination> {
             OptionsScreen(
+                onProfileClick = {
+                    navController.navigate(route = ProfileDestination)
+                },
                 onPrivacyPolicyClick = {
                     navController.navigate(route = PrivacyDestination)
                 },
@@ -225,6 +224,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
 
         composable<AttributionDestination> {
             AttributionScreen()
+        }
+
+        composable<ProfileDestination> {
+            ProfileScreen()
         }
     }
 }

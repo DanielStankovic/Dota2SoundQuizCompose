@@ -1,9 +1,7 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.composables
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,7 +25,8 @@ import kotlinx.coroutines.launch
 fun GoogleSignInButton(
     noncePair: Pair<String, String>,
     signInToSupabase: (String, String) -> Unit,
-    errorLogin: (Exception) -> Unit
+    errorLogin: (Exception) -> Unit,
+    signInButtonModifier: Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -58,7 +57,7 @@ fun GoogleSignInButton(
                 val googleIdToken = googleIdTokenCredential.idToken
 
                 signInToSupabase(googleIdToken, noncePair.first)
-                // Handle successful sign-in
+
             } catch (e: Exception) {
                 errorLogin(e)
             }
@@ -67,9 +66,7 @@ fun GoogleSignInButton(
 
     Button(
         onClick = onClick,
-        modifier = Modifier
-            .wrapContentWidth()
-            .height(50.dp),
+        modifier = signInButtonModifier,
         shape = RoundedCornerShape(30.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,

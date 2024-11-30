@@ -98,7 +98,7 @@ private fun ChangelogItem(
             changelog.version,
             color = DialogOnBackground,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 20.sp
+            fontSize = 20.sp,
         )
         Spacer(Modifier.height(16.dp))
         Text(
@@ -112,7 +112,8 @@ private fun ChangelogItem(
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Start
+            textAlign = TextAlign.Start,
+            color = Color.White
         )
         HorizontalDivider(thickness = 2.dp, color = DialogOnBackground)
     }
