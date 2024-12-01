@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "275175705511-6klo42ond3migoqim2p2hsu7pminprst.apps.googleusercontent.com",
+          "client_id": "275175705511-35si6c0k2443nv8orj94se2tu6f98sse.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.dsapps2018.dota2guessthesound",
-            "certificate_hash": "2e89de34b02e99abe4adf2104b8ad59f207b1c5c"
+            "certificate_hash": "9ab27da0ddf07ab616b2960d97019ed43f685a1e"
           }
         },
         {
@@ -43,6 +43,35 @@
         }
       },
       "admob_app_id": "ca-app-pub-2701841893001237~2192936151"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275175705511:android:772142400758670f028482",
+        "android_client_info": {
+          "package_name": "com.dsapps2018.dota2guessthesound.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275175705511-6uepasikc27vh886ua2r4afo4tk9focc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0DxpUwqAZtHckNujgb3Dscisolo3dmrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275175705511-6uepasikc27vh886ua2r4afo4tk9focc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
