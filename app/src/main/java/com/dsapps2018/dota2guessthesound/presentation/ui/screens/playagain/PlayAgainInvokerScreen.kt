@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -27,15 +28,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 
 @Composable
 fun PlayAgainInvokerScreen(
     modifier: Modifier = Modifier,
+    scoreViewModel: ScoreViewModel = hiltViewModel(),
     score: Int,
     onPlayAgain: () -> Unit
 ) {
+    scoreViewModel.updateInvokerScore(score)
+    val userData by scoreViewModel.userData.collectAsStateWithLifecycle()
+
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         content = { padding ->
@@ -62,6 +69,14 @@ fun PlayAgainInvokerScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Text(
+                        stringResource(R.string.highscore_invoker, userData.invokerScore),
+                        textAlign = TextAlign.Center,
+                        fontSize = 22.sp,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(100.dp))
+
                     Text(
                         stringResource(R.string.you_survived_for),
                         textAlign = TextAlign.Center,

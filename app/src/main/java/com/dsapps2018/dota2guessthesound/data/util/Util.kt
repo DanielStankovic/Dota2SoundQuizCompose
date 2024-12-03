@@ -17,6 +17,14 @@ fun getInitialModifiedDate(): String {
     return dateFormat.format(calendar.time)
 }
 
+fun getCurrentDate(): String {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSXXX", Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+    val calendar = Calendar.getInstance();
+    return dateFormat.format(calendar.time)
+}
+
 fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()

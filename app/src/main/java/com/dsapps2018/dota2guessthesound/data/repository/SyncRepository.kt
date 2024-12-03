@@ -15,11 +15,15 @@ import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
+import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterTypeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
 import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.getCurrentDate
 import com.dsapps2018.dota2guessthesound.data.util.getInitialModifiedDate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.postgrest.Postgrest
@@ -39,7 +43,8 @@ class SyncRepository @Inject constructor(
     private val casterTypeDao: CasterTypeDao,
     private val casterDao: CasterDao,
     private val changelogDao: ChangelogDao,
-    private val soundDao: SoundDao
+    private val soundDao: SoundDao,
+    private val userDataDao: UserDataDao
 ) {
 
     suspend fun syncRemoteConfig(): ConfigDto {
@@ -148,7 +153,7 @@ class SyncRepository @Inject constructor(
                         //Ovde za slucaj testa mozemo da fetchujemo samo neke i ovo samo u slucaju debuga. Koristim
                         //ovaj uslov za debug cisto kao osiguranje da ne ode ovaj kod na produkciju
                         soundDao.getModifiedDate() ?: getInitialModifiedDate()
-//                    "2024-10-29 17:38:45.593298" //Ovo je 5. modified_at iz baze na serveru sortirano DESC, tako da ce da vrati samo 4 zvuka uvek na svez sync
+//                    "2024-11-04 00:28:58.465092" //Ovo je 5. modified_at iz baze na serveru sortirano DESC, tako da ce da vrati samo 4 zvuka uvek na svez sync
                     }
                 val soundList = postgrest
                     .from(Constants.TABLE_SOUNDS)
@@ -233,5 +238,12 @@ class SyncRepository @Inject constructor(
         if (!isMediaMounted) throw Exception(applicationContext.getString(R.string.error_media_storage_not_mounted))
         if (!directoryCreated) throw Exception(applicationContext.getString(R.string.error_can_not_create_directory))
         return directory
+    }
+
+    suspend fun insertInitialUserData() {
+        val userData = userDataDao.getUserData()
+        if (userData != null) return
+        val userDataInitial = getInitialUserData()
+        userDataDao.insert(userDataInitial)
     }
 }

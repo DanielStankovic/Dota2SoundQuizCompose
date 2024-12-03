@@ -110,6 +110,8 @@ class SyncScreenViewModel @Inject constructor(
                 return@launch
             }
 
+            syncRepository.insertInitialUserData()
+
             sendNextEvent()
             syncRepository.syncCasterType()
 

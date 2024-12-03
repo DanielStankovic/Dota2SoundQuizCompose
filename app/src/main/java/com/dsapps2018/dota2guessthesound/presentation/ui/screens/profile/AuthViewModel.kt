@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
+import com.dsapps2018.dota2guessthesound.data.repository.ScoreRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -11,7 +14,10 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.IDToken
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.util.UUID
@@ -21,7 +27,8 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val auth: Auth,
-    private val firebaseCrashlytics: FirebaseCrashlytics
+    private val firebaseCrashlytics: FirebaseCrashlytics,
+    private val scoreRepository: ScoreRepository
 
 ) : ViewModel() {
 
@@ -29,6 +36,11 @@ class AuthViewModel @Inject constructor(
     val authEventStatus = _authEventStatus.asSharedFlow()
     val authStatus = auth.sessionStatus
 
+    val userData: StateFlow<UserDataEntity> = scoreRepository.getUserDataFlow().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = getInitialUserData()
+    )
 
     fun getNoncePair(): Pair<String, String> {
         // Generate a nonce and hash it with sha-256

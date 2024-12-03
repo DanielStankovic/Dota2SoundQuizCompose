@@ -24,9 +24,14 @@
     <string name="score">Score: %1$d</string>
     <string name="you_score_lbl">Your score is</string>
 
+
     //Play Again Screen
     <string name="no_more_sounds_msg">You have guessed all the sounds that are currently implemented.\n\nWe will add more very soon! Keep an eye for the update!</string>
     <string name="play_again_lbl">Play again</string>
+    <string name="highscore_quiz">High score: %1$d</string>
+    <string name="highscore_invoker">High score: %1$d seconds</string>
+    <string name="highscore_fast_finger">High score(%1$d): %2$.2f</string>
+    <string name="score_fast_finger_calculated">%1$d/%2$d  (%3$.2f)</string>
 
     //Home Screen
     <string name="quiz_lbl">Quiz</string>

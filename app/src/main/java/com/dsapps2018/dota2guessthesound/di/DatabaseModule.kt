@@ -6,6 +6,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
+import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.DotaDatabase
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import dagger.Module
@@ -46,6 +47,12 @@ object DatabaseModule {
     @Provides
     fun provideChangelogDao(database: DotaDatabase): ChangelogDao {
         return database.changelogDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserDataDao(database: DotaDatabase): UserDataDao {
+        return database.userDataDao()
     }
 
 }

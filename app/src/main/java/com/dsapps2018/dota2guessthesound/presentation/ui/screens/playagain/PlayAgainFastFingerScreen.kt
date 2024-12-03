@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -25,18 +26,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 
 @Composable
 fun PlayAgainFastFingerScreen(
     modifier: Modifier = Modifier,
+    scoreViewModel: ScoreViewModel = hiltViewModel(),
     scoreGuessed: Int,
     scoreTotal: Int,
     time: Int,
     answeredAll: Boolean,
     onPlayAgain: () -> Unit
 ) {
+    scoreViewModel.updateFastFingerScore(scoreGuessed, scoreTotal, time)
+    val userData by scoreViewModel.userData.collectAsStateWithLifecycle()
+
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         content = { padding ->
@@ -61,6 +68,22 @@ fun PlayAgainFastFingerScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
+                    Text(
+                        stringResource(
+                            R.string.highscore_fast_finger, time, when (time) {
+                                30 -> userData.thirtySecondsScore
+                                60 -> userData.sixtySecondsScore
+                                90 -> userData.ninetySecondsScore
+                                else -> userData.thirtySecondsScore
+                            }
+                        ),
+                        textAlign = TextAlign.Center,
+                        fontSize = 22.sp,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(100.dp))
+
                     Text(
                         stringResource(R.string.you_score_lbl),
                         textAlign = TextAlign.Center,
@@ -71,7 +94,7 @@ fun PlayAgainFastFingerScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        "${scoreGuessed}/${scoreTotal}",
+                        stringResource(R.string.score_fast_finger_calculated, scoreGuessed, scoreTotal, scoreViewModel.calculateFastFingerScore(scoreGuessed, scoreTotal)),
                         textAlign = TextAlign.Center,
                         fontSize = 36.sp,
                         fontWeight = FontWeight.ExtraBold,
@@ -87,7 +110,7 @@ fun PlayAgainFastFingerScreen(
                         color = Color.White
                     )
 
-                    if(answeredAll){
+                    if (answeredAll) {
                         Spacer(modifier = Modifier.height(20.dp))
                         Text(
                             stringResource(R.string.no_more_sounds_msg),
