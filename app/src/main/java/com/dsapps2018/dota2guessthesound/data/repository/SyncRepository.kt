@@ -20,10 +20,8 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterTypeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
-import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
 import com.dsapps2018.dota2guessthesound.data.util.Constants
-import com.dsapps2018.dota2guessthesound.data.util.getCurrentDate
 import com.dsapps2018.dota2guessthesound.data.util.getInitialModifiedDate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.postgrest.Postgrest
@@ -152,8 +150,8 @@ class SyncRepository @Inject constructor(
                     else {
                         //Ovde za slucaj testa mozemo da fetchujemo samo neke i ovo samo u slucaju debuga. Koristim
                         //ovaj uslov za debug cisto kao osiguranje da ne ode ovaj kod na produkciju
-                        soundDao.getModifiedDate() ?: getInitialModifiedDate()
-//                    "2024-11-04 00:28:58.465092" //Ovo je 5. modified_at iz baze na serveru sortirano DESC, tako da ce da vrati samo 4 zvuka uvek na svez sync
+//                        soundDao.getModifiedDate() ?: getInitialModifiedDate()
+                    "2024-11-04 00:28:58.465092" //Ovo je 5. modified_at iz baze na serveru sortirano DESC, tako da ce da vrati samo 4 zvuka uvek na svez sync
                     }
                 val soundList = postgrest
                     .from(Constants.TABLE_SOUNDS)

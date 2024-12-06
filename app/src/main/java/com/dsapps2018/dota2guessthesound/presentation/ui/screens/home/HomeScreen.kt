@@ -78,6 +78,7 @@ fun HomeScreen(
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
     val snackbarHostState = remember { SnackbarHostState() }
     val authState by authViewModel.authStatus.collectAsStateWithLifecycle()
+    val lastSyncDate by authViewModel.modifiedDateFlow.collectAsStateWithLifecycle()
 
 
 
@@ -181,6 +182,7 @@ fun HomeScreen(
                 ) {
                     LoginStatusComposable(
                         sessionStatus = authState,
+                        lastSyncString = lastSyncDate,
                         noncePair = authViewModel.getNoncePair(),
                         onUserImageClick = {
                             onProfileClicked()
@@ -195,7 +197,8 @@ fun HomeScreen(
                             .wrapContentWidth()
                             .height(50.dp),
                         profileImageSize = 40.dp,
-                        showLoginLabel = false
+                        showLoginLabel = false,
+                        showSyncLabel = false
                     )
                     Image(
                         painter = painterResource(R.drawable.ic_cogwheel),

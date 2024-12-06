@@ -84,11 +84,15 @@
     <string name="attr_wallpapers">Various background images used in this app are sourced from Wallpapers.com. These images are provided under the terms and conditions outlined on the Wallpapers.com website. All rights belong to their respective creators.</string>
     <string name="attr_freepik">Several game assets are designed by Freepik authors, sourced from Freepik.com. Licensed under the Freepik Free License. Attribution required as per license terms.</string>
     <string name="login_error">Error logging in. Check internet connection or try again using different Google account.</string>
+    <string name="sync_error">Error syncing data. Check internet connection.</string>
     <string name="logout_error">Error logging out. Check internet connection or try again.</string>
     <string name="login_success">Successful login!</string>
+    <string name="sync_success">Data successfully synced!</string>
     <string name="login_rationale">Log in to Sync Data</string>
     <string name="logout">Logout</string>
     <string name="logout_msg">Are you sure you want to Log out?</string>
+    <string name="sync_data">Sync data</string>
+    <string name="last_sync">Last Sync\n%1$s</string>
 
 
 </resources>

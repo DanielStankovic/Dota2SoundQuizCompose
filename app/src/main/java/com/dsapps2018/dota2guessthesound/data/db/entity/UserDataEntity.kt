@@ -14,17 +14,22 @@ data class UserDataEntity(
     var userId: String? = null,
     var quizScore: Int,
     var quizPlayed: Int,
+    var syncedQuizPlayed: Int,
     var invokerScore: Int,
     var invokerPlayed: Int,
+    var syncedInvokerPlayed: Int,
     var thirtySecondsScore: Double,
     var thirtyPlayed: Int,
+    var syncedThirtyPlayed: Int,
     var sixtySecondsScore: Double,
     var sixtyPlayed: Int,
+    var syncedSixtyPlayed: Int,
     var ninetySecondsScore: Double,
     var ninetyPlayed: Int,
+    var syncedNinetyPlayed: Int,
     @field:TypeConverters(DateTypeConverter::class)
     var modifiedAt: String,
-    var isFresh: Boolean
+    var lastSyncAt: Long
 )
 
 fun getInitialUserData(): UserDataEntity{
@@ -32,15 +37,20 @@ fun getInitialUserData(): UserDataEntity{
         id = Constants.USER_DATA_ID,
         quizScore = 0,
         quizPlayed = 0,
+        syncedQuizPlayed = 0,
         invokerScore = 0,
         invokerPlayed = 0,
+        syncedInvokerPlayed = 0,
         thirtySecondsScore = 0.0,
         thirtyPlayed = 0,
+        syncedThirtyPlayed = 0,
         sixtySecondsScore = 0.0,
         sixtyPlayed = 0,
+        syncedSixtyPlayed = 0,
         ninetySecondsScore = 0.0,
         ninetyPlayed = 0,
+        syncedNinetyPlayed = 0,
         modifiedAt = getInitialModifiedDate(),
-        isFresh = true
+        lastSyncAt = System.currentTimeMillis()
     )
 }

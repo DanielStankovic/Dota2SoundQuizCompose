@@ -10,6 +10,9 @@ object Constants {
     const val TABLE_SOUNDS = "sounds"
     const val TABLE_CONFIG = "config"
     const val TABLE_CHANGELOG = "changelog"
+    const val TABLE_GAME_DATA = "game_data"
+
+    const val LAST_SYNC_KEY = "last_sync"
 
     const val PERMISSION_CHECK_TAG = "permissionCheck"
 

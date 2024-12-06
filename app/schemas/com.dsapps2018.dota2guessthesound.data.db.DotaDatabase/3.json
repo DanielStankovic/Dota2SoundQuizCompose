@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "8eb5e8de87a97974adb6e6e4cbdf3616",
+    "identityHash": "e055bcb8b95bd91cb83bda60cca0de43",
     "entities": [
       {
         "tableName": "CasterType",
@@ -188,7 +188,7 @@
       },
       {
         "tableName": "UserData",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userId` TEXT, `quizScore` INTEGER NOT NULL, `quizPlayed` INTEGER NOT NULL, `invokerScore` INTEGER NOT NULL, `invokerPlayed` INTEGER NOT NULL, `thirtySecondsScore` REAL NOT NULL, `thirtyPlayed` INTEGER NOT NULL, `sixtySecondsScore` REAL NOT NULL, `sixtyPlayed` INTEGER NOT NULL, `ninetySecondsScore` REAL NOT NULL, `ninetyPlayed` INTEGER NOT NULL, `modifiedAt` TEXT NOT NULL, `isFresh` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userId` TEXT, `quizScore` INTEGER NOT NULL, `quizPlayed` INTEGER NOT NULL, `syncedQuizPlayed` INTEGER NOT NULL, `invokerScore` INTEGER NOT NULL, `invokerPlayed` INTEGER NOT NULL, `syncedInvokerPlayed` INTEGER NOT NULL, `thirtySecondsScore` REAL NOT NULL, `thirtyPlayed` INTEGER NOT NULL, `syncedThirtyPlayed` INTEGER NOT NULL, `sixtySecondsScore` REAL NOT NULL, `sixtyPlayed` INTEGER NOT NULL, `syncedSixtyPlayed` INTEGER NOT NULL, `ninetySecondsScore` REAL NOT NULL, `ninetyPlayed` INTEGER NOT NULL, `syncedNinetyPlayed` INTEGER NOT NULL, `modifiedAt` TEXT NOT NULL, `lastSyncAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -215,6 +215,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "syncedQuizPlayed",
+            "columnName": "syncedQuizPlayed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "invokerScore",
             "columnName": "invokerScore",
             "affinity": "INTEGER",
@@ -223,6 +229,12 @@
           {
             "fieldPath": "invokerPlayed",
             "columnName": "invokerPlayed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncedInvokerPlayed",
+            "columnName": "syncedInvokerPlayed",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -239,6 +251,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "syncedThirtyPlayed",
+            "columnName": "syncedThirtyPlayed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "sixtySecondsScore",
             "columnName": "sixtySecondsScore",
             "affinity": "REAL",
@@ -247,6 +265,12 @@
           {
             "fieldPath": "sixtyPlayed",
             "columnName": "sixtyPlayed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncedSixtyPlayed",
+            "columnName": "syncedSixtyPlayed",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -263,14 +287,20 @@
             "notNull": true
           },
           {
+            "fieldPath": "syncedNinetyPlayed",
+            "columnName": "syncedNinetyPlayed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "modifiedAt",
             "columnName": "modifiedAt",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "isFresh",
-            "columnName": "isFresh",
+            "fieldPath": "lastSyncAt",
+            "columnName": "lastSyncAt",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -288,7 +318,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8eb5e8de87a97974adb6e6e4cbdf3616')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e055bcb8b95bd91cb83bda60cca0de43')"
     ]
   }
 }

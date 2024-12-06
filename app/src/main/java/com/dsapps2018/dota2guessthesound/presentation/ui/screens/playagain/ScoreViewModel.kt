@@ -36,7 +36,6 @@ class ScoreViewModel @Inject constructor(
                     userData.quizScore = score
                 }
                 userData.quizPlayed++
-                userData.isFresh = false
                 userData.modifiedAt = getCurrentDate()
                 scoreRepository.updateUserData(userData)
             }
@@ -50,7 +49,6 @@ class ScoreViewModel @Inject constructor(
                     userData.invokerScore = score
                 }
                 userData.invokerPlayed++
-                userData.isFresh = false
                 userData.modifiedAt = getCurrentDate()
                 scoreRepository.updateUserData(userData)
             }
@@ -75,7 +73,6 @@ class ScoreViewModel @Inject constructor(
                     60 -> userData.sixtyPlayed++
                     90 -> userData.ninetyPlayed++
                 }
-                userData.isFresh = false
                 userData.modifiedAt = getCurrentDate()
                 scoreRepository.updateUserData(userData)
             }

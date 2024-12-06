@@ -19,7 +19,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
-import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -60,6 +59,7 @@ fun ProfileScreen(
 ) {
     val authState by authViewModel.authStatus.collectAsStateWithLifecycle()
     val userData by authViewModel.userData.collectAsStateWithLifecycle()
+    val lastSyncDate by authViewModel.modifiedDateFlow.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -133,8 +133,8 @@ fun ProfileScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.7f)
-                        .padding(top = 100.dp, bottom = 30.dp)
+                        .fillMaxHeight(0.8f)
+                        .padding(top = 70.dp, bottom = 30.dp)
                         .align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
@@ -142,9 +142,10 @@ fun ProfileScreen(
                 {
                     LoginStatusComposable(
                         sessionStatus = authState,
+                        lastSyncString = lastSyncDate,
                         noncePair = authViewModel.getNoncePair(),
-                        onUserImageClick = {
-                            //Do Nothing
+                        onSyncDataClick = {
+                           authViewModel.syncUserData()
                         },
                         onSignInToSupabase = { googleIdToken, rawNonce ->
                             authViewModel.signInToSupabase(googleIdToken, rawNonce)
@@ -156,7 +157,8 @@ fun ProfileScreen(
                             .wrapContentWidth()
                             .height(50.dp),
                         profileImageSize = 80.dp,
-                        showLoginLabel = true
+                        showLoginLabel = true,
+                        showSyncLabel = true
                     )
                     Spacer(modifier = Modifier.height(40.dp))
 

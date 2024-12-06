@@ -22,4 +22,6 @@ interface UserDataDao {
     @Query("SELECT * FROM UserData WHERE id=1")
     fun getUserDataFlow(): Flow<UserDataEntity>
 
+    @Query("SELECT lastSyncAt FROM UserData WHERE id=1")
+    fun getLastSyncDate(): Flow<Long>
 }
