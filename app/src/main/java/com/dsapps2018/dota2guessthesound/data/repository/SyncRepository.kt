@@ -150,8 +150,8 @@ class SyncRepository @Inject constructor(
                     else {
                         //Ovde za slucaj testa mozemo da fetchujemo samo neke i ovo samo u slucaju debuga. Koristim
                         //ovaj uslov za debug cisto kao osiguranje da ne ode ovaj kod na produkciju
-//                        soundDao.getModifiedDate() ?: getInitialModifiedDate()
-                    "2024-11-04 00:28:58.465092" //Ovo je 5. modified_at iz baze na serveru sortirano DESC, tako da ce da vrati samo 4 zvuka uvek na svez sync
+                        soundDao.getModifiedDate() ?: getInitialModifiedDate()
+//                    "2024-11-04 00:28:58.465092" //Ovo je 5. modified_at iz baze na serveru sortirano DESC, tako da ce da vrati samo 4 zvuka uvek na svez sync
                     }
                 val soundList = postgrest
                     .from(Constants.TABLE_SOUNDS)
