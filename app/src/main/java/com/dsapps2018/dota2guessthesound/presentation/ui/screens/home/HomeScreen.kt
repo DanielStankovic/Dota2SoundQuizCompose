@@ -51,6 +51,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatusComposable
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
@@ -79,7 +80,7 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val authState by authViewModel.authStatus.collectAsStateWithLifecycle()
     val lastSyncDate by authViewModel.modifiedDateFlow.collectAsStateWithLifecycle()
-
+    val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
 
 
     LaunchedEffect(Unit) {

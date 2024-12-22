@@ -13,7 +13,7 @@ plugins {
 android {
     signingConfigs {
         create("release") {
-            storeFile = file("C:\\Users\\danie\\Downloads\\SpellSound.keystore.jks")
+//            storeFile = file("C:\\Users\\danie\\Downloads\\SpellSound.keystore.jks")
             storePassword = "0642336402"
             keyPassword = "0642336402"
             keyAlias = "SpellSound"
