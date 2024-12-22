@@ -29,7 +29,12 @@ import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.downloadPublicTo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import javax.inject.Inject
@@ -143,7 +148,7 @@ class SyncRepository @Inject constructor(
     }
 
     fun syncSound(): Flow<Pair<Float, String>> {
-        return flow {
+        return channelFlow {
             try {
                 val modifiedDate =
                     if (!BuildConfig.DEBUG) soundDao.getModifiedDate() ?: getInitialModifiedDate()
@@ -187,15 +192,34 @@ class SyncRepository @Inject constructor(
                 directory?.let { dir ->
                     val filteredList = soundList.filter { x -> x.isActive }
                     val progressPortion = 1f / filteredList.size
-                    filteredList.forEachIndexed { index, sound ->
-                        val file = File(dir, sound.soundFileName)
-                        storage.from(Constants.BUCKET_NAME).downloadPublicTo(
-                            "${Constants.BUCKET_FOLDER_NAME}/${sound.soundFileName}",
-                            file
-                        )
-                        sound.soundFileLink = file.path
-                        soundDao.insert(sound)
-                        emit(progressPortion * (index + 1) to sound.spellName)
+//                    filteredList.forEachIndexed { index, sound ->
+//                        val file = File(dir, sound.soundFileName)
+//                        storage.from(Constants.BUCKET_NAME).downloadPublicTo(
+//                            "${Constants.BUCKET_FOLDER_NAME}/${sound.soundFileName}",
+//                            file
+//                        )
+//                        sound.soundFileLink = file.path
+//                        soundDao.insert(sound)
+//                        emit(progressPortion * (index + 1) to sound.spellName)
+//                    }
+                    coroutineScope {
+                        val downloadJobs = filteredList.mapIndexed { index, sound ->
+                            async(Dispatchers.IO) {
+                                try {
+                                    val file = File(dir, sound.soundFileName)
+                                    storage.from(Constants.BUCKET_NAME).downloadPublicTo(
+                                        "${Constants.BUCKET_FOLDER_NAME}/${sound.soundFileName}",
+                                        file
+                                    )
+                                    sound.soundFileLink = file.path
+                                    soundDao.insert(sound)
+                                    trySend(progressPortion * (index + 1) to sound.spellName)
+                                } catch (e: Exception) {
+                                    throw e
+                                }
+                            }
+                        }
+                        downloadJobs.awaitAll()
                     }
                 }
 
