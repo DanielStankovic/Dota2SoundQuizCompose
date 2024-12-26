@@ -40,6 +40,7 @@ class UserDataRepository @Inject constructor(
                         "sixty_played",
                         "ninety_score",
                         "ninety_played",
+                        "coin_value",
                     )
                 ) {
                     filter {
@@ -128,6 +129,13 @@ class UserDataRepository @Inject constructor(
                 localUserData.ninetyPlayed = serverUserData.ninetyPlayed
                 localUserData.syncedNinetyPlayed = serverUserData.ninetyPlayed
 
+                // Sync coinValue by summing only once
+                val newCoinValue =
+                    localUserData.coinValue - localUserData.syncedCoinValue
+                serverUserData.coinValue += newCoinValue
+                localUserData.coinValue = serverUserData.coinValue
+                localUserData.syncedCoinValue = serverUserData.coinValue
+
                 //Sync Local user ID
                 localUserData.userId = userId
 
@@ -163,9 +171,16 @@ class UserDataRepository @Inject constructor(
             localUserData.syncedThirtyPlayed = 0
             localUserData.syncedSixtyPlayed = 0
             localUserData.syncedNinetyPlayed = 0
+            localUserData.syncedCoinValue = 0
             userDataDao.update(localUserData)
         } catch (e: Exception) {
             throw e
         }
+    }
+
+    suspend fun updateCoinValue(value: Int){
+        val localUserData = getLocalUserData()
+        localUserData.coinValue += value
+        userDataDao.update(localUserData)
     }
 }

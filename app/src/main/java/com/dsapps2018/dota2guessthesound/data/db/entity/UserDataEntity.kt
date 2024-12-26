@@ -27,6 +27,8 @@ data class UserDataEntity(
     var ninetySecondsScore: Double,
     var ninetyPlayed: Int,
     var syncedNinetyPlayed: Int,
+    var coinValue: Int,
+    var syncedCoinValue: Int,
     @field:TypeConverters(DateTypeConverter::class)
     var modifiedAt: String,
     var lastSyncAt: Long
@@ -50,6 +52,8 @@ fun getInitialUserData(): UserDataEntity{
         ninetySecondsScore = 0.0,
         ninetyPlayed = 0,
         syncedNinetyPlayed = 0,
+        coinValue = 0,
+        syncedCoinValue = 0,
         modifiedAt = getInitialModifiedDate(),
         lastSyncAt = System.currentTimeMillis()
     )

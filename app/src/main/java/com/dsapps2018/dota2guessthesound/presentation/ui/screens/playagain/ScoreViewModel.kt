@@ -36,6 +36,7 @@ class ScoreViewModel @Inject constructor(
                     userData.quizScore = score
                 }
                 userData.quizPlayed++
+                userData.coinValue += score
                 userData.modifiedAt = getCurrentDate()
                 scoreRepository.updateUserData(userData)
             }
@@ -69,9 +70,24 @@ class ScoreViewModel @Inject constructor(
                     }
                 }
                 when(time){
-                    30 -> userData.thirtyPlayed++
-                    60 -> userData.sixtyPlayed++
-                    90 -> userData.ninetyPlayed++
+                    30 -> {
+                        userData.thirtyPlayed++
+                        if(currentScore > 2.0){
+                            userData.coinValue += time
+                        }
+                    }
+                    60 -> {
+                        userData.sixtyPlayed++
+                        if(currentScore > 6.0){
+                            userData.coinValue += time
+                        }
+                    }
+                    90 -> {
+                        userData.ninetyPlayed++
+                        if(currentScore > 15.0){
+                            userData.coinValue += time
+                        }
+                    }
                 }
                 userData.modifiedAt = getCurrentDate()
                 scoreRepository.updateUserData(userData)

@@ -28,6 +28,8 @@ data class UserDataDto(
     var ninetySecondsScore: Double,
     @SerialName("ninety_played")
     var ninetyPlayed: Int,
+    @SerialName("coin_value")
+    var coinValue: Int,
     @SerialName("modified_at")
     var modifiedAt: String,
 )
@@ -45,6 +47,7 @@ fun getInitialServerUserData(userId: String): UserDataDto{
         sixtyPlayed = 0,
         ninetySecondsScore = 0.0,
         ninetyPlayed = 0,
+        coinValue = 0,
         modifiedAt = getCurrentDate()
     )
 }

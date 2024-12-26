@@ -85,19 +85,19 @@ fun CoinInfoDialog(
 
             CoinInfoItem(
                 quizMode = stringResource(R.string.ff_30_lbl),
-                value = "30",
+                value = stringResource(R.string.score_larger_than_2),
                 R.drawable.coin_30
             )
 
             CoinInfoItem(
                 quizMode = stringResource(R.string.ff_60_lbl),
-                value = "60",
+                value = stringResource(R.string.score_larger_than_6),
                 R.drawable.coin_60
             )
 
             CoinInfoItem(
                 quizMode = stringResource(R.string.ff_90_lbl),
-                value = "90",
+                value = stringResource(R.string.score_larger_than_15),
                 R.drawable.coin_90
             )
         }

@@ -30,8 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.profile.AuthViewModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.Exort
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.Quas
@@ -40,6 +42,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.theme.Wex
 @Composable
 fun InvokerExplanationScreen(
     modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel = hiltViewModel(),
     onPlayClicked: () -> Unit
 ) {
 
@@ -129,6 +132,7 @@ fun InvokerExplanationScreen(
                         text = stringResource(R.string.play_lbl), textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
+                        authViewModel.updateCoinValue(-50)
                         onPlayClicked()
                     }
 

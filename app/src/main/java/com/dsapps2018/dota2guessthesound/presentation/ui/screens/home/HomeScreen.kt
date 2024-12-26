@@ -107,6 +107,7 @@ fun HomeScreen(
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
     val snackbarHostState = remember { SnackbarHostState() }
     val authState by authViewModel.authStatus.collectAsStateWithLifecycle()
+    val userData by authViewModel.userData.collectAsStateWithLifecycle()
     val lastSyncDate by authViewModel.modifiedDateFlow.collectAsStateWithLifecycle()
     val currentIndex by homeViewModel.currentIndex.collectAsStateWithLifecycle()
     val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
@@ -250,13 +251,15 @@ fun HomeScreen(
                         Image(
                             painter = painterResource(R.drawable.coin_blank),
                             contentDescription = null,
-                            modifier = Modifier.size(40.dp).clickable{
-                                showCoinInfoDialog = true
-                            }
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable {
+                                    showCoinInfoDialog = true
+                                }
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            "20",
+                            userData.coinValue.toString(),
                             color = Color.White,
                             fontSize = 30.sp,
                             textAlign = TextAlign.Center,
@@ -345,7 +348,7 @@ fun HomeScreen(
                                                 paddingValues = PaddingValues(
                                                     horizontal = 30.dp
                                                 ),
-                                                enabled = false,
+                                                enabled = userData.coinValue >= 50,
                                                 maxLines = 1,
                                                 text = stringResource(R.string.invoker_lbl),
                                                 textColor = Color.White,
@@ -360,7 +363,7 @@ fun HomeScreen(
                                                     .offset(y = (-10).dp)
                                                     .size(40.dp)
                                                     .rotate(-45f)
-                                                    .clickable{
+                                                    .clickable {
                                                         showCoinInfoDialog = true
                                                     }
                                                     .align(Alignment.TopStart)
@@ -374,7 +377,9 @@ fun HomeScreen(
                                                     .offset(y = 40.dp)
                                                     .clickable {
                                                         showRewardedAd(context,
-                                                            onRewarded = {},
+                                                            onRewarded = {
+                                                                authViewModel.updateCoinValue(50)
+                                                            },
                                                             onAdDismissed = {})
                                                     }
                                                     .height(90.dp)
