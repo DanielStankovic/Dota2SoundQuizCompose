@@ -37,11 +37,11 @@ fun MenuButton(
                     Modifier
                 }
             )
+            .padding(paddingValues)
             .paint(
                 painterResource(id = if (enabled) R.drawable.button_bg else R.drawable.button_disabled_bg),
                 contentScale = contentScale
-            )
-            .padding(paddingValues),
+            ),
         contentAlignment = Alignment.Center
     ) {
         AutoSizeText(
@@ -53,6 +53,5 @@ fun MenuButton(
             alignment = Alignment.Center,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
-//        Text(text = text, fontSize = 22.sp, color = textColor, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp))
     }
 }
