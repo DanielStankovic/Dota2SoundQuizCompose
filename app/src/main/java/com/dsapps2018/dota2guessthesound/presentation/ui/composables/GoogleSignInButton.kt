@@ -1,5 +1,6 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.composables
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -71,12 +72,13 @@ fun GoogleSignInButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
             contentColor = Color.White
-        )
+        ),
+        border = BorderStroke(0.5.dp, Color.White.copy(alpha = 0.5f))
     ) {
         Image(
             painter = painterResource(id = R.drawable.google_logo_dark),
             contentDescription = ""
         )
-        Text(text = "Sign in", modifier = Modifier.padding(horizontal = 6.dp))
+        Text(text = "Log in", modifier = Modifier.padding(horizontal = 6.dp))
     }
 }

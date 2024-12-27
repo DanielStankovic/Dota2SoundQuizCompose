@@ -125,10 +125,16 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun onErrorEvent(e: Exception) {
+    fun onErrorException(e: Exception) {
         viewModelScope.launch {
             firebaseCrashlytics.recordException(e)
             _authEventStatus.emit(AuthEvent.Error(context.getString(R.string.login_error)))
+        }
+    }
+
+    fun onErrorEvent(msg: String) {
+        viewModelScope.launch {
+            _authEventStatus.emit(AuthEvent.Error(msg, true))
         }
     }
 

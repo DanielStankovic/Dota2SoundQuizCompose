@@ -12,6 +12,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.Pick
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.LeaderboardScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.AttributionScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.OptionsScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.PrivacyScreen
@@ -61,6 +62,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onProfileClicked = {
                     navController.navigate(ProfileDestination)
+                },
+                onLeaderboardClicked = {
+                    navController.navigate(LeaderboardDestination)
                 }
             )
         }
@@ -228,6 +232,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
 
         composable<ProfileDestination> {
             ProfileScreen()
+        }
+
+        composable<LeaderboardDestination> {
+            LeaderboardScreen()
         }
     }
 }

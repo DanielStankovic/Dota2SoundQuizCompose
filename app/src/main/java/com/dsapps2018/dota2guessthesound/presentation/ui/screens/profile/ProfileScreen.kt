@@ -151,7 +151,7 @@ fun ProfileScreen(
                             authViewModel.signInToSupabase(googleIdToken, rawNonce)
                         },
                         onLoginError = { e ->
-                            authViewModel.onErrorEvent(e)
+                            authViewModel.onErrorException(e)
                         },
                         signInButtonModifier = Modifier
                             .wrapContentWidth()

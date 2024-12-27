@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.widget.Space
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -37,9 +36,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Snackbar
@@ -90,6 +86,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import io.github.jan.supabase.auth.status.SessionStatus
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -99,6 +96,7 @@ fun HomeScreen(
     onInvokerClicked: () -> Unit,
     onOptionsClicked: () -> Unit,
     onProfileClicked: () -> Unit,
+    onLeaderboardClicked: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
@@ -155,11 +153,17 @@ fun HomeScreen(
                 }
 
                 is AuthEvent.Error -> {
-                    snackbarHostState.showSnackbar(
-                        message = authEvent.error,
-                        withDismissAction = true,
-                        duration = SnackbarDuration.Indefinite
-                    )
+                    if(!authEvent.isDismissible) {
+                        snackbarHostState.showSnackbar(
+                            message = authEvent.error,
+                            withDismissAction = true,
+                            duration = SnackbarDuration.Indefinite
+                        )
+                    }else{
+                        snackbarHostState.showSnackbar(
+                            message = authEvent.error
+                        )
+                    }
                 }
             }
         }
@@ -168,7 +172,10 @@ fun HomeScreen(
 
     Scaffold(contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { data ->
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(bottom = AdSize.BANNER.height.dp)
+            ) { data ->
                 Snackbar(
                     snackbarData = data,
                     containerColor = DialogBackground,
@@ -205,7 +212,7 @@ fun HomeScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 70.dp, end = 50.dp, start = 30.dp),
+                            .padding(top = 70.dp, end = 30.dp, start = 30.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -220,7 +227,7 @@ fun HomeScreen(
                                 authViewModel.signInToSupabase(googleIdToken, rawNonce)
                             },
                             onLoginError = { e ->
-                                authViewModel.onErrorEvent(e)
+                                authViewModel.onErrorException(e)
                             },
                             signInButtonModifier = Modifier
                                 .wrapContentWidth()
@@ -232,7 +239,7 @@ fun HomeScreen(
                         Image(
                             painter = painterResource(R.drawable.ic_cogwheel),
                             modifier = Modifier
-                                .size(50.dp)
+                                .size(40.dp)
                                 .clickable {
                                     onOptionsClicked()
                                 },
@@ -244,20 +251,22 @@ fun HomeScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 20.dp, start = 30.dp),
+                            .padding(top = 30.dp, start = 30.dp, end = 30.dp),
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(
-                            painter = painterResource(R.drawable.coin_blank),
+                        Image(painter = painterResource(if (authState is SessionStatus.Authenticated) R.drawable.leaderboard else R.drawable.leaderboard_disabled),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(40.dp)
                                 .clickable {
-                                    showCoinInfoDialog = true
-                                }
-                        )
-                        Spacer(Modifier.width(12.dp))
+                                    if (authState is SessionStatus.Authenticated) {
+                                        onLeaderboardClicked()
+                                    } else {
+                                        authViewModel.onErrorEvent(context.getString(R.string.leaderboard_login_required))
+                                    }
+                                })
+                        Spacer(Modifier.weight(1f))
                         Text(
                             userData.coinValue.toString(),
                             color = Color.White,
@@ -265,6 +274,14 @@ fun HomeScreen(
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold
                         )
+                        Spacer(Modifier.width(12.dp))
+                        Image(painter = painterResource(R.drawable.coin_blank),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable {
+                                    showCoinInfoDialog = true
+                                })
                     }
 
                     Row(
@@ -355,8 +372,7 @@ fun HomeScreen(
                                                 contentScale = ContentScale.Fit) {
                                                 onInvokerClicked()
                                             }
-                                            Image(
-                                                painter = painterResource(R.drawable.coin_50),
+                                            Image(painter = painterResource(R.drawable.coin_50),
                                                 contentDescription = null,
                                                 modifier = Modifier
                                                     .padding(start = 25.dp)
@@ -376,11 +392,9 @@ fun HomeScreen(
                                                 modifier = Modifier
                                                     .offset(y = 40.dp)
                                                     .clickable {
-                                                        showRewardedAd(context,
-                                                            onRewarded = {
-                                                                authViewModel.updateCoinValue(50)
-                                                            },
-                                                            onAdDismissed = {})
+                                                        showRewardedAd(context, onRewarded = {
+                                                            authViewModel.updateCoinValue(50)
+                                                        }, onAdDismissed = {})
                                                     }
                                                     .height(90.dp)
                                                     .width(200.dp)

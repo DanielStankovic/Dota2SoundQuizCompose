@@ -49,3 +49,6 @@ object AttributionDestination
 
 @Serializable
 object ProfileDestination
+
+@Serializable
+object LeaderboardDestination
