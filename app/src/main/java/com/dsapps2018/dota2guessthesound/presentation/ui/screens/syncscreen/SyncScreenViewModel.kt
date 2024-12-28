@@ -59,6 +59,7 @@ class SyncScreenViewModel @Inject constructor(
             "Downloading config files",
             "Syncing caster type",
             "Syncing casters",
+            "Syncing game mode",
             "Syncing changelog",
             "Syncing user data",
             "Syncing sounds",
@@ -120,6 +121,9 @@ class SyncScreenViewModel @Inject constructor(
 
             sendNextEvent()
             syncRepository.syncCaster()
+
+            sendNextEvent()
+            syncRepository.syncGameMode()
 
             sendNextEvent()
             syncRepository.syncChangelog()

@@ -10,15 +10,18 @@ import com.dsapps2018.dota2guessthesound.data.api.response.CasterDto
 import com.dsapps2018.dota2guessthesound.data.api.response.CasterTypeDto
 import com.dsapps2018.dota2guessthesound.data.api.response.ChangelogDto
 import com.dsapps2018.dota2guessthesound.data.api.response.ConfigDto
+import com.dsapps2018.dota2guessthesound.data.api.response.GameModeDto
 import com.dsapps2018.dota2guessthesound.data.api.response.SoundDto
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
+import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterTypeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
 import com.dsapps2018.dota2guessthesound.data.util.Constants
@@ -35,7 +38,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
 import java.io.File
 import javax.inject.Inject
 
@@ -47,7 +49,8 @@ class SyncRepository @Inject constructor(
     private val casterDao: CasterDao,
     private val changelogDao: ChangelogDao,
     private val soundDao: SoundDao,
-    private val userDataDao: UserDataDao
+    private val userDataDao: UserDataDao,
+    private val gameModeDao: GameModeDao
 ) {
 
     suspend fun syncRemoteConfig(): ConfigDto {
@@ -114,6 +117,35 @@ class SyncRepository @Inject constructor(
 
             casterDao.deleteAll(casterList)
             casterDao.insertAll(casterList.filter { x -> x.isActive })
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun syncGameMode() {
+        try {
+            val modifiedDate = gameModeDao.getModifiedDate() ?: getInitialModifiedDate()
+            val gameModeList = postgrest
+                .from(Constants.TABLE_GAME_MODE)
+                .select(
+                    columns = Columns.list(
+                        "id",
+                        "mode",
+                        "code",
+                        "modified_at",
+                        "active"
+                    )
+                ) {
+                    filter {
+                        gt("modified_at", modifiedDate)
+                    }
+                    order("modified_at", Order.ASCENDING)
+                }.decodeList<GameModeDto>().map { x ->
+                    GameModeEntity(x.id, x.mode, x.code, x.modifiedAt, x.isActive)
+                }
+
+            gameModeDao.deleteAll(gameModeList)
+            gameModeDao.insertAll(gameModeList.filter { x -> x.isActive })
         } catch (e: Exception) {
             throw e
         }
