@@ -174,7 +174,11 @@ fun HomeScreen(
         snackbarHost = {
             SnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.padding(bottom = AdSize.BANNER.height.dp)
+                modifier = Modifier.padding(
+                    bottom = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                        context, currentScreenWidth
+                    ).height.dp
+                )
             ) { data ->
                 Snackbar(
                     snackbarData = data,
