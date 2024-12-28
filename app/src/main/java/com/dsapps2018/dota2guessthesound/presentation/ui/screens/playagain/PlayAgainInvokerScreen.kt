@@ -65,7 +65,7 @@ fun PlayAgainInvokerScreen(
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f)
                         .align(Alignment.BottomCenter)
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp).padding(bottom = 70.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

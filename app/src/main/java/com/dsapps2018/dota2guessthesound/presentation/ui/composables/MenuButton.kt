@@ -51,7 +51,7 @@ fun MenuButton(
             color = textColor,
             maxLines = maxLines,
             alignment = Alignment.Center,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier.padding(8.dp)
         )
     }
 }

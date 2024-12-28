@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.dsapps2018.dota2guessthesound.data.util.toDp
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,7 +64,7 @@ fun AnimatedImages(
             scope.launch {
                 // Start the animation
                 offsetY.animateTo(
-                    targetValue = -120f, // Move up by 100.dp
+                    targetValue = -360f, // Move up by 100.dp
                     animationSpec = tween(durationMillis = 1000) // Duration of 1.5 seconds
                 )
                 offsetY.animateTo(
@@ -86,8 +87,8 @@ fun AnimatedImages(
             painter = smallImageCorrect,
             contentDescription = "Small Image Correct",
             modifier = Modifier
-                .size(150.dp)
-                .offset(x = offsetX.value.dp)
+                .size(400.toDp())
+                .offset(x = offsetX.value.toDp())
                 .background(Color.Transparent),
             contentScale = ContentScale.Inside
         )
@@ -97,8 +98,8 @@ fun AnimatedImages(
             painter = smallImageWrong,
             contentDescription = "Small Image Wrong",
             modifier = Modifier
-                .size(150.dp)
-                .offset(y = offsetY.value.dp)
+                .size(400.toDp())
+                .offset(y = offsetY.value.toDp())
                 .background(Color.Transparent),
             contentScale = ContentScale.Inside
         )

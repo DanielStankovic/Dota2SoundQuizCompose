@@ -126,7 +126,7 @@ fun InvokerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Spacer(modifier = Modifier.height(70.dp))
+                    Spacer(modifier = Modifier.height(50.dp))
 
                     Row(
                         modifier = Modifier

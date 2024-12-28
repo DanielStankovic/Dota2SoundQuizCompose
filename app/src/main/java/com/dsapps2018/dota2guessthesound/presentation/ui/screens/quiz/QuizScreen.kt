@@ -7,13 +7,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,18 +30,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.toDp
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedImages
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import kotlin.random.Random
 
 @Composable
@@ -49,10 +58,18 @@ fun QuizScreen(
 ) {
 
     val context = LocalContext.current
+    val currentScreenWidth = LocalConfiguration.current.screenWidthDp
     val animationTrigger by quizViewModel.triggerAnimation.collectAsStateWithLifecycle()
 
     var buttonOptionsList: List<String> by remember {
-        mutableStateOf(listOf(Constants.EMPTY_STRING, Constants.EMPTY_STRING, Constants.EMPTY_STRING, Constants.EMPTY_STRING))
+        mutableStateOf(
+            listOf(
+                Constants.EMPTY_STRING,
+                Constants.EMPTY_STRING,
+                Constants.EMPTY_STRING,
+                Constants.EMPTY_STRING
+            )
+        )
     }
     var score: Int by remember {
         mutableIntStateOf(0)
@@ -73,13 +90,13 @@ fun QuizScreen(
                 }
 
                 QuizEventState.WrongSound -> {
-                    showInterstitial(context){
+                    showInterstitial(context) {
                         onPlayAgain(score, false)
                     }
                 }
 
                 QuizEventState.NoMoreSounds -> {
-                    showInterstitial(context){
+                    showInterstitial(context) {
                         onPlayAgain(score, true)
                     }
                 }
@@ -91,7 +108,7 @@ fun QuizScreen(
         }
     }
     Scaffold(
-        contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         content = { padding ->
             if (showDialog) SingleOptionDialog(
                 onDismiss = {
@@ -102,7 +119,7 @@ fun QuizScreen(
                 },
                 titleText = context.getString(R.string.error_connection_lost_title),
                 messageText = context.getString(R.string.error_connection_lost_msg),
-                optionText= context.getString(R.string.lbl_ok),
+                optionText = context.getString(R.string.lbl_ok),
                 dismissible = false
             )
 
@@ -122,8 +139,7 @@ fun QuizScreen(
 
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                        .fillMaxSize(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -131,16 +147,20 @@ fun QuizScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 100.dp, end = 40.dp),
+                            .padding(top = 70.dp, end = 40.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        Text(context.getString(R.string.score, score), fontSize = 30.sp, color = Color.White)
+                        Text(
+                            context.getString(R.string.score, score),
+                            fontSize = 30.sp,
+                            color = Color.White
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(70.dp))
 
                     AnimatedImages(
-                        modifier = Modifier.size(160.dp),
+                        modifier = Modifier.size(420.toDp()),
                         bigImage = painterResource(id = R.drawable.sound_button),
                         smallImageCorrect = painterResource(id = R.drawable.gj),
                         smallImageWrong = painterResource(id = R.drawable.wrong),
@@ -151,20 +171,22 @@ fun QuizScreen(
                         resetAnimationTriggerCorrect = {
                             quizViewModel.resetAnimationTrigger()
                         },
-                        floatOffsetCorrect = if (Random.nextBoolean()) (-130f) else (150f)
+                        floatOffsetCorrect = if (Random.nextBoolean()) (-360f) else (400f)
 
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         MenuButton(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(100.dp),
+                                .height(200.toDp()),
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[0],
                             textColor = Color.White,
@@ -177,7 +199,7 @@ fun QuizScreen(
                         MenuButton(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(100.dp),
+                                .height(200.toDp()),
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[1],
                             maxLines = 2,
@@ -191,14 +213,16 @@ fun QuizScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.Center,
 
                         ) {
                         MenuButton(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(100.dp),
+                                .height(200.toDp()),
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[2],
                             textColor = Color.White,
@@ -211,7 +235,7 @@ fun QuizScreen(
                         MenuButton(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(100.dp),
+                                .height(200.toDp()),
                             paddingValues = PaddingValues(),
                             text = buttonOptionsList[3],
                             textColor = Color.White,
@@ -222,7 +246,31 @@ fun QuizScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.weight(0.6f))
+                    Box(modifier = Modifier
+                        .padding(top = 40.dp)
+                        .fillMaxWidth()
+                        .height(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                            context, currentScreenWidth
+                        ).height.dp)) {
+                        AndroidView(
+                            // on below line specifying width for ads.
+                            factory = { context ->
+                                // on below line specifying ad view.
+                                AdView(context).apply {
+                                    // on below line specifying ad size
+                                    setAdSize(
+                                        AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                                            context, currentScreenWidth
+                                        )
+                                    )
+                                    // on below line specifying ad unit id
+                                    // currently added a test ad unit id.
+                                    adUnitId = context.getString(R.string.banner_id)
+                                    // calling load ad to load our ad.
+                                    loadAd(AdRequest.Builder().build())
+                                }
+                            })
+                    }
                 }
 
             }

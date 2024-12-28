@@ -153,13 +153,13 @@ fun HomeScreen(
                 }
 
                 is AuthEvent.Error -> {
-                    if(!authEvent.isDismissible) {
+                    if (!authEvent.isDismissible) {
                         snackbarHostState.showSnackbar(
                             message = authEvent.error,
                             withDismissAction = true,
                             duration = SnackbarDuration.Indefinite
                         )
-                    }else{
+                    } else {
                         snackbarHostState.showSnackbar(
                             message = authEvent.error
                         )
@@ -417,24 +417,34 @@ fun HomeScreen(
                         }
                     }
 
-                    AndroidView(
-                        // on below line specifying width for ads.
-                        modifier = Modifier.fillMaxWidth(), factory = { context ->
-                            // on below line specifying ad view.
-                            AdView(context).apply {
-                                // on below line specifying ad size
-                                setAdSize(
-                                    AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                                        context, currentScreenWidth
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                                    context, currentScreenWidth
+                                ).height.dp
+                            )
+                    ) {
+                        AndroidView(
+                            // on below line specifying width for ads.
+                            modifier = Modifier.fillMaxWidth(), factory = { context ->
+                                // on below line specifying ad view.
+                                AdView(context).apply {
+                                    // on below line specifying ad size
+                                    setAdSize(
+                                        AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                                            context, currentScreenWidth
+                                        )
                                     )
-                                )
-                                // on below line specifying ad unit id
-                                // currently added a test ad unit id.
-                                adUnitId = context.getString(R.string.banner_id)
-                                // calling load ad to load our ad.
-                                loadAd(AdRequest.Builder().build())
-                            }
-                        })
+                                    // on below line specifying ad unit id
+                                    // currently added a test ad unit id.
+                                    adUnitId = context.getString(R.string.banner_id)
+                                    // calling load ad to load our ad.
+                                    loadAd(AdRequest.Builder().build())
+                                }
+                            })
+                    }
                 }
 
 
