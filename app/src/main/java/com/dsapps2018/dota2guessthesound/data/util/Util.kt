@@ -5,10 +5,14 @@ import android.content.Context
 import android.content.ContextWrapper
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.math.pow
+import kotlin.math.round
 
 fun getInitialModifiedDate(): String {
      val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSXXX", Locale.getDefault()).apply {
@@ -45,4 +49,13 @@ fun formatTimestampToLocalDateTime(timestamp: Long): String {
 
     // Format the date to a locale-specific string
     return dateTimeFormat.format(date)
+}
+
+fun getMonthFromStringDate(date: String): Int{
+    return ZonedDateTime.parse(date, DateTimeFormatter.ISO_OFFSET_DATE_TIME).monthValue
+}
+
+fun Double.roundTo(decimals: Int): Double {
+    val factor = 10.0.pow(decimals)
+    return round(this * factor) / factor
 }

@@ -24,4 +24,7 @@ interface GameModeDao {
     @Delete
     suspend fun deleteAll(list: List<GameModeEntity>)
 
+    @Query("SELECT id FROM GameMode WHERE code=:gameModeCode")
+    suspend fun getGameModeIdByCode(gameModeCode: String): Int
+
 }

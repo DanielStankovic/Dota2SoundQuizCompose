@@ -75,20 +75,52 @@ class UserDataRepository @Inject constructor(
                 val localUserData = getLocalUserData()
 
                 //HighScore update
-
-                //SERVER
-                serverUserData.quizScore = maxOf(serverUserData.quizScore, localUserData.quizScore)
-                serverUserData.invokerScore =
-                    maxOf(serverUserData.invokerScore, localUserData.invokerScore)
-                serverUserData.thirtySecondsScore =
+                val maxQuizScore = maxOf(serverUserData.quizScore, localUserData.quizScore)
+                val maxInvokerScore = maxOf(serverUserData.invokerScore, localUserData.invokerScore)
+                val maxThirtySecondsScore =
                     maxOf(serverUserData.thirtySecondsScore, localUserData.thirtySecondsScore)
+                val maxSixtySecondsScore =
+                    maxOf(serverUserData.sixtySecondsScore, localUserData.sixtySecondsScore)
+                val maxNinetySecondsScore =
+                    maxOf(serverUserData.ninetySecondsScore, localUserData.ninetySecondsScore)
+                //SERVER
+                serverUserData.apply {
+                    quizScore = maxQuizScore
+                    invokerScore = maxInvokerScore
+                    thirtySecondsScore = maxThirtySecondsScore
+                    sixtySecondsScore = maxSixtySecondsScore
+                    ninetySecondsScore = maxNinetySecondsScore
+                }
 
                 //LOCAL
-                localUserData.quizScore = maxOf(serverUserData.quizScore, localUserData.quizScore)
-                localUserData.invokerScore =
-                    maxOf(serverUserData.invokerScore, localUserData.invokerScore)
-                localUserData.thirtySecondsScore =
-                    maxOf(serverUserData.thirtySecondsScore, localUserData.thirtySecondsScore)
+                serverUserData.apply {
+                    quizScore = maxQuizScore
+                    invokerScore = maxInvokerScore
+                    thirtySecondsScore = maxThirtySecondsScore
+                    sixtySecondsScore = maxSixtySecondsScore
+                    ninetySecondsScore = maxNinetySecondsScore
+                }
+
+//                serverUserData.quizScore = maxOf(serverUserData.quizScore, localUserData.quizScore)
+//                serverUserData.invokerScore =
+//                    maxOf(serverUserData.invokerScore, localUserData.invokerScore)
+//                serverUserData.thirtySecondsScore =
+//                    maxOf(serverUserData.thirtySecondsScore, localUserData.thirtySecondsScore)
+//                serverUserData.sixtySecondsScore =
+//                    maxOf(serverUserData.sixtySecondsScore, localUserData.sixtySecondsScore)
+//                serverUserData.ninetySecondsScore =
+//                    maxOf(serverUserData.ninetySecondsScore, localUserData.ninetySecondsScore)
+//
+//                //LOCAL
+//                localUserData.quizScore = maxOf(serverUserData.quizScore, localUserData.quizScore)
+//                localUserData.invokerScore =
+//                    maxOf(serverUserData.invokerScore, localUserData.invokerScore)
+//                localUserData.thirtySecondsScore =
+//                    maxOf(serverUserData.thirtySecondsScore, localUserData.thirtySecondsScore)
+//                localUserData.sixtySecondsScore =
+//                    maxOf(serverUserData.sixtySecondsScore, localUserData.sixtySecondsScore)
+//                localUserData.ninetySecondsScore =
+//                    maxOf(serverUserData.ninetySecondsScore, localUserData.ninetySecondsScore)
 
 
                 //Times played Update
@@ -178,7 +210,7 @@ class UserDataRepository @Inject constructor(
         }
     }
 
-    suspend fun updateCoinValue(value: Int){
+    suspend fun updateCoinValue(value: Int) {
         val localUserData = getLocalUserData()
         localUserData.coinValue += value
         userDataDao.update(localUserData)

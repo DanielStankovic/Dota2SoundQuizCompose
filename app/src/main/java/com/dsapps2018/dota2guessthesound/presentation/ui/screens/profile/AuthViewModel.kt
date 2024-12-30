@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
+import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.ScoreRepository
 import com.dsapps2018.dota2guessthesound.data.repository.UserDataRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants
@@ -37,6 +38,7 @@ class AuthViewModel @Inject constructor(
     private val postgrest: Postgrest,
     private val firebaseCrashlytics: FirebaseCrashlytics,
     private val userDataRepository: UserDataRepository,
+    private val leaderboardRepository: LeaderboardRepository,
     scoreRepository: ScoreRepository
 
 ) : ViewModel() {
@@ -88,6 +90,7 @@ class AuthViewModel @Inject constructor(
                         userDataRepository.createServerUserData(id)
                         userDataRepository.syncUserData()
                     }
+                    leaderboardRepository.updateUserIdAndSendData(id)
                 }
                 _authEventStatus.emit(AuthEvent.Success(context.getString(R.string.login_success)))
             } catch (e: Exception) {

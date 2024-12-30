@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.SyncRepository
 import com.dsapps2018.dota2guessthesound.data.repository.UserDataRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -29,6 +30,7 @@ class SyncScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val syncRepository: SyncRepository,
     private val userDataRepository: UserDataRepository,
+    private val leaderboardRepository: LeaderboardRepository,
     private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
@@ -61,6 +63,7 @@ class SyncScreenViewModel @Inject constructor(
             "Syncing casters",
             "Syncing game mode",
             "Syncing changelog",
+            "Syncing leaderboard",
             "Syncing user data",
             "Syncing sounds",
             "Sync finished"
@@ -127,6 +130,10 @@ class SyncScreenViewModel @Inject constructor(
 
             sendNextEvent()
             syncRepository.syncChangelog()
+
+            sendNextEvent()
+            syncRepository.syncLeaderboard()
+            leaderboardRepository.sendUnsentDetails()
 
             sendNextEvent()
             userDataRepository.syncUserData()

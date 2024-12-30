@@ -6,6 +6,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
+import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.DotaDatabase
@@ -60,6 +61,12 @@ object DatabaseModule {
     @Provides
     fun provideGameModeDao(database: DotaDatabase): GameModeDao {
         return database.gameModeDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLeaderboardDao(database: DotaDatabase): LeaderboardDao {
+        return database.leaderboardDao()
     }
 
 }

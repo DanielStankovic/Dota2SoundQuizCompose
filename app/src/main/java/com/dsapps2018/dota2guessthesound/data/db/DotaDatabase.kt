@@ -7,18 +7,30 @@ import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
+import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterTypeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardDetailsEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 
 @Database(
-    entities = [CasterTypeEntity::class, CasterEntity::class, SoundEntity::class, ChangelogEntity::class, UserDataEntity::class, GameModeEntity::class],
+    entities = [
+        CasterTypeEntity::class,
+        CasterEntity::class,
+        SoundEntity::class,
+        ChangelogEntity::class,
+        UserDataEntity::class,
+        GameModeEntity::class,
+        LeaderboardEntity::class,
+        LeaderboardDetailsEntity::class
+    ],
     version = Constants.DATABASE_VERSION,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -39,5 +51,7 @@ abstract class DotaDatabase : RoomDatabase() {
     abstract fun userDataDao(): UserDataDao
 
     abstract fun gameModeDao(): GameModeDao
+
+    abstract fun leaderboardDao(): LeaderboardDao
 
 }
