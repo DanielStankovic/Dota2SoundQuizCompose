@@ -8,6 +8,7 @@ import androidx.room.Update
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardDetailsEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LeaderboardDao {
@@ -41,4 +42,7 @@ interface LeaderboardDao {
 
     @Delete
     suspend fun deleteSentDetails(detailsList: List<LeaderboardDetailsEntity>)
+
+    @Query("SELECT startAt FROM Leaderboard ORDER BY modifiedAt DESC LIMIT 1")
+    fun getLeaderboardStartDate(): Flow<String>
 }

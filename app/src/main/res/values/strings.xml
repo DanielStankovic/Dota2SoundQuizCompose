@@ -105,6 +105,7 @@
     <string name="last_sync">Last Sync\n%1$s</string>
     <string name="coin_info_title">How to earn coins:</string>
     <string name="leaderboard_login_required">Please Log in to check Leaderboard</string>
+    <string name="leaderboard_month_lbl">Leaderboard - %1$s</string>
 
 
 </resources>

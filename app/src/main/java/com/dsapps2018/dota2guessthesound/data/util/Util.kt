@@ -15,7 +15,7 @@ import kotlin.math.pow
 import kotlin.math.round
 
 fun getInitialModifiedDate(): String {
-     val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSXXX", Locale.getDefault()).apply {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSXXX", Locale.getDefault()).apply {
         timeZone = TimeZone.getTimeZone("UTC")
     }
     val calendar = Calendar.getInstance();
@@ -45,14 +45,22 @@ fun formatTimestampToLocalDateTime(timestamp: Long): String {
     val defaultLocale = Locale.getDefault()
 
     // Get the localized date and time format for the device's locale
-    val dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, defaultLocale)
+    val dateTimeFormat =
+        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, defaultLocale)
 
     // Format the date to a locale-specific string
     return dateTimeFormat.format(date)
 }
 
-fun getMonthFromStringDate(date: String): Int{
+fun getMonthFromStringDate(date: String): Int {
     return ZonedDateTime.parse(date, DateTimeFormatter.ISO_OFFSET_DATE_TIME).monthValue
+}
+
+fun getMonthStringFromStringDate(date: String): String {
+    return ZonedDateTime.parse(
+        date,
+        DateTimeFormatter.ISO_OFFSET_DATE_TIME
+    ).month.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 }
 
 fun Double.roundTo(decimals: Int): Double {

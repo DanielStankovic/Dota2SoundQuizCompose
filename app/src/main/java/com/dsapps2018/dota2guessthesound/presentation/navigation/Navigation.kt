@@ -235,7 +235,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         }
 
         composable<LeaderboardDestination> {
-            LeaderboardScreen()
+            LeaderboardScreen(onHistoryClicked = {
+
+            })
         }
     }
 }
