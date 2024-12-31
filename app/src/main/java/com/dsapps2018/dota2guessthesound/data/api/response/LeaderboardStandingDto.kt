@@ -16,5 +16,7 @@ data class LeaderboardStandingDto(
     @SerialName("end_at")
     val endAt: String,
     @SerialName("current_server_timestamp")
-    val serverTimestamp: String
+    val serverTimestamp: String,
+    @SerialName("is_current_user")
+    val isCurrentUser: Boolean,
 )

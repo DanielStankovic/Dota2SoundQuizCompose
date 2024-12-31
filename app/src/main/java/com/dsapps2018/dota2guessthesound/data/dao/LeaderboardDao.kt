@@ -45,4 +45,7 @@ interface LeaderboardDao {
 
     @Query("SELECT startAt FROM Leaderboard ORDER BY modifiedAt DESC LIMIT 1")
     fun getLeaderboardStartDate(): Flow<String>
+
+    @Query("SELECT id FROM Leaderboard ORDER BY modifiedAt DESC LIMIT 1")
+    fun getLeaderboardId(): Flow<Int>
 }

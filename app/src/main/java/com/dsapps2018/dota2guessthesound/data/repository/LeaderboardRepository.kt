@@ -81,21 +81,26 @@ class LeaderboardRepository @Inject constructor(
         }
     }
 
-    fun getLeaderboardMonth(): Flow<String>{
+    fun getLeaderboardMonth(): Flow<String> {
         return leaderboardDao.getLeaderboardStartDate().map { date ->
             getMonthStringFromStringDate(date)
         }
     }
 
-    suspend fun fetchLeaderboardStanding(){
-        getAuthUserId()?.let { userId ->
-            val data = postgrest.rpc(
+    fun getLeaderboardId(): Flow<Int> {
+        return leaderboardDao.getLeaderboardId()
+    }
+
+    suspend fun fetchLeaderboardStanding(): List<LeaderboardStandingDto> {
+        try {
+            return postgrest.rpc(
                 function = "get_top_10_leaderboard_standings",
                 parameters = buildJsonObject {
-                    put("current_user_id", userId)
+                    put("current_user_id", getAuthUserId()!!)
                 }
             ).decodeList<LeaderboardStandingDto>()
-            val a = data
+        } catch (e: Exception) {
+            throw e
         }
     }
 }

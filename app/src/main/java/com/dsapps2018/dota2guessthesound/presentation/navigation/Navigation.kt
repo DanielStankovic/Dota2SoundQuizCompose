@@ -235,9 +235,13 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         }
 
         composable<LeaderboardDestination> {
-            LeaderboardScreen(onHistoryClicked = {
+            LeaderboardScreen(
+                onHistoryClicked = {
 
-            })
+                },
+                onCheckRewardClicked = { leaderboardId ->
+
+                })
         }
     }
 }

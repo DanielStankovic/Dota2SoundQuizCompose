@@ -106,6 +106,8 @@
     <string name="coin_info_title">How to earn coins:</string>
     <string name="leaderboard_login_required">Please Log in to check Leaderboard</string>
     <string name="leaderboard_month_lbl">Leaderboard - %1$s</string>
+    <string name="leaderboard_standing_fetch_error">Error getting Leaderboard data from the server.\n\nTry again…</string>
+    <string name="leaderboard_standing_no_data">No Leaderboard data</string>
 
 
 </resources>
