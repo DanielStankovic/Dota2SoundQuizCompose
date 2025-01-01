@@ -10,6 +10,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -57,13 +59,16 @@ class LeaderboardViewModel @Inject constructor(
         }
 
     fun fetchLeaderboardStanding() = viewModelScope.launch(coroutineExceptionHandler) {
-        val result = leaderboardRepository.fetchLeaderboardStanding()
-        if (result.isNotEmpty()) {
-            result[0].let { leaderboardStanding ->
+        val top10StandingResult = async(Dispatchers.IO){leaderboardRepository.fetchTop10LeaderboardStandings()}.await()
+        val currentUserStandingResult = async(Dispatchers.IO){leaderboardRepository.fetchCurrentUserLeaderboardStandings()}.await()
+
+        val completeResult = if(top10StandingResult.any { x -> x.isCurrentUser }) top10StandingResult else top10StandingResult + currentUserStandingResult
+        if (completeResult.isNotEmpty()) {
+            completeResult[0].let { leaderboardStanding ->
                 startCountdown(leaderboardStanding.endAt, leaderboardStanding.serverTimestamp)
             }
         }
-        _leaderboardState.value = LeaderboardFetchState.Success(result)
+        _leaderboardState.value = LeaderboardFetchState.Success(completeResult)
     }
 
     private fun startCountdown(endDate: String, initialServerTimestamp: String) =

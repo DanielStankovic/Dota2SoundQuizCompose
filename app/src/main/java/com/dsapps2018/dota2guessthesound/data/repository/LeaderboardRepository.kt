@@ -10,6 +10,10 @@ import com.dsapps2018.dota2guessthesound.data.util.getCurrentDate
 import com.dsapps2018.dota2guessthesound.data.util.getMonthStringFromStringDate
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.result.PostgrestResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.buildJsonObject
@@ -91,10 +95,23 @@ class LeaderboardRepository @Inject constructor(
         return leaderboardDao.getLeaderboardId()
     }
 
-    suspend fun fetchLeaderboardStanding(): List<LeaderboardStandingDto> {
+    suspend fun fetchTop10LeaderboardStandings(): List<LeaderboardStandingDto> {
         try {
             return postgrest.rpc(
                 function = "get_top_10_leaderboard_standings",
+                parameters = buildJsonObject {
+                    put("current_user_id", getAuthUserId()!!)
+                }
+            ).decodeList<LeaderboardStandingDto>()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun fetchCurrentUserLeaderboardStandings(): List<LeaderboardStandingDto> {
+        try {
+            return postgrest.rpc(
+                function = "get_user_leaderboard_standings",
                 parameters = buildJsonObject {
                     put("current_user_id", getAuthUserId()!!)
                 }

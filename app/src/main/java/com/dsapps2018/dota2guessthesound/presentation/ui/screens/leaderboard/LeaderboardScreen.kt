@@ -1,6 +1,5 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard
 
-import android.widget.Space
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +23,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -33,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -159,13 +163,14 @@ fun LeaderboardData(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
             .padding(top = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -176,28 +181,59 @@ fun LeaderboardData(
                 onCheckRewardClicked
             }
         }
-        Spacer(Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ){
-            leaderboardStanding.getOrNull(1)?.let { it ->
-                TopStandingComposable(
-                    modifier = Modifier.weight(1f),
-                    leaderboardStandingDto = it)
+        Spacer(Modifier.height(24.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                .background(color = Color.Black)
+                .padding(start = 16.dp, end = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
+        ) {
+            item {
+                Spacer(Modifier.height(1.dp))
             }
-            Spacer(Modifier.width(16.dp))
-            leaderboardStanding.getOrNull(0)?.let { it ->
-                TopStandingComposable(
-                    modifier = Modifier.weight(1f),
-                    leaderboardStandingDto = it)
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    leaderboardStanding.getOrNull(1)?.let { it ->
+                        TopStandingComposable(
+                            modifier = Modifier.weight(1f),
+                            leaderboardStandingDto = it
+                        )
+                    }
+                    Spacer(Modifier.width(16.dp))
+                    leaderboardStanding.getOrNull(0)?.let { it ->
+                        TopStandingComposable(
+                            modifier = Modifier.weight(1f),
+                            leaderboardStandingDto = it
+                        )
+                    }
+                    Spacer(Modifier.width(16.dp))
+                    leaderboardStanding.getOrNull(2)?.let { it ->
+                        TopStandingComposable(
+                            modifier = Modifier.weight(1f),
+                            leaderboardStandingDto = it
+                        )
+                    }
+                }
             }
-            Spacer(Modifier.width(16.dp))
-            leaderboardStanding.getOrNull(2)?.let { it ->
-                TopStandingComposable(
-                    modifier = Modifier.weight(1f),
-                    leaderboardStandingDto = it)
+            if (leaderboardStanding.size > 3) {
+                items(
+                    leaderboardStanding.subList(
+                        3,
+                        leaderboardStanding.size
+                    )
+                ) { leaderboardStanding ->
+                    LeaderboardStandingComposable(leaderboardStanding)
+                }
+            }
+            item {
+                Spacer(Modifier.height(80.dp))
             }
         }
     }
