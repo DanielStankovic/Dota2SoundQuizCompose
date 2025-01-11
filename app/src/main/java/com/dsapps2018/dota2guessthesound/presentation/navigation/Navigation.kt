@@ -21,6 +21,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayA
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayAgainScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.profile.ProfileScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz.QuizScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.rewards.RewardsScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen.SyncScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen.forceupdate.ForceUpdateScreen
 
@@ -239,9 +240,16 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 onHistoryClicked = {
 
                 },
-                onCheckRewardClicked = { leaderboardId ->
-
+                onCheckRewardClicked = { leaderboardId, month ->
+                    navController.navigate(route = RewardsDestination(leaderboardId, month))
                 })
+        }
+
+        composable<RewardsDestination> { backStackEntry ->
+            val rewardsDestination: RewardsDestination = backStackEntry.toRoute()
+            RewardsScreen(
+                month = rewardsDestination.month
+            )
         }
     }
 }

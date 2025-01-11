@@ -108,6 +108,11 @@
     <string name="leaderboard_month_lbl">Leaderboard - %1$s</string>
     <string name="leaderboard_standing_fetch_error">Error getting Leaderboard data from the server.\n\nTry again…</string>
     <string name="leaderboard_standing_no_data">No Leaderboard data</string>
+    <string name="rewards_month">"Rewards - %1$s"</string>
 
+    //Rewards Screen
+    <string name="rewards_fetch_error">Error getting Rewards data from the server.\n\nTry again…</string>
+    <string name="rewards_no_data">No Rewards added for the current leaderboard.\n\nPlease, check again later…</string>
+    <string name="hero_item_type">%1$s - %2$s</string>
 
 </resources>

@@ -15,6 +15,7 @@ object Constants {
     const val TABLE_LEADERBOARD_DETAILS = "leaderboard_details"
     const val TABLE_LEADERBOARD_STANDING = "leaderboard_standing"
     const val TABLE_GAME_DATA = "game_data"
+    const val TABLE_REWARDS = "rewards"
 
     const val LAST_SYNC_KEY = "last_sync"
 

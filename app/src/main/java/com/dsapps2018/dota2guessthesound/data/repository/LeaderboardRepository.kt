@@ -10,10 +10,6 @@ import com.dsapps2018.dota2guessthesound.data.util.getCurrentDate
 import com.dsapps2018.dota2guessthesound.data.util.getMonthStringFromStringDate
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
-import io.github.jan.supabase.postgrest.result.PostgrestResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.buildJsonObject

@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -49,13 +48,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardStandingDto
 import com.dsapps2018.dota2guessthesound.data.util.toDp
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.LeaderboardBackground
-import com.dsapps2018.dota2guessthesound.presentation.ui.theme.LeaderboardOnBackground
 
 @Composable
 fun LeaderboardScreen(
     onHistoryClicked: () -> Unit,
-    onCheckRewardClicked: (Int) -> Unit,
+    onCheckRewardClicked: (Int, String) -> Unit,
     leaderboardViewModel: LeaderboardViewModel = hiltViewModel()
 ) {
     val leaderboardMonth by leaderboardViewModel.leaderboardMonth.collectAsStateWithLifecycle()
@@ -64,8 +64,7 @@ fun LeaderboardScreen(
     val leaderboardState by leaderboardViewModel.leaderboardState.collectAsStateWithLifecycle()
 
     leaderboardViewModel.fetchLeaderboardStanding()
-    Scaffold(
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
+    Scaffold(contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         content = { padding ->
             Column(
                 modifier = Modifier
@@ -80,8 +79,7 @@ fun LeaderboardScreen(
                         color = Color.White,
                         modifier = Modifier.align(Alignment.Center)
                     )
-                    Icon(
-                        painter = painterResource(R.drawable.ic_history),
+                    Icon(painter = painterResource(R.drawable.ic_history),
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier
@@ -90,14 +88,14 @@ fun LeaderboardScreen(
                             .clickable {
                                 onHistoryClicked()
                             }
-                            .align(Alignment.CenterEnd)
-                    )
+                            .align(Alignment.CenterEnd))
                 }
 
-                LeaderboardContent(
-                    { timer },
-                    leaderboardState = leaderboardState
-                ) { onCheckRewardClicked(leaderboardId) }
+                LeaderboardContent({ timer },
+                    leaderboardState = leaderboardState,
+                    onCheckRewardClicked = {
+                        onCheckRewardClicked(leaderboardId, leaderboardMonth)
+                    })
             }
         })
 }
@@ -128,33 +126,6 @@ fun LeaderboardContent(
 }
 
 @Composable
-fun ErrorOrEmptyContent(message: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = message, textAlign = TextAlign.Center, color = Color.White, fontSize = 22.sp)
-    }
-}
-
-@Composable
-fun LoadingContent() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(50.dp),
-            color = LeaderboardOnBackground
-        )
-    }
-}
-
-@Composable
 fun LeaderboardData(
     timer: () -> String,
     leaderboardStanding: List<LeaderboardStandingDto>,
@@ -177,9 +148,7 @@ fun LeaderboardData(
             TimerComposable {
                 timer()
             }
-            RewardComposable {
-                onCheckRewardClicked
-            }
+            RewardComposable(onCheckRewardClicked = onCheckRewardClicked)
         }
         Spacer(Modifier.height(24.dp))
         LazyColumn(
@@ -202,22 +171,19 @@ fun LeaderboardData(
                 ) {
                     leaderboardStanding.getOrNull(1)?.let { it ->
                         TopStandingComposable(
-                            modifier = Modifier.weight(1f),
-                            leaderboardStandingDto = it
+                            modifier = Modifier.weight(1f), leaderboardStandingDto = it
                         )
                     }
                     Spacer(Modifier.width(16.dp))
                     leaderboardStanding.getOrNull(0)?.let { it ->
                         TopStandingComposable(
-                            modifier = Modifier.weight(1f),
-                            leaderboardStandingDto = it
+                            modifier = Modifier.weight(1f), leaderboardStandingDto = it
                         )
                     }
                     Spacer(Modifier.width(16.dp))
                     leaderboardStanding.getOrNull(2)?.let { it ->
                         TopStandingComposable(
-                            modifier = Modifier.weight(1f),
-                            leaderboardStandingDto = it
+                            modifier = Modifier.weight(1f), leaderboardStandingDto = it
                         )
                     }
                 }
@@ -225,8 +191,7 @@ fun LeaderboardData(
             if (leaderboardStanding.size > 3) {
                 items(
                     leaderboardStanding.subList(
-                        3,
-                        leaderboardStanding.size
+                        3, leaderboardStanding.size
                     )
                 ) { leaderboardStanding ->
                     LeaderboardStandingComposable(leaderboardStanding)
@@ -244,10 +209,7 @@ fun TimerComposable(
     timer: () -> String,
 ) {
     Text(
-        "Ends in\n${timer()}",
-        color = Color.White,
-        textAlign = TextAlign.Center,
-        fontSize = 22.sp
+        "Ends in\n${timer()}", color = Color.White, textAlign = TextAlign.Center, fontSize = 22.sp
     )
 }
 
@@ -268,8 +230,7 @@ fun RewardComposable(onCheckRewardClicked: () -> Unit) {
             repeatMode = RepeatMode.Reverse
         ), label = "PulsatingButton"
     )
-    Image(
-        painter = painterResource(R.drawable.check_rewards),
+    Image(painter = painterResource(R.drawable.check_rewards),
         contentDescription = null,
         modifier = Modifier
             .padding(end = 20.dp)
@@ -278,6 +239,5 @@ fun RewardComposable(onCheckRewardClicked: () -> Unit) {
                 onCheckRewardClicked()
             }
             .scale(scale)
-            .alpha(alpha)
-    )
+            .alpha(alpha))
 }
