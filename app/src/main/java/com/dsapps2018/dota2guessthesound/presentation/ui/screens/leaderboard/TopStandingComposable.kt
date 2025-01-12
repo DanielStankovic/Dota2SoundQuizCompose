@@ -1,6 +1,5 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -23,15 +21,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardStandingDto
-import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogOnBackground
-import com.dsapps2018.dota2guessthesound.presentation.ui.theme.LeaderboardOnBackground
 
 
 @Composable

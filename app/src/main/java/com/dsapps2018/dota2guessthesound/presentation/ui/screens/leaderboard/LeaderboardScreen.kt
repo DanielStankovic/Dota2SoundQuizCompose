@@ -10,7 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,6 +54,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.theme.LeaderboardBackgr
 @Composable
 fun LeaderboardScreen(
     onHistoryClicked: () -> Unit,
+    onQuestionClicked: () -> Unit,
     onCheckRewardClicked: (Int, String) -> Unit,
     leaderboardViewModel: LeaderboardViewModel = hiltViewModel()
 ) {
@@ -72,23 +72,37 @@ fun LeaderboardScreen(
                     .background(LeaderboardBackground)
                     .padding(top = 70.dp)
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(painter = painterResource(R.drawable.ic_question),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier
+                            .padding(start = 20.dp, end= 4.dp)
+                            .size(25.dp)
+                            .clickable {
+                                onQuestionClicked()
+                            })
+
                     Text(
+                        modifier = Modifier.weight(1f),
                         text = stringResource(R.string.leaderboard_month_lbl, leaderboardMonth),
                         fontSize = 18.sp,
                         color = Color.White,
-                        modifier = Modifier.align(Alignment.Center)
+                        textAlign = TextAlign.Center
                     )
                     Icon(painter = painterResource(R.drawable.ic_history),
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier
-                            .padding(end = 16.dp)
-                            .size(20.dp)
+                            .padding(end = 20.dp, start = 4.dp)
+                            .size(25.dp)
                             .clickable {
                                 onHistoryClicked()
-                            }
-                            .align(Alignment.CenterEnd))
+                            })
                 }
 
                 LeaderboardContent({ timer },

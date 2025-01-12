@@ -55,3 +55,6 @@ object LeaderboardDestination
 
 @Serializable
 data class RewardsDestination(val leaderboardId: Int, val month:String)
+
+@Serializable
+object FaqDestination

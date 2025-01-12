@@ -63,6 +63,7 @@ class SyncScreenViewModel @Inject constructor(
             "Syncing casters",
             "Syncing game mode",
             "Syncing changelog",
+            "Syncing faq",
             "Syncing leaderboard",
             "Syncing user data",
             "Syncing sounds",
@@ -130,6 +131,9 @@ class SyncScreenViewModel @Inject constructor(
 
             sendNextEvent()
             syncRepository.syncChangelog()
+
+            sendNextEvent()
+            syncRepository.syncFaq()
 
             sendNextEvent()
             syncRepository.syncLeaderboard()

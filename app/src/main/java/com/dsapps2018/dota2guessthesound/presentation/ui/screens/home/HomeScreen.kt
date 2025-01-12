@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Snackbar
@@ -73,6 +74,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
+import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.openDiscordInviteLink
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatusComposable
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
@@ -96,6 +99,7 @@ fun HomeScreen(
     onInvokerClicked: () -> Unit,
     onOptionsClicked: () -> Unit,
     onProfileClicked: () -> Unit,
+    onQuestionClicked: () -> Unit,
     onLeaderboardClicked: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
@@ -293,7 +297,7 @@ fun HomeScreen(
                             .weight(1f)
                             .fillMaxWidth()
                             .padding(horizontal = 4.dp)
-                            .padding(bottom = 50.dp),
+                            .padding(bottom = 30.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -421,6 +425,43 @@ fun HomeScreen(
                         }
                     }
 
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(painter = painterResource(R.drawable.ic_question),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier
+                                .padding(start = 20.dp)
+                                .size(40.dp)
+                                .clickable {
+                                    onQuestionClicked()
+                                })
+                        Spacer(Modifier.weight(1f))
+                        Column(
+                            modifier = Modifier
+                                .padding(bottom = 30.dp, end = 30.dp)
+                                .clickable {
+                                    openDiscordInviteLink(context, Constants.DISCORD_INV_LINK)
+                                },
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.join_lbl),
+                                color = Color.White,
+                                fontSize = 20.sp
+                            )
+                            Icon(
+                                modifier = Modifier.size(40.dp),
+                                painter = painterResource(R.drawable.ic_discord),
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+                    }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardDetailsEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardEntity
 import kotlinx.coroutines.flow.Flow

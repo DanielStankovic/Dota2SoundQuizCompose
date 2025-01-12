@@ -3,6 +3,9 @@ package com.dsapps2018.dota2guessthesound.data.util
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
+import android.net.Uri
+import com.dsapps2018.dota2guessthesound.BuildConfig
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
@@ -60,10 +63,33 @@ fun getMonthStringFromStringDate(date: String): String {
     return ZonedDateTime.parse(
         date,
         DateTimeFormatter.ISO_OFFSET_DATE_TIME
-    ).month.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    ).month.name.lowercase()
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 }
 
 fun Double.roundTo(decimals: Int): Double {
     val factor = 10.0.pow(decimals)
     return round(this * factor) / factor
+}
+
+fun openDiscordInviteLink(context: Context, inviteLink: String) {
+    // Create an Intent for the Discord invite link
+    val discordIntent = Intent(Intent.ACTION_VIEW, Uri.parse(inviteLink))
+
+    // Set the Discord app as the target if it's installed
+    discordIntent.setPackage(Constants.DISCORD_PACKAGE_NAME)
+
+    // Check if the Discord app can handle this Intent
+    val canHandleDiscordIntent = discordIntent.resolveActivity(context.packageManager) != null
+
+    // Use Discord app if available, otherwise fallback to browser
+    if (!canHandleDiscordIntent) {
+        discordIntent.setPackage(null) // Clear the package to let the system choose a browser
+    }
+
+    context.startActivity(discordIntent)
+}
+
+fun createSupabaseImgPath(bucketId: String, imageFileName: String): String {
+    return "${BuildConfig.BASE_URL}/storage/v1/object/public/$bucketId/$imageFileName"
 }

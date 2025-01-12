@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
 import com.dsapps2018.dota2guessthesound.data.util.toDp
 import kotlinx.coroutines.launch
 

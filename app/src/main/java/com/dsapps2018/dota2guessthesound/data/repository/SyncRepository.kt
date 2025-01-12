@@ -10,12 +10,14 @@ import com.dsapps2018.dota2guessthesound.data.api.response.CasterDto
 import com.dsapps2018.dota2guessthesound.data.api.response.CasterTypeDto
 import com.dsapps2018.dota2guessthesound.data.api.response.ChangelogDto
 import com.dsapps2018.dota2guessthesound.data.api.response.ConfigDto
+import com.dsapps2018.dota2guessthesound.data.api.response.FaqDto
 import com.dsapps2018.dota2guessthesound.data.api.response.GameModeDto
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardDto
 import com.dsapps2018.dota2guessthesound.data.api.response.SoundDto
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
+import com.dsapps2018.dota2guessthesound.data.dao.FaqDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
@@ -23,6 +25,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterTypeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.FaqEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
@@ -53,6 +56,7 @@ class SyncRepository @Inject constructor(
     private val casterTypeDao: CasterTypeDao,
     private val casterDao: CasterDao,
     private val changelogDao: ChangelogDao,
+    private val faqDao: FaqDao,
     private val soundDao: SoundDao,
     private val userDataDao: UserDataDao,
     private val gameModeDao: GameModeDao,
@@ -180,6 +184,43 @@ class SyncRepository @Inject constructor(
 
             changelogDao.deleteAll(changelogList)
             changelogDao.insertAll(changelogList)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun syncFaq() {
+        try {
+            val modifiedDate = faqDao.getModifiedDate() ?: getInitialModifiedDate()
+            val faqList = postgrest
+                .from(Constants.TABLE_FAQ)
+                .select(
+                    columns = Columns.list(
+                        "id",
+                        "question",
+                        "answer",
+                        "question_order",
+                        "modified_at",
+                        "active"
+                    )
+                ) {
+                    filter {
+                        gt("modified_at", modifiedDate)
+                    }
+                    order("modified_at", Order.ASCENDING)
+                }.decodeList<FaqDto>().map { x ->
+                    FaqEntity(
+                        x.id,
+                        x.questionOrder,
+                        x.question,
+                        x.answers,
+                        x.modifiedAt,
+                        x.isActive
+                    )
+                }
+
+            faqDao.deleteAll(faqList)
+            faqDao.insertAll(faqList)
         } catch (e: Exception) {
             throw e
         }

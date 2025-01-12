@@ -1,7 +1,6 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.coininfo
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.IdRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

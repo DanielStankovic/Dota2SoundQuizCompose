@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.changelog.ChangelogScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.faq.FaqScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.FastFingerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.PickTimeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
@@ -63,6 +64,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onProfileClicked = {
                     navController.navigate(ProfileDestination)
+                },
+                onQuestionClicked = {
+                    navController.navigate(FaqDestination)
                 },
                 onLeaderboardClicked = {
                     navController.navigate(LeaderboardDestination)
@@ -242,6 +246,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onCheckRewardClicked = { leaderboardId, month ->
                     navController.navigate(route = RewardsDestination(leaderboardId, month))
+                },
+                onQuestionClicked = {
+                    navController.navigate(route = FaqDestination)
                 })
         }
 
@@ -250,6 +257,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             RewardsScreen(
                 month = rewardsDestination.month
             )
+        }
+
+        composable<FaqDestination> {
+            FaqScreen()
         }
     }
 }

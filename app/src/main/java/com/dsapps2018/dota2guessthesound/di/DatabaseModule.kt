@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
+import com.dsapps2018.dota2guessthesound.data.dao.FaqDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
@@ -67,6 +68,12 @@ object DatabaseModule {
     @Provides
     fun provideLeaderboardDao(database: DotaDatabase): LeaderboardDao {
         return database.leaderboardDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFaqDao(database: DotaDatabase): FaqDao {
+        return database.faqDao()
     }
 
 }

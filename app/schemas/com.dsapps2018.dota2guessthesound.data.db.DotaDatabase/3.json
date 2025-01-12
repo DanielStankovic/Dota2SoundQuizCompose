@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "d2a01397a93d3d9eeb7be27be5ac90ee",
+    "identityHash": "99974bbd3d1f6723a08c9d886cb0737b",
     "entities": [
       {
         "tableName": "CasterType",
@@ -463,12 +463,62 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "Faq",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `questionOrder` INTEGER NOT NULL, `question` TEXT NOT NULL, `answers` TEXT NOT NULL, `modifiedAt` TEXT NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "questionOrder",
+            "columnName": "questionOrder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "question",
+            "columnName": "question",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "answers",
+            "columnName": "answers",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modifiedAt",
+            "columnName": "modifiedAt",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "isActive",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd2a01397a93d3d9eeb7be27be5ac90ee')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '99974bbd3d1f6723a08c9d886cb0737b')"
     ]
   }
 }

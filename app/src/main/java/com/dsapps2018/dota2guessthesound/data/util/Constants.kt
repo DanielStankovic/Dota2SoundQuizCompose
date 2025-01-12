@@ -16,6 +16,12 @@ object Constants {
     const val TABLE_LEADERBOARD_STANDING = "leaderboard_standing"
     const val TABLE_GAME_DATA = "game_data"
     const val TABLE_REWARDS = "rewards"
+    const val TABLE_FAQ = "faq"
+
+    const val DISCORD_INV_LINK = "https://discord.gg/2aH27NKEdA"
+    const val DISCORD_PACKAGE_NAME = "com.discord"
+
+    const val FAQ_BUCKET = "faq"
 
     const val LAST_SYNC_KEY = "last_sync"
 
