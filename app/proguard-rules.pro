@@ -20,6 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class com.dsapps2018.dota2guessthesound.data.api.response.** { <fields>; }
+-keep class com.dsapps2018.dota2guessthesound.data.api.request.** { <fields>; }
 -keep class com.dsapps2018.dota2guessthesound.presentation.navigation.** { <fields>; }
 -if class androidx.credentials.CredentialManager
 -keep class androidx.credentials.playservices.** {

@@ -37,6 +37,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -229,6 +231,8 @@ fun TimerComposable(
 
 @Composable
 fun RewardComposable(onCheckRewardClicked: () -> Unit) {
+    val currentScreenWidth = LocalConfiguration.current.screenWidthDp
+
     val infiniteTransition = rememberInfiniteTransition(label = "PulsatingButton")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f, targetValue = 1.1f, animationSpec = infiniteRepeatable(
@@ -248,7 +252,7 @@ fun RewardComposable(onCheckRewardClicked: () -> Unit) {
         contentDescription = null,
         modifier = Modifier
             .padding(end = 20.dp)
-            .size(250.toDp())
+            .size( (currentScreenWidth * 0.25).dp)
             .clickable {
                 onCheckRewardClicked()
             }

@@ -101,7 +101,7 @@ class LeaderboardViewModel @Inject constructor(
                     // Update only if the visible value changes
                     val newCountdownText = if (days > 0) String.format(
                         Locale.getDefault(),
-                        "%02d $daysString %02dh:%02dm:%02ds",
+                        "%02d $daysString\n%02dh:%02dm:%02ds",
                         days, hours, minutes, seconds
                     ) else String.format(
                         Locale.getDefault(),

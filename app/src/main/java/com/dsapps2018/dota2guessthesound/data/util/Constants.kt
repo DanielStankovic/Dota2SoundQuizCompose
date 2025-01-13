@@ -21,8 +21,6 @@ object Constants {
     const val DISCORD_INV_LINK = "https://discord.gg/2aH27NKEdA"
     const val DISCORD_PACKAGE_NAME = "com.discord"
 
-    const val FAQ_BUCKET = "faq"
-
     const val LAST_SYNC_KEY = "last_sync"
 
     const val PERMISSION_CHECK_TAG = "permissionCheck"
