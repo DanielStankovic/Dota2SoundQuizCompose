@@ -38,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -48,7 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardStandingDto
-import com.dsapps2018.dota2guessthesound.data.util.toDp
+import com.dsapps2018.dota2guessthesound.data.util.getMonthStringFromStringDate
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.LeaderboardBackground
@@ -60,8 +59,6 @@ fun LeaderboardScreen(
     onCheckRewardClicked: (Int, String) -> Unit,
     leaderboardViewModel: LeaderboardViewModel = hiltViewModel()
 ) {
-    val leaderboardMonth by leaderboardViewModel.leaderboardMonth.collectAsStateWithLifecycle()
-    val leaderboardId by leaderboardViewModel.leaderboardId.collectAsStateWithLifecycle()
     val timer by leaderboardViewModel.countdownFlow.collectAsStateWithLifecycle()
     val leaderboardState by leaderboardViewModel.leaderboardState.collectAsStateWithLifecycle()
 
@@ -74,7 +71,42 @@ fun LeaderboardScreen(
                     .background(LeaderboardBackground)
                     .padding(top = 70.dp)
             ) {
-                Row (
+
+                LeaderboardContent({ timer },
+                    leaderboardState = leaderboardState,
+                    onCheckRewardClicked = { leaderboardId, leaderboardMonth ->
+                        onCheckRewardClicked(leaderboardId, leaderboardMonth)
+                    },
+                    onQuestionClicked = {
+                        onQuestionClicked()
+                    },
+                    onHistoryClicked = {
+                        onHistoryClicked()
+                    })
+            }
+        })
+}
+
+@Composable
+fun LeaderboardContent(
+    timer: () -> String,
+    leaderboardState: LeaderboardViewModel.LeaderboardFetchState,
+    onCheckRewardClicked: (Int, String) -> Unit,
+    onQuestionClicked: () -> Unit,
+    onHistoryClicked: () -> Unit,
+) {
+    when (leaderboardState) {
+        is LeaderboardViewModel.LeaderboardFetchState.Error -> {
+            ErrorOrEmptyContent(leaderboardState.error)
+        }
+
+        LeaderboardViewModel.LeaderboardFetchState.Loading -> {
+            LoadingContent()
+        }
+
+        is LeaderboardViewModel.LeaderboardFetchState.Success -> {
+            Column {
+                Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
@@ -83,7 +115,7 @@ fun LeaderboardScreen(
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier
-                            .padding(start = 20.dp, end= 4.dp)
+                            .padding(start = 20.dp, end = 4.dp)
                             .size(25.dp)
                             .clickable {
                                 onQuestionClicked()
@@ -91,7 +123,10 @@ fun LeaderboardScreen(
 
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = stringResource(R.string.leaderboard_month_lbl, leaderboardMonth),
+                        text = stringResource(
+                            R.string.leaderboard_month_lbl,
+                            getMonthStringFromStringDate(leaderboardState.leaderboardData.startAt)
+                        ),
                         fontSize = 18.sp,
                         color = Color.White,
                         textAlign = TextAlign.Center
@@ -106,37 +141,21 @@ fun LeaderboardScreen(
                                 onHistoryClicked()
                             })
                 }
-
-                LeaderboardContent({ timer },
-                    leaderboardState = leaderboardState,
-                    onCheckRewardClicked = {
-                        onCheckRewardClicked(leaderboardId, leaderboardMonth)
-                    })
+                if (leaderboardState.data.isEmpty()) {
+                    ErrorOrEmptyContent(stringResource(R.string.leaderboard_standing_no_data))
+                } else {
+                    LeaderboardData(
+                        timer,
+                        leaderboardState.data,
+                        onCheckRewardClicked = {
+                            onCheckRewardClicked(
+                                leaderboardState.leaderboardData.id,
+                                getMonthStringFromStringDate(leaderboardState.leaderboardData.startAt)
+                            )
+                        })
+                }
             }
-        })
-}
 
-@Composable
-fun LeaderboardContent(
-    timer: () -> String,
-    leaderboardState: LeaderboardViewModel.LeaderboardFetchState,
-    onCheckRewardClicked: () -> Unit
-) {
-    when (leaderboardState) {
-        is LeaderboardViewModel.LeaderboardFetchState.Error -> {
-            ErrorOrEmptyContent(leaderboardState.error)
-        }
-
-        LeaderboardViewModel.LeaderboardFetchState.Loading -> {
-            LoadingContent()
-        }
-
-        is LeaderboardViewModel.LeaderboardFetchState.Success -> {
-            if (leaderboardState.data.isEmpty()) {
-                ErrorOrEmptyContent(stringResource(R.string.leaderboard_standing_no_data))
-            } else {
-                LeaderboardData(timer, leaderboardState.data, onCheckRewardClicked)
-            }
         }
     }
 }
@@ -252,7 +271,7 @@ fun RewardComposable(onCheckRewardClicked: () -> Unit) {
         contentDescription = null,
         modifier = Modifier
             .padding(end = 20.dp)
-            .size( (currentScreenWidth * 0.25).dp)
+            .size((currentScreenWidth * 0.25).dp)
             .clickable {
                 onCheckRewardClicked()
             }

@@ -46,7 +46,7 @@ class RewardsViewModel @Inject constructor(
     private fun fetchRewardsData() = viewModelScope.launch(coroutineExceptionHandler) {
         _rewardsState.value = RewardsFetchState.Loading
 
-        val rewardsList = rewardsRepository.getRewardsData(1)
+        val rewardsList = rewardsRepository.getRewardsData(leaderboardId)
         val sortedList = if (rewardsList.isNotEmpty()) {
             rewardsList.sortedBy {
                 when (it.standing) {

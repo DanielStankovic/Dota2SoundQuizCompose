@@ -8,7 +8,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.FaqDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
-import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDao
+import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDetailsDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
@@ -17,7 +17,6 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.FaqEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardDetailsEntity
-import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
 import com.dsapps2018.dota2guessthesound.data.util.Constants
@@ -30,7 +29,6 @@ import com.dsapps2018.dota2guessthesound.data.util.Constants
         ChangelogEntity::class,
         UserDataEntity::class,
         GameModeEntity::class,
-        LeaderboardEntity::class,
         LeaderboardDetailsEntity::class,
         FaqEntity::class
     ],
@@ -55,7 +53,7 @@ abstract class DotaDatabase : RoomDatabase() {
 
     abstract fun gameModeDao(): GameModeDao
 
-    abstract fun leaderboardDao(): LeaderboardDao
+    abstract fun leaderboardDetailsDao(): LeaderboardDetailsDao
 
     abstract fun faqDao(): FaqDao
 

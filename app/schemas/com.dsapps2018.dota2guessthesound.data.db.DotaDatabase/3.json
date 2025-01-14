@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "99974bbd3d1f6723a08c9d886cb0737b",
+    "identityHash": "172a6e0e9f1b551f42f5fe9a5916ba35",
     "entities": [
       {
         "tableName": "CasterType",
@@ -371,56 +371,12 @@
         "foreignKeys": []
       },
       {
-        "tableName": "Leaderboard",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `startAt` TEXT NOT NULL, `endAt` TEXT NOT NULL, `modifiedAt` TEXT NOT NULL, PRIMARY KEY(`id`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "startAt",
-            "columnName": "startAt",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "endAt",
-            "columnName": "endAt",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "modifiedAt",
-            "columnName": "modifiedAt",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
         "tableName": "LeaderboardDetails",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `leaderboardId` INTEGER NOT NULL, `gameModeId` INTEGER NOT NULL, `userId` TEXT, `score` REAL NOT NULL, `createdDate` TEXT NOT NULL, `isSent` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `gameModeId` INTEGER NOT NULL, `userId` TEXT, `score` REAL NOT NULL, `createdDate` TEXT NOT NULL, `isSent` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "leaderboardId",
-            "columnName": "leaderboardId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -518,7 +474,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '99974bbd3d1f6723a08c9d886cb0737b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '172a6e0e9f1b551f42f5fe9a5916ba35')"
     ]
   }
 }

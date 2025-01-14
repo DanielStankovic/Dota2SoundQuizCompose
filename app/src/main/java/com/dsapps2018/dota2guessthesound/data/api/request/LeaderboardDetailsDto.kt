@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LeaderboardDetailsDto(
-    @SerialName("leaderboard_id")
-    val leaderboardId: Int,
     @SerialName("user_id")
     val userId: String,
     @SerialName("game_mode_id")
     val gameModeId: Int,
     @SerialName("score")
-    val score: Double
+    val score: Double,
+    @SerialName("created_at")
+    val createdDate: String
 )

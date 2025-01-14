@@ -12,14 +12,12 @@ import com.dsapps2018.dota2guessthesound.data.api.response.ChangelogDto
 import com.dsapps2018.dota2guessthesound.data.api.response.ConfigDto
 import com.dsapps2018.dota2guessthesound.data.api.response.FaqDto
 import com.dsapps2018.dota2guessthesound.data.api.response.GameModeDto
-import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardDto
 import com.dsapps2018.dota2guessthesound.data.api.response.SoundDto
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.FaqDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
-import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
@@ -27,12 +25,10 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.CasterTypeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.FaqEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
-import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.getInitialModifiedDate
-import com.dsapps2018.dota2guessthesound.data.util.getMonthFromStringDate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -46,7 +42,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import java.io.File
-import java.time.LocalDate
 import javax.inject.Inject
 
 class SyncRepository @Inject constructor(
@@ -59,8 +54,7 @@ class SyncRepository @Inject constructor(
     private val faqDao: FaqDao,
     private val soundDao: SoundDao,
     private val userDataDao: UserDataDao,
-    private val gameModeDao: GameModeDao,
-    private val leaderboardDao: LeaderboardDao
+    private val gameModeDao: GameModeDao
 ) {
 
     suspend fun syncRemoteConfig(): ConfigDto {
@@ -221,57 +215,6 @@ class SyncRepository @Inject constructor(
 
             faqDao.deleteAll(faqList)
             faqDao.insertAll(faqList)
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    suspend fun syncLeaderboard() {
-        try {
-            val savedLeaderboard = leaderboardDao.getLeaderboard()
-            if (savedLeaderboard == null) {
-                //This means that no leaderboard was ever synced
-                fetchAndInsertLeaderboard()
-            } else {
-                //This means that some leaderboard is already synced
-                val monthOfStartDate = getMonthFromStringDate(savedLeaderboard.startAt)
-                val currentMonth = LocalDate.now().monthValue
-
-                if (monthOfStartDate != currentMonth) {
-                    leaderboardDao.deleteAll()
-                    fetchAndInsertLeaderboard()
-                }
-            }
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    private suspend fun fetchAndInsertLeaderboard() {
-        try {
-            val leaderboardServer = postgrest
-                .from(Constants.TABLE_LEADERBOARD)
-                .select(
-                    columns = Columns.list(
-                        "id",
-                        "start_at",
-                        "end_at",
-                        "modified_at",
-                    )
-                ) {
-                    filter {
-                        eq("active", 1)
-                    }
-                }.decodeSingle<LeaderboardDto>()
-            leaderboardServer.apply {
-                val leaderboardLocal = LeaderboardEntity(
-                    id = id,
-                    startAt = startAt,
-                    endAt = endAt,
-                    modifiedAt = modifiedAt
-                )
-                leaderboardDao.insert(leaderboardLocal)
-            }
         } catch (e: Exception) {
             throw e
         }

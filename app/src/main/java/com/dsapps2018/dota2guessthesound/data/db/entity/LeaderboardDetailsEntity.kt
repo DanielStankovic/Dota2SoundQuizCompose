@@ -9,7 +9,6 @@ import com.dsapps2018.dota2guessthesound.data.util.DateTypeConverter
 data class LeaderboardDetailsEntity (
     @PrimaryKey(autoGenerate = true)
     val id : Int = 0,
-    val leaderboardId: Int,
     val gameModeId: Int,
     val userId: String?,
     val score: Double,
