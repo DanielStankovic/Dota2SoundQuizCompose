@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardDetailsEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LeaderboardDetailsDao {

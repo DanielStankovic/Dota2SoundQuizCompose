@@ -1,12 +1,15 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardDto
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardStandingDto
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
+import com.dsapps2018.dota2guessthesound.presentation.navigation.LeaderboardDestination
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,9 +30,12 @@ import javax.inject.Inject
 @HiltViewModel
 class LeaderboardViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    savedStateHandle: SavedStateHandle,
     private val leaderboardRepository: LeaderboardRepository,
     private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
+
+    val leaderboardId: Int? = savedStateHandle.toRoute<LeaderboardDestination>().leaderboardId
 
     private val _leaderboardState =
         MutableStateFlow<LeaderboardFetchState>(LeaderboardFetchState.Loading)
@@ -40,21 +46,28 @@ class LeaderboardViewModel @Inject constructor(
 
     val coroutineExceptionHandler: CoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, throwable ->
-                firebaseCrashlytics.recordException(throwable)
-                _leaderboardState.value =
-                    LeaderboardFetchState.Error(context.getString(R.string.leaderboard_standing_fetch_error))
+            firebaseCrashlytics.recordException(throwable)
+            _leaderboardState.value =
+                LeaderboardFetchState.Error(context.getString(R.string.leaderboard_standing_fetch_error))
         }
 
     fun fetchLeaderboardStanding() = viewModelScope.launch(coroutineExceptionHandler) {
-        val top10StandingResult = async(Dispatchers.IO){leaderboardRepository.fetchTop10LeaderboardStandings()}.await()
-        val currentUserStandingResult = async(Dispatchers.IO){leaderboardRepository.fetchCurrentUserLeaderboardStandings()}.await()
-        val activeLeaderboard = async(Dispatchers.IO){leaderboardRepository.fetchActiveLeaderboard()}.await()
+        val top10StandingResult =
+            async(Dispatchers.IO) { leaderboardRepository.fetchTop10LeaderboardStandings(leaderboardId) }.await()
+        val currentUserStandingResult =
+            async(Dispatchers.IO) { leaderboardRepository.fetchCurrentUserLeaderboardStandings(leaderboardId) }.await()
 
-        val completeResult = if(top10StandingResult.any { x -> x.isCurrentUser }) top10StandingResult else top10StandingResult + currentUserStandingResult
+        val leaderboardData =
+            async(Dispatchers.IO) { leaderboardRepository.fetchLeaderboardData(leaderboardId) }.await()
 
-        startCountdown(activeLeaderboard.endAt, activeLeaderboard.serverTimestamp)
+        startCountdown(leaderboardData.endAt, leaderboardData.serverTimestamp)
 
-        _leaderboardState.value = LeaderboardFetchState.Success(completeResult, activeLeaderboard)
+        val completeResult =
+            if (top10StandingResult.any { x -> x.isCurrentUser }) top10StandingResult else top10StandingResult + currentUserStandingResult
+
+
+
+        _leaderboardState.value = LeaderboardFetchState.Success(completeResult, leaderboardData)
     }
 
     private fun startCountdown(endDate: String, initialServerTimestamp: String) =
@@ -73,7 +86,7 @@ class LeaderboardViewModel @Inject constructor(
                 val remainingTime = ChronoUnit.MILLIS.between(correctedNow, targetDateTime)
 
                 if (remainingTime <= 0) {
-                    _countdownFlow.value = "Time's up!"
+                    _countdownFlow.value = "Congratulations\nWinners!"
                     break
                 } else {
 
@@ -83,7 +96,7 @@ class LeaderboardViewModel @Inject constructor(
                     val minutes = (remainingTime / (60 * 1000)) % 60
                     val seconds = (remainingTime / 1000) % 60
 
-                    val daysString = if(days <= 1) "day" else "days"
+                    val daysString = if (days <= 1) "day" else "days"
                     // Update only if the visible value changes
                     val newCountdownText = if (days > 0) String.format(
                         Locale.getDefault(),
@@ -95,7 +108,7 @@ class LeaderboardViewModel @Inject constructor(
                         hours, minutes, seconds
                     )
                     if (_countdownFlow.value != newCountdownText) {
-                        _countdownFlow.value = newCountdownText
+                        _countdownFlow.value = "Ends in\n$newCountdownText"
                     }
 
                     // Delay until the next second boundary
@@ -107,7 +120,11 @@ class LeaderboardViewModel @Inject constructor(
 
     sealed interface LeaderboardFetchState {
         data object Loading : LeaderboardFetchState
-        data class Success(val data: List<LeaderboardStandingDto>, val leaderboardData: LeaderboardDto) : LeaderboardFetchState
+        data class Success(
+            val data: List<LeaderboardStandingDto>,
+            val leaderboardData: LeaderboardDto
+        ) : LeaderboardFetchState
+
         data class Error(val error: String) : LeaderboardFetchState
     }
 }

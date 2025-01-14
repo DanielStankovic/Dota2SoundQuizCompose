@@ -67,6 +67,17 @@ fun getMonthStringFromStringDate(date: String): String {
         .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 }
 
+fun getMonthYearStringFromStringDate(date: String): String {
+    val parsedDate = ZonedDateTime.parse(
+        date,
+        DateTimeFormatter.ISO_OFFSET_DATE_TIME
+    )
+    return "${
+        parsedDate.month.name.lowercase()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    }  -  ${parsedDate.year}"
+}
+
 fun Double.roundTo(decimals: Int): Double {
     val factor = 10.0.pow(decimals)
     return round(this * factor) / factor

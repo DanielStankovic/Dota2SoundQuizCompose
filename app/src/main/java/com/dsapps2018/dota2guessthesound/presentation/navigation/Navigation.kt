@@ -14,6 +14,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.LeaderboardScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.leaderboardhistory.LeaderboardHistoryScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.AttributionScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.OptionsScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.PrivacyScreen
@@ -69,7 +70,7 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                     navController.navigate(FaqDestination)
                 },
                 onLeaderboardClicked = {
-                    navController.navigate(LeaderboardDestination)
+                    navController.navigate(LeaderboardDestination(null))
                 }
             )
         }
@@ -239,10 +240,14 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             ProfileScreen()
         }
 
-        composable<LeaderboardDestination> {
-            LeaderboardScreen(
-                onHistoryClicked = {
+        composable<LeaderboardDestination> { backStackEntry ->
 
+            val leaderboardDestination: LeaderboardDestination = backStackEntry.toRoute()
+
+            LeaderboardScreen(
+                isHistory = leaderboardDestination.leaderboardId != null,
+                onHistoryClicked = {
+                    navController.navigate(route = LeaderboardHistoryDestination)
                 },
                 onCheckRewardClicked = { leaderboardId, month ->
                     navController.navigate(route = RewardsDestination(leaderboardId, month))
@@ -261,6 +266,14 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
 
         composable<FaqDestination> {
             FaqScreen()
+        }
+
+        composable<LeaderboardHistoryDestination> {
+            LeaderboardHistoryScreen(
+                onLeaderboardClicked = { leaderboardId ->
+                    navController.navigate(LeaderboardDestination(leaderboardId))
+                }
+            )
         }
     }
 }

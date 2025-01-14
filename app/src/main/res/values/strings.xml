@@ -51,6 +51,8 @@
     <string name="score_larger_than_2">Score > 2</string>
     <string name="score_larger_than_6">Score > 6</string>
     <string name="score_larger_than_15">Score > 15</string>
+    <string name="join_lbl">Join</string>
+
 
 
     //FastFinger Screen
@@ -114,6 +116,10 @@
     <string name="rewards_fetch_error">Error getting Rewards data from the server.\n\nTry again…</string>
     <string name="rewards_no_data">No Rewards added for the current leaderboard.\n\nPlease, check again later…</string>
     <string name="hero_item_type">%1$s - %2$s</string>
-    <string name="join_lbl">Join</string>
+
+    //Leaderboard History
+    <string name="history_fetch_error">Error getting Leaderboard History data from the server.\n\nTry again…</string>
+    <string name="history_no_data">There are no previous Leaderboards\n\nGo back and check standings for the current Leaderboard…</string>
+    <string name="leaderboard_history_lbl">Leaderboard History</string>
 
 </resources>

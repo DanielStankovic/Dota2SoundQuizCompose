@@ -51,10 +51,13 @@ object AttributionDestination
 object ProfileDestination
 
 @Serializable
-object LeaderboardDestination
+data class LeaderboardDestination(val leaderboardId: Int? = null)
 
 @Serializable
 data class RewardsDestination(val leaderboardId: Int, val month:String)
 
 @Serializable
 object FaqDestination
+
+@Serializable
+object LeaderboardHistoryDestination

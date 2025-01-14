@@ -2,13 +2,19 @@ package com.dsapps2018.dota2guessthesound.data.repository
 
 import com.dsapps2018.dota2guessthesound.data.api.request.LeaderboardDetailsDto
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardDto
+import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardHistoryDto
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardStandingDto
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDetailsDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardDetailsEntity
+import com.dsapps2018.dota2guessthesound.data.model.LeaderboardHistoryModel
+import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.getCurrentDate
+import com.dsapps2018.dota2guessthesound.data.util.getMonthYearStringFromStringDate
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -73,7 +79,7 @@ class LeaderboardRepository @Inject constructor(
 
             postgrest.rpc(
                 function = "insert_leaderboard_details",
-                parameters =  mapOf("data_list" to jsonData)
+                parameters = mapOf("data_list" to jsonData)
             )
 
             leaderboardDetailsDao.deleteSentDetails(unsentDetailsLocal)
@@ -83,12 +89,13 @@ class LeaderboardRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchTop10LeaderboardStandings(): List<LeaderboardStandingDto> {
+    suspend fun fetchTop10LeaderboardStandings(leaderboardId: Int?): List<LeaderboardStandingDto> {
         try {
             return postgrest.rpc(
                 function = "get_top_10_leaderboard_standings",
                 parameters = buildJsonObject {
                     put("current_user_id", getAuthUserId()!!)
+                    put("lb_id", leaderboardId)
                 }
             ).decodeList<LeaderboardStandingDto>()
         } catch (e: Exception) {
@@ -96,12 +103,13 @@ class LeaderboardRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchCurrentUserLeaderboardStandings(): List<LeaderboardStandingDto> {
+    suspend fun fetchCurrentUserLeaderboardStandings(leaderboardId: Int?): List<LeaderboardStandingDto> {
         try {
             return postgrest.rpc(
                 function = "get_user_leaderboard_standings",
                 parameters = buildJsonObject {
                     put("current_user_id", getAuthUserId()!!)
+                    put("lb_id", leaderboardId)
                 }
             ).decodeList<LeaderboardStandingDto>()
         } catch (e: Exception) {
@@ -109,11 +117,37 @@ class LeaderboardRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchActiveLeaderboard(): LeaderboardDto {
+    suspend fun fetchLeaderboardData(leaderboardId: Int?): LeaderboardDto {
         try {
             return postgrest.rpc(
-                function = "get_active_leaderboard_entry"
+                function = "get_leaderboard_entry",
+                parameters = buildJsonObject {
+                    put("lb_id", leaderboardId)
+                }
             ).decodeSingle()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun fetchLeaderboardHistory(): List<LeaderboardHistoryModel> {
+        try {
+            return postgrest.from(Constants.TABLE_LEADERBOARD).select(
+                columns = Columns.list(
+                    "id",
+                    "start_at"
+                )
+            ) {
+                filter {
+                    eq("active", false)
+                }
+                order("start_at", Order.ASCENDING)
+            }.decodeList<LeaderboardHistoryDto>().map { historyDto ->
+                LeaderboardHistoryModel(
+                    historyDto.id,
+                    getMonthYearStringFromStringDate(historyDto.startAt)
+                )
+            }
         } catch (e: Exception) {
             throw e
         }
