@@ -144,7 +144,9 @@ class AuthViewModel @Inject constructor(
     fun signOut() {
         viewModelScope.launch {
             try {
+                userDataRepository.syncUserData()
                 auth.signOut()
+                userDataRepository.resetLocalUserData()
             } catch (e: Exception) {
                 firebaseCrashlytics.recordException(e)
                 _authEventStatus.emit(AuthEvent.Error(context.getString(R.string.login_error)))

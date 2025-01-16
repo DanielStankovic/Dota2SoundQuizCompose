@@ -93,7 +93,7 @@ class UserDataRepository @Inject constructor(
                 }
 
                 //LOCAL
-                serverUserData.apply {
+                localUserData.apply {
                     quizScore = maxQuizScore
                     invokerScore = maxInvokerScore
                     thirtySecondsScore = maxThirtySecondsScore
@@ -214,5 +214,9 @@ class UserDataRepository @Inject constructor(
         val localUserData = getLocalUserData()
         localUserData.coinValue += value
         userDataDao.update(localUserData)
+    }
+
+    suspend fun resetLocalUserData(){
+        userDataDao.update(getInitialUserData())
     }
 }
