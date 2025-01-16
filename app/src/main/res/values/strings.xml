@@ -107,7 +107,7 @@
     <string name="leaderboard_login_required">Please Log in to check Leaderboard</string>
     <string name="leaderboard_month_lbl">Leaderboard - %1$s</string>
     <string name="leaderboard_standing_fetch_error">Error getting Leaderboard data from the server.\n\nTry again…</string>
-    <string name="leaderboard_standing_no_data">No Leaderboard data</string>
+    <string name="leaderboard_standing_no_data">No Leaderboard data\n\nPlay any mode to get Leaderboard standing</string>
     <string name="rewards_month">"Rewards - %1$s"</string>
 
     //Rewards Screen
