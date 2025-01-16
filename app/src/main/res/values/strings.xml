@@ -48,9 +48,7 @@
     <string name="ff_60_lbl">FF-60</string>
     <string name="ff_90_lbl">FF-90</string>
     <string name="score_lbl">Score</string>
-    <string name="score_larger_than_2">Score > 2</string>
-    <string name="score_larger_than_6">Score > 6</string>
-    <string name="score_larger_than_15">Score > 15</string>
+    <string name="score_larger_than_value">Score > %1$d</string>
     <string name="join_lbl">Join</string>
 
 

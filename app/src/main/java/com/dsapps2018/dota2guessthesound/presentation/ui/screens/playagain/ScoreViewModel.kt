@@ -9,6 +9,7 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
 import com.dsapps2018.dota2guessthesound.data.enums.GameModeEnum
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.ScoreRepository
+import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.getCurrentDate
 import com.dsapps2018.dota2guessthesound.data.util.roundTo
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -112,21 +113,21 @@ class ScoreViewModel @Inject constructor(
                 when (time) {
                     30 -> {
                         userData.thirtyPlayed++
-                        if (currentScore > 2.0) {
+                        if (currentScore > Constants.FF_30_SCORE_MIN) {
                             userData.coinValue += time
                         }
                     }
 
                     60 -> {
                         userData.sixtyPlayed++
-                        if (currentScore > 6.0) {
+                        if (currentScore > Constants.FF_60_SCORE_MIN) {
                             userData.coinValue += time
                         }
                     }
 
                     90 -> {
                         userData.ninetyPlayed++
-                        if (currentScore > 15.0) {
+                        if (currentScore > Constants.FF_90_SCORE_MIN) {
                             userData.coinValue += time
                         }
                     }

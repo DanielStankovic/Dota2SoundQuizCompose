@@ -197,13 +197,7 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             PlayAgainInvokerScreen(
                 score = playAgainInvokerDestination.score,
                 onPlayAgain = {
-                    navController.navigate(route = HomeDestination) {
-                        popUpTo<HomeDestination> {
-                            inclusive = false
-                            saveState = false
-                        }
-                        restoreState = false
-                    }
+                    navController.popBackStack(route = HomeDestination, false)
                 })
         }
 

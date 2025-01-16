@@ -373,14 +373,14 @@ fun HomeScreen(
                                                 paddingValues = PaddingValues(
                                                     horizontal = 30.dp
                                                 ),
-                                                enabled = userData.coinValue >= 50,
+                                                enabled = userData.coinValue >= Constants.INVOKER_COIN_COST,
                                                 maxLines = 1,
                                                 text = stringResource(R.string.invoker_lbl),
                                                 textColor = Color.White,
                                                 contentScale = ContentScale.Fit) {
                                                 onInvokerClicked()
                                             }
-                                            Image(painter = painterResource(R.drawable.coin_50),
+                                            Image(painter = painterResource(R.drawable.coin_70),
                                                 contentDescription = null,
                                                 modifier = Modifier
                                                     .padding(start = 25.dp)
@@ -401,7 +401,7 @@ fun HomeScreen(
                                                     .offset(y = 40.dp)
                                                     .clickable {
                                                         showRewardedAd(context, onRewarded = {
-                                                            authViewModel.updateCoinValue(50)
+                                                            authViewModel.updateCoinValue(Constants.INVOKER_COIN_COST)
                                                         }, onAdDismissed = {})
                                                     }
                                                     .height(90.dp)

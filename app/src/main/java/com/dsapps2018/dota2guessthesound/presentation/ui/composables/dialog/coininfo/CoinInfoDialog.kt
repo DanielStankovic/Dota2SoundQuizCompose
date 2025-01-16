@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,19 +86,19 @@ fun CoinInfoDialog(
 
             CoinInfoItem(
                 quizMode = stringResource(R.string.ff_30_lbl),
-                value = stringResource(R.string.score_larger_than_2),
+                value = stringResource(R.string.score_larger_than_value, Constants.FF_30_SCORE_MIN.toInt()),
                 R.drawable.coin_30
             )
 
             CoinInfoItem(
                 quizMode = stringResource(R.string.ff_60_lbl),
-                value = stringResource(R.string.score_larger_than_6),
+                value = stringResource(R.string.score_larger_than_value, Constants.FF_60_SCORE_MIN.toInt()),
                 R.drawable.coin_60
             )
 
             CoinInfoItem(
                 quizMode = stringResource(R.string.ff_90_lbl),
-                value = stringResource(R.string.score_larger_than_15),
+                value = stringResource(R.string.score_larger_than_value, Constants.FF_90_SCORE_MIN.toInt()),
                 R.drawable.coin_90
             )
         }

@@ -103,10 +103,8 @@ fun PlayAgainInvokerScreen(
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.5f)
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = 16.dp).padding(bottom = 70.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
