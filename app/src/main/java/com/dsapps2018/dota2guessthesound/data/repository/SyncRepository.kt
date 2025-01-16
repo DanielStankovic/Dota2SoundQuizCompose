@@ -41,6 +41,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import java.io.File
 import javax.inject.Inject
 
@@ -276,19 +278,30 @@ class SyncRepository @Inject constructor(
 //                        emit(progressPortion * (index + 1) to sound.spellName)
 //                    }
                     coroutineScope {
+                        val semaphore = Semaphore(200) // Limit concurrency to 200
                         val downloadJobs = filteredList.mapIndexed { index, sound ->
                             async(Dispatchers.IO) {
-                                try {
-                                    val file = File(dir, sound.soundFileName)
-                                    storage.from(Constants.BUCKET_NAME).downloadPublicTo(
-                                        "${Constants.BUCKET_FOLDER_NAME}/${sound.soundFileName}",
-                                        file
-                                    )
-                                    sound.soundFileLink = file.path
-                                    soundDao.insert(sound)
-                                    trySend(progressPortion * (index + 1) to sound.spellName)
-                                } catch (e: Exception) {
-                                    throw e
+                                semaphore.withPermit {
+                                    var attempt = 0
+                                    val maxAttempts = 3
+                                    while (true) {
+                                        try {
+                                            val file = File(dir, sound.soundFileName)
+                                            storage.from(Constants.BUCKET_NAME).downloadPublicTo(
+                                                "${Constants.BUCKET_FOLDER_NAME}/${sound.soundFileName}",
+                                                file
+                                            )
+                                            sound.soundFileLink = file.path
+                                            soundDao.insert(sound)
+                                            trySend(progressPortion * (index + 1) to sound.spellName)
+                                            break // Exit loop on success
+                                        } catch (e: Exception) {
+                                            attempt++
+                                            if (attempt >= maxAttempts) {
+                                                throw e // Re-throw exception after max attempts
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
