@@ -52,6 +52,7 @@ class LeaderboardViewModel @Inject constructor(
         }
 
     fun fetchLeaderboardStanding() = viewModelScope.launch(coroutineExceptionHandler) {
+        _leaderboardState.value = LeaderboardFetchState.Loading
         val top10StandingResult =
             async(Dispatchers.IO) { leaderboardRepository.fetchTop10LeaderboardStandings(leaderboardId) }.await()
         val currentUserStandingResult =

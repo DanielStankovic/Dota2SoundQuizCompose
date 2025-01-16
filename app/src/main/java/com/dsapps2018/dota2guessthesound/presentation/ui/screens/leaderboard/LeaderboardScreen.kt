@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -85,6 +87,9 @@ fun LeaderboardScreen(
                     },
                     onHistoryClicked = {
                         onHistoryClicked()
+                    },
+                    onRefreshDataClicked = {
+                        leaderboardViewModel.fetchLeaderboardStanding()
                     })
             }
         })
@@ -98,6 +103,7 @@ fun LeaderboardContent(
     onCheckRewardClicked: (Int, String) -> Unit,
     onQuestionClicked: () -> Unit,
     onHistoryClicked: () -> Unit,
+    onRefreshDataClicked: () -> Unit
 ) {
     when (leaderboardState) {
         is LeaderboardViewModel.LeaderboardFetchState.Error -> {
@@ -128,8 +134,7 @@ fun LeaderboardContent(
                     }
                     Text(
                         modifier = Modifier.weight(1f), text = stringResource(
-                            R.string.leaderboard_month_lbl,
-                            if (isHistory) {
+                            R.string.leaderboard_month_lbl, if (isHistory) {
                                 getMonthYearStringFromStringDate(leaderboardState.leaderboardData.startAt)
                             } else {
                                 getMonthStringFromStringDate(leaderboardState.leaderboardData.startAt)
@@ -148,12 +153,18 @@ fun LeaderboardContent(
                                 })
                     }
                 }
-                LeaderboardData(timer, leaderboardState.data, onCheckRewardClicked = {
-                    onCheckRewardClicked(
-                        leaderboardState.leaderboardData.id,
-                        getMonthStringFromStringDate(leaderboardState.leaderboardData.startAt)
-                    )
-                })
+                LeaderboardData(
+                    timer,
+                    isHistory = isHistory,
+                    leaderboardState.data,
+                    onCheckRewardClicked = {
+                        onCheckRewardClicked(
+                            leaderboardState.leaderboardData.id,
+                            getMonthStringFromStringDate(leaderboardState.leaderboardData.startAt)
+                        )
+                    },
+                    onRefreshDataClicked = onRefreshDataClicked
+                )
 
             }
 
@@ -164,8 +175,10 @@ fun LeaderboardContent(
 @Composable
 fun LeaderboardData(
     timer: () -> String,
+    isHistory: Boolean,
     leaderboardStanding: List<LeaderboardStandingDto>,
-    onCheckRewardClicked: () -> Unit
+    onCheckRewardClicked: () -> Unit,
+    onRefreshDataClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -199,8 +212,34 @@ fun LeaderboardData(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
             ) {
-                item {
-                    Spacer(Modifier.height(1.dp))
+                if (!isHistory) {
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp, end = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Text(stringResource(R.string.refresh_data),
+                                color = Color.White,
+                                textAlign = TextAlign.Center,
+                                fontSize = 16.sp,
+                                modifier = Modifier.clickable {
+                                    onRefreshDataClicked()
+                                })
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = Color.White
+                            )
+                        }
+                    }
+                } else {
+                    item {
+                        Spacer(Modifier.height(1.dp))
+                    }
                 }
                 item {
                     Row(

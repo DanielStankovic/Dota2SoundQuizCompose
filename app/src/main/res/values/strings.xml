@@ -119,5 +119,6 @@
     <string name="history_fetch_error">Error getting Leaderboard History data from the server.\n\nTry again…</string>
     <string name="history_no_data">There are no previous Leaderboards\n\nGo back and check standings for the current Leaderboard…</string>
     <string name="leaderboard_history_lbl">Leaderboard History</string>
+    <string name="refresh_data">Refresh data</string>
 
 </resources>
