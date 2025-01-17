@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class InvokerViewModel @Inject constructor(
@@ -56,6 +57,9 @@ class InvokerViewModel @Inject constructor(
     private val _isTimerRunning = MutableStateFlow(true)
     val isTimerRunning = _isTimerRunning.asStateFlow()
 
+    private val _gameTimer = MutableStateFlow(0)
+    val gameTimer = _gameTimer.asStateFlow()
+
     private val _speedLevel = MutableStateFlow(1)
     val speedLevel = _speedLevel.asStateFlow()
 
@@ -70,6 +74,12 @@ class InvokerViewModel @Inject constructor(
     private var guessedSounds = 0
 
     init {
+        viewModelScope.launch {
+            while (_isTimerRunning.value) {
+                delay(1.seconds)
+                _gameTimer.value++
+            }
+        }
         viewModelScope.launch {
             invokerRepository.getInvokerSounds().collect { list ->
                 fullList.addAll(list)
@@ -92,7 +102,6 @@ class InvokerViewModel @Inject constructor(
 
     private suspend fun onWrongGuess() {
         decreaseLives()
-        resetTimer()
     }
 
     private suspend fun decreaseLives() {
@@ -100,13 +109,14 @@ class InvokerViewModel @Inject constructor(
         if (_numOfHearts.value <= 0) {
             //Game Over here
             _isTimerRunning.value = false
-            _quizEvent.emit(InvokerEventState.GameOver)
+            _quizEvent.emit(InvokerEventState.GameOver(_gameTimer.value))
             stopTimer()
+        } else {
+            resetTimer()
         }
     }
 
     private fun startTimer() {
-        stopTimer() // Ensure any previous timer is stopped
         timerJob = viewModelScope.launch {
             _soundTimer.value = speedTimeMap[speedLevel.value]!!
             while (_soundTimer.value > 0) {
@@ -114,7 +124,7 @@ class InvokerViewModel @Inject constructor(
                 _soundTimer.value--
                 if (_soundTimer.value == 0) {
                     decreaseLives()
-                    resetTimer() // Reset after timeout
+//                    resetTimer() // Reset after timeout
                 }
             }
         }
@@ -195,13 +205,12 @@ class InvokerViewModel @Inject constructor(
     }
 
     private fun getNumberOfOrbsFromList(orbList: LinkedList<OrbType>): OrbWrapper {
-        return OrbWrapper(
-            quasNum = orbList.count { it == OrbType.QUAS },
+        return OrbWrapper(quasNum = orbList.count { it == OrbType.QUAS },
             wexNum = orbList.count { it == OrbType.WEX },
             exortNum = orbList.count { it == OrbType.EXORT })
     }
 
-    fun playSound(){
+    fun playSound() {
         soundPlayer.playSound(currentSound?.soundFileLink!!)
     }
 }
