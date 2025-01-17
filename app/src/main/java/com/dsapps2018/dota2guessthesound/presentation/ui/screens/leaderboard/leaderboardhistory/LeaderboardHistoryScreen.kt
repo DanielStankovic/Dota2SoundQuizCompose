@@ -161,7 +161,7 @@ fun HistoryCard(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                historyItem.monthYearString,
+                historyItem.name,
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp

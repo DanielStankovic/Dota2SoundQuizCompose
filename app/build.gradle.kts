@@ -26,8 +26,8 @@ android {
         applicationId = "com.dsapps2018.dota2guessthesound"
         minSdk = 29
         targetSdk = 35
-        versionCode = 11
-        versionName = "2.1.0"
+        versionCode = 12
+        versionName = "2.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -179,10 +179,6 @@ dependencies {
 
     //Permissions
     implementation(libs.accompanist.permissions)
-
-    //Play Review
-    implementation(libs.play.review)
-    implementation(libs.play.review.ktx)
 
     //Authentication
     implementation(libs.androidx.credentials)

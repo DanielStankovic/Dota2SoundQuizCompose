@@ -135,9 +135,9 @@ fun LeaderboardContent(
                     Text(
                         modifier = Modifier.weight(1f), text = stringResource(
                             R.string.leaderboard_month_lbl, if (isHistory) {
-                                getMonthYearStringFromStringDate(leaderboardState.leaderboardData.startAt)
+                                leaderboardState.leaderboardData.getLeaderboardName(true)
                             } else {
-                                getMonthStringFromStringDate(leaderboardState.leaderboardData.startAt)
+                                leaderboardState.leaderboardData.getLeaderboardName(false)
                             }
                         ), fontSize = 18.sp, color = Color.White, textAlign = TextAlign.Center
                     )
@@ -160,7 +160,7 @@ fun LeaderboardContent(
                     onCheckRewardClicked = {
                         onCheckRewardClicked(
                             leaderboardState.leaderboardData.id,
-                            getMonthStringFromStringDate(leaderboardState.leaderboardData.startAt)
+                            leaderboardState.leaderboardData.getLeaderboardName(false)
                         )
                     },
                     onRefreshDataClicked = onRefreshDataClicked

@@ -14,6 +14,7 @@ import com.dsapps2018.dota2guessthesound.data.util.getMonthYearStringFromStringD
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Columns.Companion.raw
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
 import kotlinx.serialization.json.Json
@@ -135,17 +136,19 @@ class LeaderboardRepository @Inject constructor(
             return postgrest.from(Constants.TABLE_LEADERBOARD).select(
                 columns = Columns.list(
                     "id",
+                    "name",
                     "start_at"
                 )
             ) {
                 filter {
                     eq("active", false)
+                    lt("start_at", "now()")
                 }
                 order("start_at", Order.ASCENDING)
             }.decodeList<LeaderboardHistoryDto>().map { historyDto ->
                 LeaderboardHistoryModel(
                     historyDto.id,
-                    getMonthYearStringFromStringDate(historyDto.startAt)
+                    historyDto.name ?: getMonthYearStringFromStringDate(historyDto.startAt)
                 )
             }
         } catch (e: Exception) {

@@ -1,6 +1,5 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.options
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -43,7 +42,6 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AutoSizeText
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.OptionsItem
-import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 
@@ -140,7 +138,7 @@ fun OptionsScreen(
                         trailingIcon = R.drawable.ic_arrow_right,
                         optionText = stringResource(R.string.rate_app)
                     ) {
-                        launchInAppReview(context)
+                        openAppOnGooglePlay(context, launcher)
                     }
 
                     Spacer(Modifier.weight(0.8f))
@@ -186,6 +184,26 @@ private fun openAppSettings(
     launcher.launch(intent)
 }
 
+private fun openAppOnGooglePlay(
+    context: Context,
+    launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
+) {
+    val appPackageName = context.packageName
+    val playStoreUri = Uri.parse("market://details?id=$appPackageName")
+    val browserUri = Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+
+    val playStoreIntent = Intent(Intent.ACTION_VIEW, playStoreUri)
+
+    // Check if the Play Store app is available
+    if (playStoreIntent.resolveActivity(context.packageManager) != null) {
+        launcher.launch(playStoreIntent)
+    } else {
+        // Fallback to the browser
+        val browserIntent = Intent(Intent.ACTION_VIEW, browserUri)
+        launcher.launch(browserIntent)
+    }
+}
+
 private fun sendEmail(context: Context) {
     try {
         val selectorIntent = Intent(ACTION_SENDTO)
@@ -207,20 +225,5 @@ private fun sendEmail(context: Context) {
         Firebase.crashlytics.recordException(e)
     } catch (t: Throwable) {
         Firebase.crashlytics.recordException(t)
-    }
-}
-
-private fun launchInAppReview(context: Context) {
-    val reviewManager = ReviewManagerFactory.create(context as Activity)
-    val requestReviewFlow = reviewManager.requestReviewFlow()
-    requestReviewFlow.addOnCompleteListener { request ->
-        if (request.isSuccessful) {
-            val reviewInfo = request.result
-            reviewManager.launchReviewFlow(context, reviewInfo)
-        } else {
-            request.exception?.cause?.let {
-                Firebase.crashlytics.recordException(it)
-            }
-        }
     }
 }
