@@ -1,14 +1,18 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
 import com.dsapps2018.dota2guessthesound.data.repository.QuizRepository
+import com.dsapps2018.dota2guessthesound.data.util.SoundFileMapper
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayer
 import com.dsapps2018.dota2guessthesound.data.util.connectivity.ConnectivityObserver
 import com.dsapps2018.dota2guessthesound.data.util.connectivity.NetworkConnectivityObserver
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz.QuizEventState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FastFingerViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val quizRepository: QuizRepository,
     private val soundPlayer: SoundPlayer,
     private val networkConnectivityObserver: NetworkConnectivityObserver
@@ -61,7 +66,24 @@ class FastFingerViewModel @Inject constructor(
         }
         currentSound?.let {
             _quizEvent.emit(QuizEventState.SoundReady(getButtonOptions(it)))
-            soundPlayer.playSound(it.soundFileLink)
+
+//            soundPlayer.playSound(it.soundFileLink)
+
+            if(it.isLocal){
+                val resourceId = SoundFileMapper.map[it.spellName]
+                if(resourceId == null){
+                    playNextSound()
+                    return
+                }
+                val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
+                soundPlayer.playSoundFromResource(uri)
+            }else{
+                if(it.soundFileLink.isNotEmpty()) {
+                    soundPlayer.playSound(it.soundFileLink)
+                }else{
+                    playNextSound()
+                }
+            }
         }
     }
     private fun getNextSound(): SoundModel? {

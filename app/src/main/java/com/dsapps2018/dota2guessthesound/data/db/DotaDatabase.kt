@@ -35,7 +35,8 @@ import com.dsapps2018.dota2guessthesound.data.util.Constants
     version = Constants.DATABASE_VERSION,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 2, to = 3)
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4)
     ],
     exportSchema = true
 )

@@ -3,7 +3,7 @@ package com.dsapps2018.dota2guessthesound.data.util
 object Constants {
 
     const val DATABASE_NAME = "dota_database"
-    const val DATABASE_VERSION = 3
+    const val DATABASE_VERSION = 4
 
     const val TABLE_CASTER_TYPE = "caster_type"
     const val TABLE_CASTERS = "casters"

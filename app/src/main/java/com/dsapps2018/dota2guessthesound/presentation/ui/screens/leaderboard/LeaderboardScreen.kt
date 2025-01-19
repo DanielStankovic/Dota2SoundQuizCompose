@@ -49,8 +49,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.api.response.LeaderboardStandingDto
-import com.dsapps2018.dota2guessthesound.data.util.getMonthStringFromStringDate
-import com.dsapps2018.dota2guessthesound.data.util.getMonthYearStringFromStringDate
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.LeaderboardBackground

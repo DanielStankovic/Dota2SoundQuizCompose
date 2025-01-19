@@ -14,7 +14,6 @@ import com.dsapps2018.dota2guessthesound.data.util.getMonthYearStringFromStringD
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Columns.Companion.raw
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
 import kotlinx.serialization.json.Json

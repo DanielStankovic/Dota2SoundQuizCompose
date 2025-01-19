@@ -24,4 +24,7 @@ interface CasterDao {
     @Delete
     suspend fun deleteAll(list: List<CasterEntity>)
 
+    @Query("DELETE FROM Caster")
+    suspend fun truncateTable()
+
 }

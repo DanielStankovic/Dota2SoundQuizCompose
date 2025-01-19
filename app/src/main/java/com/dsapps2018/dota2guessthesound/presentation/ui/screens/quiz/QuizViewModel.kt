@@ -1,13 +1,17 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
 import com.dsapps2018.dota2guessthesound.data.repository.QuizRepository
+import com.dsapps2018.dota2guessthesound.data.util.SoundFileMapper
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayer
 import com.dsapps2018.dota2guessthesound.data.util.connectivity.ConnectivityObserver
 import com.dsapps2018.dota2guessthesound.data.util.connectivity.NetworkConnectivityObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val quizRepository: QuizRepository,
     private val soundPlayer: SoundPlayer,
     private val networkConnectivityObserver: NetworkConnectivityObserver
@@ -45,20 +50,36 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-    private suspend fun playNextSound(){
-        if(networkConnectivityObserver.isConnected() != ConnectivityObserver.Status.Available){
+    private suspend fun playNextSound() {
+        if (networkConnectivityObserver.isConnected() != ConnectivityObserver.Status.Available) {
             _quizEvent.emit(QuizEventState.ConnectionLost)
         }
         currentSound = getNextSound()
-        if(currentSound == null){
+        if (currentSound == null) {
             _quizEvent.emit(QuizEventState.NoMoreSounds)
             return
         }
         currentSound?.let {
             _quizEvent.emit(QuizEventState.SoundReady(getButtonOptions(it)))
-            soundPlayer.playSound(it.soundFileLink)
+
+            if(it.isLocal){
+                val resourceId = SoundFileMapper.map[it.spellName]
+                if(resourceId == null){
+                    playNextSound()
+                    return
+                }
+                val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
+                soundPlayer.playSoundFromResource(uri)
+            }else{
+                if(it.soundFileLink.isNotEmpty()) {
+                    soundPlayer.playSound(it.soundFileLink)
+                }else{
+                    playNextSound()
+                }
+            }
         }
     }
+
     private fun getNextSound(): SoundModel? {
         if (remainingSounds.isEmpty()) return null
         val nextSound = remainingSounds.random()
@@ -79,21 +100,21 @@ class QuizViewModel @Inject constructor(
         return uniqueOptions.shuffled() // Shuffle to randomize button order
     }
 
-    fun playSound(){
-       soundPlayer.playSound(currentSound?.soundFileLink!!)
+    fun playSound() {
+        soundPlayer.playSound(currentSound?.soundFileLink!!)
 //        if(!mediaPlayer.isPlaying){
 //            mediaPlayer.start()
 //        }
     }
 
-    fun onAnswerClicked(answer: String){
-        viewModelScope.launch{
-           soundPlayer.stop()
+    fun onAnswerClicked(answer: String) {
+        viewModelScope.launch {
+            soundPlayer.stop()
 
-            if(answer == currentSound?.spellName){
+            if (answer == currentSound?.spellName) {
                 _quizEvent.emit(QuizEventState.CorrectSound)
                 playNextSound()
-            }else{
+            } else {
                 _quizEvent.emit(QuizEventState.WrongSound)
             }
         }

@@ -27,4 +27,7 @@ interface FaqDao {
 
     @Delete
     suspend fun deleteAll(list: List<FaqEntity>)
+
+    @Query("DELETE FROM Faq")
+    suspend fun truncateTable()
 }

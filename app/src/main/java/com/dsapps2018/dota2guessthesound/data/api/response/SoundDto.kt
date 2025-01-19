@@ -11,12 +11,12 @@ data class SoundDto(
     val spellName: String,
     @SerialName("sound_file_name")
     val soundFileName: String,
-    @SerialName("sound_file_link")
-    val soundFileLink: String,
     @SerialName("modified_at")
     val modifiedAt: String,
     @SerialName("caster_id")
     val casterId : Int,
     @SerialName("active")
-    val isActive: Boolean
+    val isActive: Boolean,
+    @SerialName("is_local")
+    val isLocal: Boolean
 )

@@ -2,6 +2,7 @@ package com.dsapps2018.dota2guessthesound.data.util
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.net.Uri
 
 class SoundPlayer(
     private val context: Context,
@@ -20,6 +21,17 @@ class SoundPlayer(
             reset()
             setDataSource(
                path
+            )
+            prepareAsync()
+        }
+    }
+
+    fun playSoundFromResource(uri: Uri) {
+        mediaPlayer.run {
+            reset()
+            setDataSource(
+                context,
+                uri
             )
             prepareAsync()
         }

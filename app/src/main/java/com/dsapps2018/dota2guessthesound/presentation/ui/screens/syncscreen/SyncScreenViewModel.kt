@@ -1,6 +1,7 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
@@ -28,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SyncScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val sharedPreferences: SharedPreferences,
     private val syncRepository: SyncRepository,
     private val userDataRepository: UserDataRepository,
     private val leaderboardRepository: LeaderboardRepository,
@@ -93,11 +95,11 @@ class SyncScreenViewModel @Inject constructor(
     }
 
     private fun startTriviaRotation() {
-        viewModelScope.launch{
+        viewModelScope.launch {
             val shuffledList = triviaList.shuffled()
             var index = 0
             _triviaData.update { shuffledList[index] }
-            while (true){
+            while (true) {
                 delay(10000L)
                 index = (index + 1) % shuffledList.size
                 _triviaData.update { shuffledList[index] }
@@ -116,6 +118,16 @@ class SyncScreenViewModel @Inject constructor(
             if (configDto.forcedVersion > BuildConfig.VERSION_CODE) {
                 _progressStatus.emit(ProgressUpdateEvent.ProgressUpdateRequired)
                 return@launch
+            }
+
+            if (configDto.deleteVersion == BuildConfig.VERSION_CODE) {
+                val isDeletedForVersion = sharedPreferences.getBoolean(
+                    "DELETED_FOR_VER_${configDto.deleteVersion}",
+                    false
+                )
+                if (!isDeletedForVersion) {
+                   syncRepository.deleteDatabaseData(configDto.deleteVersion)
+                }
             }
 
             syncRepository.insertInitialUserData()
@@ -141,6 +153,7 @@ class SyncScreenViewModel @Inject constructor(
             sendNextEvent()
             userDataRepository.syncUserData()
 
+            sendNextEvent()
             syncRepository.syncSound().onEach { progressUpdate ->
                 val prog = ProgressUpdateEvent.ProgressUpdate(
                     (syncIndex + progressUpdate.first).toFloat(),

@@ -27,4 +27,7 @@ interface ChangelogDao {
 
     @Delete
     suspend fun deleteAll(list: List<ChangelogEntity>)
+
+    @Query("DELETE FROM Changelog")
+    suspend fun truncateTable()
 }

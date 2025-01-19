@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class ConfigDto(
     @SerialName("forced_version")
     val forcedVersion: Int,
+    @SerialName("delete_version")
+    val deleteVersion: Int,
     @SerialName("recommended_version")
     val recommendedVersion: Int
 )

@@ -1,5 +1,6 @@
 package com.dsapps2018.dota2guessthesound.data.db.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -15,5 +16,7 @@ data class SoundEntity(
     @field:TypeConverters(DateTypeConverter::class)
     val modifiedAt: String,
     val casterId: Int,
-    val isActive: Boolean
+    val isActive: Boolean,
+    @ColumnInfo(defaultValue = "1")
+    val isLocal: Boolean
 )

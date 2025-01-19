@@ -1,7 +1,9 @@
 package com.dsapps2018.dota2guessthesound.data.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Environment
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.os.EnvironmentCompat
 import com.dsapps2018.dota2guessthesound.BuildConfig
@@ -18,6 +20,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.FaqDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
+import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDetailsDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
@@ -56,7 +59,9 @@ class SyncRepository @Inject constructor(
     private val faqDao: FaqDao,
     private val soundDao: SoundDao,
     private val userDataDao: UserDataDao,
-    private val gameModeDao: GameModeDao
+    private val gameModeDao: GameModeDao,
+    private val leaderboardDetailsDao: LeaderboardDetailsDao,
+    private val sharedPreferences: SharedPreferences
 ) {
 
     suspend fun syncRemoteConfig(): ConfigDto {
@@ -66,6 +71,7 @@ class SyncRepository @Inject constructor(
                 Columns.raw(
                     """
             forced_version: data->forced_version,
+            delete_version: data->delete_version,
             recommended_version: data->recommended_version
             """
                         .trimIndent()
@@ -240,10 +246,10 @@ class SyncRepository @Inject constructor(
                             "id",
                             "spell_name",
                             "sound_file_name",
-                            "sound_file_link",
                             "caster_id",
                             "modified_at",
-                            "active"
+                            "active",
+                            "is_local"
                         )
                     ) {
                         filter {
@@ -255,18 +261,27 @@ class SyncRepository @Inject constructor(
                             x.id,
                             x.spellName,
                             x.soundFileName,
-                            x.soundFileLink,
+                            "",
                             x.modifiedAt,
                             x.casterId,
-                            x.isActive
+                            x.isActive,
+                            x.isLocal
                         )
                     }
 
                 soundDao.deleteAll(soundList)
-                val directory = getAppExternalStorage()
-                directory?.let { dir ->
-                    val filteredList = soundList.filter { x -> x.isActive }
-                    val progressPortion = 1f / filteredList.size
+                //List of Active
+                val filteredList = soundList.filter { x -> x.isActive }
+                val (localSounds, serverSounds) = filteredList.partition { x -> x.isLocal }
+                soundDao.insertAllTransaction(localSounds)
+
+                if (serverSounds.isNotEmpty()) {
+                    Log.d("###", "Usao u serverSounds. Ima za sync: ${serverSounds.size}")
+
+                    val directory = getAppExternalStorage()
+                    directory?.let { dir ->
+
+                        val progressPortion = 1f / serverSounds.size
 //                    filteredList.forEachIndexed { index, sound ->
 //                        val file = File(dir, sound.soundFileName)
 //                        storage.from(Constants.BUCKET_NAME).downloadPublicTo(
@@ -277,35 +292,37 @@ class SyncRepository @Inject constructor(
 //                        soundDao.insert(sound)
 //                        emit(progressPortion * (index + 1) to sound.spellName)
 //                    }
-                    coroutineScope {
-                        val semaphore = Semaphore(200) // Limit concurrency to 200
-                        val downloadJobs = filteredList.mapIndexed { index, sound ->
-                            async(Dispatchers.IO) {
-                                semaphore.withPermit {
-                                    var attempt = 0
-                                    val maxAttempts = 3
-                                    while (true) {
-                                        try {
-                                            val file = File(dir, sound.soundFileName)
-                                            storage.from(Constants.BUCKET_NAME).downloadPublicTo(
-                                                "${Constants.BUCKET_FOLDER_NAME}/${sound.soundFileName}",
-                                                file
-                                            )
-                                            sound.soundFileLink = file.path
-                                            soundDao.insert(sound)
-                                            trySend(progressPortion * (index + 1) to sound.spellName)
-                                            break // Exit loop on success
-                                        } catch (e: Exception) {
-                                            attempt++
-                                            if (attempt >= maxAttempts) {
-                                                throw e // Re-throw exception after max attempts
+                        coroutineScope {
+                            val semaphore = Semaphore(100) // Limit concurrency to 200
+                            val downloadJobs = serverSounds.mapIndexed { index, sound ->
+                                async(Dispatchers.IO) {
+                                    semaphore.withPermit {
+                                        var attempt = 0
+                                        val maxAttempts = 3
+                                        while (true) {
+                                            try {
+                                                val file = File(dir, sound.soundFileName)
+                                                storage.from(Constants.BUCKET_NAME)
+                                                    .downloadPublicTo(
+                                                        "${Constants.BUCKET_FOLDER_NAME}/${sound.soundFileName}",
+                                                        file
+                                                    )
+                                                sound.soundFileLink = file.path
+                                                soundDao.insert(sound)
+                                                trySend(progressPortion * (index + 1) to sound.spellName)
+                                                break // Exit loop on success
+                                            } catch (e: Exception) {
+                                                attempt++
+                                                if (attempt >= maxAttempts) {
+                                                    throw e // Re-throw exception after max attempts
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                            downloadJobs.awaitAll()
                         }
-                        downloadJobs.awaitAll()
                     }
                 }
 
@@ -353,6 +370,30 @@ class SyncRepository @Inject constructor(
         if (userData != null) return
         val userDataInitial = getInitialUserData()
         userDataDao.insert(userDataInitial)
+    }
+
+    suspend fun deleteDatabaseData(deleteVersion: Int) {
+        try {
+            userDataDao.truncateTable()
+            casterTypeDao.truncateTable()
+            casterDao.truncateTable()
+            gameModeDao.truncateTable()
+            changelogDao.truncateTable()
+            faqDao.truncateTable()
+            soundDao.truncateTable()
+            leaderboardDetailsDao.truncateTable()
+
+            val soundDirectory = getAppExternalStorage()
+            soundDirectory?.let { dir ->
+                if (dir.exists() && dir.isDirectory) {
+                    dir.deleteRecursively()
+                }
+            }
+
+            sharedPreferences.edit().putBoolean("DELETED_FOR_VER_$deleteVersion", true).apply()
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
 }

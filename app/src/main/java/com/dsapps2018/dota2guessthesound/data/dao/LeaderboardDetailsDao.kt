@@ -24,4 +24,7 @@ interface LeaderboardDetailsDao {
 
     @Delete
     suspend fun deleteSentDetails(detailsList: List<LeaderboardDetailsEntity>)
+
+    @Query("DELETE FROM LeaderboardDetails")
+    suspend fun truncateTable()
 }

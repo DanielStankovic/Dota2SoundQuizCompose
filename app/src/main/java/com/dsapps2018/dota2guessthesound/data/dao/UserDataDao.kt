@@ -24,4 +24,7 @@ interface UserDataDao {
 
     @Query("SELECT lastSyncAt FROM UserData WHERE id=1")
     fun getLastSyncDate(): Flow<Long>
+
+    @Query("DELETE FROM UserData")
+    suspend fun truncateTable()
 }

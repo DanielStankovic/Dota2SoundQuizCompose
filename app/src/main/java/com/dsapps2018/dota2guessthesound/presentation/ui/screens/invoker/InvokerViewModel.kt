@@ -1,13 +1,17 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
 import com.dsapps2018.dota2guessthesound.data.repository.InvokerRepository
+import com.dsapps2018.dota2guessthesound.data.util.SoundFileMapper
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayer
 import com.dsapps2018.dota2guessthesound.data.util.connectivity.ConnectivityObserver
 import com.dsapps2018.dota2guessthesound.data.util.connectivity.NetworkConnectivityObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +25,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class InvokerViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val invokerRepository: InvokerRepository,
     private val soundPlayer: SoundPlayer,
     private val networkConnectivityObserver: NetworkConnectivityObserver
@@ -148,8 +153,23 @@ class InvokerViewModel @Inject constructor(
         currentSound = getNextSound(currentSound)
 
         currentSound?.let {
-            soundPlayer.playSound(it.soundFileLink)
+//            soundPlayer.playSound(it.soundFileLink)
 
+            if(it.isLocal){
+                val resourceId = SoundFileMapper.map[it.spellName]
+                if(resourceId == null){
+                    playNextSound()
+                    return
+                }
+                val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
+                soundPlayer.playSoundFromResource(uri)
+            }else{
+                if(it.soundFileLink.isNotEmpty()) {
+                    soundPlayer.playSound(it.soundFileLink)
+                }else{
+                    playNextSound()
+                }
+            }
         }
     }
 

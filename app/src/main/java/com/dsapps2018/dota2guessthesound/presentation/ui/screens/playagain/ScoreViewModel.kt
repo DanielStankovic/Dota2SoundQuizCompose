@@ -72,10 +72,12 @@ class ScoreViewModel @Inject constructor(
                 userData.coinValue += score
                 userData.modifiedAt = getCurrentDate()
                 scoreRepository.updateUserData(userData)
-                leaderboardRepository.updateLeaderboard(
-                    score.toDouble(),
-                    GameModeEnum.QUIZ.gameCode
-                )
+                if (score > 0) {
+                    leaderboardRepository.updateLeaderboard(
+                        score.toDouble(),
+                        GameModeEnum.QUIZ.gameCode
+                    )
+                }
             }
         }
     }
@@ -89,10 +91,12 @@ class ScoreViewModel @Inject constructor(
                 userData.invokerPlayed++
                 userData.modifiedAt = getCurrentDate()
                 scoreRepository.updateUserData(userData)
-                leaderboardRepository.updateLeaderboard(
-                    score.toDouble(),
-                    GameModeEnum.INVOKER.gameCode
-                )
+                if (score > 0) {
+                    leaderboardRepository.updateLeaderboard(
+                        score.toDouble(),
+                        GameModeEnum.INVOKER.gameCode
+                    )
+                }
             }
         }
     }
@@ -134,10 +138,12 @@ class ScoreViewModel @Inject constructor(
                 }
                 userData.modifiedAt = getCurrentDate()
                 scoreRepository.updateUserData(userData)
-                leaderboardRepository.updateLeaderboard(
-                    currentScore,
-                    getGameModeFromTime(time).gameCode
-                )
+                if (currentScore > 0.0) {
+                    leaderboardRepository.updateLeaderboard(
+                        currentScore,
+                        getGameModeFromTime(time).gameCode
+                    )
+                }
             }
         }
     }

@@ -27,4 +27,6 @@ interface GameModeDao {
     @Query("SELECT id FROM GameMode WHERE code=:gameModeCode")
     suspend fun getGameModeIdByCode(gameModeCode: String): Int
 
+    @Query("DELETE FROM GameMode")
+    suspend fun truncateTable()
 }
