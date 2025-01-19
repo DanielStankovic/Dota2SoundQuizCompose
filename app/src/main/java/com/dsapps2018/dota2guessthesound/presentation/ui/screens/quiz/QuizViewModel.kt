@@ -61,11 +61,15 @@ class QuizViewModel @Inject constructor(
         }
         currentSound?.let {
             _quizEvent.emit(QuizEventState.SoundReady(getButtonOptions(it)))
+            playSoundFromSoundModel(it)
+        }
+    }
 
+    private fun playSoundFromSoundModel(currentSound: SoundModel?){
+        currentSound?.let {
             if(it.isLocal){
                 val resourceId = SoundFileMapper.map[it.spellName]
                 if(resourceId == null){
-                    playNextSound()
                     return
                 }
                 val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
@@ -73,8 +77,6 @@ class QuizViewModel @Inject constructor(
             }else{
                 if(it.soundFileLink.isNotEmpty()) {
                     soundPlayer.playSound(it.soundFileLink)
-                }else{
-                    playNextSound()
                 }
             }
         }
@@ -101,7 +103,8 @@ class QuizViewModel @Inject constructor(
     }
 
     fun playSound() {
-        soundPlayer.playSound(currentSound?.soundFileLink!!)
+        playSoundFromSoundModel(currentSound)
+//        soundPlayer.playSound(currentSound?.soundFileLink!!)
 //        if(!mediaPlayer.isPlaying){
 //            mediaPlayer.start()
 //        }

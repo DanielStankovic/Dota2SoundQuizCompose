@@ -154,11 +154,15 @@ class InvokerViewModel @Inject constructor(
 
         currentSound?.let {
 //            soundPlayer.playSound(it.soundFileLink)
+            playSoundFromSoundModel(it)
+        }
+    }
 
+    private fun playSoundFromSoundModel(currentSound: SoundModel?){
+        currentSound?.let {
             if(it.isLocal){
                 val resourceId = SoundFileMapper.map[it.spellName]
                 if(resourceId == null){
-                    playNextSound()
                     return
                 }
                 val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
@@ -166,8 +170,6 @@ class InvokerViewModel @Inject constructor(
             }else{
                 if(it.soundFileLink.isNotEmpty()) {
                     soundPlayer.playSound(it.soundFileLink)
-                }else{
-                    playNextSound()
                 }
             }
         }
@@ -231,7 +233,8 @@ class InvokerViewModel @Inject constructor(
     }
 
     fun playSound() {
-        soundPlayer.playSound(currentSound?.soundFileLink!!)
+        playSoundFromSoundModel(currentSound)
+//        soundPlayer.playSound(currentSound?.soundFileLink!!)
     }
 }
 

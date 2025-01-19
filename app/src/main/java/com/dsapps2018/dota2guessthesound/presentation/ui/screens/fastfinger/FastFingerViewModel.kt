@@ -69,21 +69,7 @@ class FastFingerViewModel @Inject constructor(
 
 //            soundPlayer.playSound(it.soundFileLink)
 
-            if(it.isLocal){
-                val resourceId = SoundFileMapper.map[it.spellName]
-                if(resourceId == null){
-                    playNextSound()
-                    return
-                }
-                val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
-                soundPlayer.playSoundFromResource(uri)
-            }else{
-                if(it.soundFileLink.isNotEmpty()) {
-                    soundPlayer.playSound(it.soundFileLink)
-                }else{
-                    playNextSound()
-                }
-            }
+            playSoundFromSoundModel(it)
         }
     }
     private fun getNextSound(): SoundModel? {
@@ -106,8 +92,26 @@ class FastFingerViewModel @Inject constructor(
         return uniqueOptions.shuffled() // Shuffle to randomize button order
     }
 
+    private fun playSoundFromSoundModel(currentSound: SoundModel?){
+        currentSound?.let {
+            if(it.isLocal){
+                val resourceId = SoundFileMapper.map[it.spellName]
+                if(resourceId == null){
+                    return
+                }
+                val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
+                soundPlayer.playSoundFromResource(uri)
+            }else{
+                if(it.soundFileLink.isNotEmpty()) {
+                    soundPlayer.playSound(it.soundFileLink)
+                }
+            }
+        }
+    }
+
     fun playSound(){
-        soundPlayer.playSound(currentSound?.soundFileLink!!)
+        playSoundFromSoundModel(currentSound)
+//        soundPlayer.playSound(currentSound?.soundFileLink!!)
     }
 
     fun onAnswerClicked(answer: String){
