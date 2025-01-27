@@ -23,6 +23,9 @@
     //Quiz Screen
     <string name="score">Score: %1$d</string>
     <string name="you_score_lbl">Your score is</string>
+    <string name="game_over_lbl">Game Over</string>
+    <string name="watch_add_to_continue_msg">Don\'t give up—watch longer video ad to get a second chance and keep playing!</string>
+
 
 
     //Play Again Screen
