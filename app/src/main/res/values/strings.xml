@@ -39,6 +39,7 @@
     <string name="quiz_lbl">Quiz</string>
     <string name="fast_finger_lbl">Fast Finger</string>
     <string name="invoker_lbl">Invoker</string>
+    <string name="daily_joke_lbl">Daily Joke</string>
     <string name="permission_required_lbl">Permission Required</string>
     <string name="permission_msg">Notification Permission is required if you want to the receive latest news about the Dota 2 Sound Quiz and its updates.</string>
     <string name="permission_msg_rationale">You can Allow notifications from Settings if you want to receive the latest news about the Dota 2 Sound Quiz and its updates.</string>

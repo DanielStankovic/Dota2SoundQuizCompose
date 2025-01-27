@@ -15,7 +15,7 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val MAX_INDEX = 2
+        private const val MAX_INDEX = 3
     }
 
     private val _currentIndex = MutableStateFlow(0)
@@ -46,6 +46,10 @@ class HomeViewModel @Inject constructor(
         val currentTimestamp = System.currentTimeMillis()
 
         return (currentTimestamp - savedTimestamp) >= TEN_DAYS_MILLIS
+    }
+
+    fun moveToJokeIndex() {
+        _currentIndex.value = 3
     }
 
 }

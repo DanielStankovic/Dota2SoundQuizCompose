@@ -1,6 +1,7 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -8,6 +9,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -21,20 +23,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -53,12 +51,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -73,11 +68,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
-import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.openDiscordInviteLink
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedIcon
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatusComposable
-import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.coininfo.CoinInfoDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.profile.AuthEvent
@@ -91,12 +85,14 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import io.github.jan.supabase.auth.status.SessionStatus
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     onQuizClicked: () -> Unit,
     onFastFingerClicked: () -> Unit,
     onInvokerClicked: () -> Unit,
+    onJokeClicked: () -> Unit,
     onOptionsClicked: () -> Unit,
     onProfileClicked: () -> Unit,
     onQuestionClicked: () -> Unit,
@@ -177,8 +173,7 @@ fun HomeScreen(
     Scaffold(contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         snackbarHost = {
             SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.padding(
+                hostState = snackbarHostState, modifier = Modifier.padding(
                     bottom = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                         context, currentScreenWidth
                     ).height.dp
@@ -275,154 +270,128 @@ fun HomeScreen(
                                     }
                                 })
                         Spacer(Modifier.weight(1f))
-                        Text(
-                            userData.coinValue.toString(),
-                            color = Color.White,
-                            fontSize = 30.sp,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Image(painter = painterResource(R.drawable.coin_blank),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clickable {
-                                    showCoinInfoDialog = true
-                                })
+                        AnimatedIcon(currentIndex)
+
                     }
 
-                    Row(
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(horizontal = 4.dp)
-                            .padding(bottom = 30.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(horizontal = 4.dp),
                     ) {
-                        ArrowButton(false, currentIndex) {
-                            shouldAnimate = true
-                            isFlippingForward = false
-                            homeViewModel.moveLeft()
-                        }
-
-                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                            when (currentIndex) {
-                                0 -> {
-                                    MenuButton(
-                                        modifier = Modifier
-                                            .wrapContentHeight()
-                                            .graphicsLayer {
-                                                rotationY = animatedRotationY
-                                                cameraDistance = 30f
-
-                                            },
-                                        paddingValues = PaddingValues(
-                                            horizontal = 30.dp
-                                        ),
-                                        maxLines = 1,
-                                        text = stringResource(R.string.quiz_lbl),
-                                        textColor = Color.White,
-                                        contentScale = ContentScale.Fit,
-                                    ) {
+                        when (currentIndex) {
+                            0 -> {
+                                HomeQuizComposable(currentIndex = currentIndex,
+                                    animatedRotationY = animatedRotationY,
+                                    setShouldAnimate = { boolValue ->
+                                        shouldAnimate = boolValue
+                                    },
+                                    setIsFlippingForward = { boolValue ->
+                                        isFlippingForward = boolValue
+                                    },
+                                    onMoveLeft = {
+                                        homeViewModel.moveLeft()
+                                    },
+                                    onMoveRight = {
+                                        homeViewModel.moveRight()
+                                    },
+                                    onQuizClicked = {
                                         onQuizClicked()
-                                    }
-                                }
+                                    },
+                                    onMoveToJokeScreen = {
+                                        homeViewModel.moveToJokeIndex()
+                                    })
+                            }
 
-                                1 -> {
-                                    MenuButton(
-                                        modifier = Modifier
-                                            .wrapContentHeight()
-                                            .graphicsLayer {
-                                                rotationY = animatedRotationY
-                                                cameraDistance = 30f
-                                            },
-                                        paddingValues = PaddingValues(
-                                            horizontal = 30.dp
-                                        ),
-                                        maxLines = 1,
-                                        text = stringResource(R.string.fast_finger_lbl),
-                                        textColor = Color.White,
-                                        contentScale = ContentScale.Fit
-                                    ) {
+                            1 -> {
+                                HomeFastFingerComposable(currentIndex = currentIndex,
+                                    animatedRotationY = animatedRotationY,
+                                    setShouldAnimate = { boolValue ->
+                                        shouldAnimate = boolValue
+                                    },
+                                    setIsFlippingForward = { boolValue ->
+                                        isFlippingForward = boolValue
+                                    },
+                                    onMoveLeft = {
+                                        homeViewModel.moveLeft()
+                                    },
+                                    onMoveRight = {
+                                        homeViewModel.moveRight()
+                                    },
+                                    onFastFingerClicked = {
                                         onFastFingerClicked()
-                                    }
-                                }
+                                    },
+                                    onMoveToJokeScreen = {
+                                        homeViewModel.moveToJokeIndex()
+                                    })
+                            }
 
-                                2 -> {
-                                    Column(
-                                        modifier = Modifier.fillMaxHeight(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Spacer(modifier = Modifier.weight(1f))
-                                        Spacer(modifier = Modifier.height(90.dp))
-                                        Box(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .wrapContentHeight()
-                                        ) {
-                                            MenuButton(modifier = Modifier
-                                                .wrapContentHeight()
-                                                .graphicsLayer {
-                                                    rotationY = animatedRotationY
-                                                    cameraDistance = 30f
-                                                }
-                                                .align(Alignment.Center),
-                                                paddingValues = PaddingValues(
-                                                    horizontal = 30.dp
-                                                ),
-                                                enabled = userData.coinValue >= Constants.INVOKER_COIN_COST,
-                                                maxLines = 1,
-                                                text = stringResource(R.string.invoker_lbl),
-                                                textColor = Color.White,
-                                                contentScale = ContentScale.Fit) {
-                                                onInvokerClicked()
-                                            }
-                                            Image(painter = painterResource(R.drawable.coin_70),
-                                                contentDescription = null,
-                                                modifier = Modifier
-                                                    .padding(start = 25.dp)
-                                                    .offset(y = (-10).dp)
-                                                    .size(40.dp)
-                                                    .rotate(-45f)
-                                                    .clickable {
-                                                        showCoinInfoDialog = true
-                                                    }
-                                                    .align(Alignment.TopStart)
-
-                                            )
-                                        }
-                                        if (isRewardedReady) {
-                                            Image(painter = painterResource(R.drawable.watch_video_btn),
-                                                contentDescription = null,
-                                                modifier = Modifier
-                                                    .offset(y = 40.dp)
-                                                    .clickable {
-                                                        showRewardedAd(context, onRewarded = {
-                                                            authViewModel.updateCoinValue(Constants.INVOKER_COIN_COST)
-                                                        }, onAdDismissed = {})
-                                                    }
-                                                    .height(90.dp)
-                                                    .width(200.dp)
-                                                    .scale(scale)
-                                                    .alpha(alpha))
-                                        } else {
-                                            Spacer(modifier = Modifier.height(90.dp))
-                                        }
-                                        Spacer(modifier = Modifier.weight(1f))
+                            2 -> {
+                                HomeInvokerComposable(currentIndex = currentIndex,
+                                    animatedRotationY = animatedRotationY,
+                                    isRewardedReady = isRewardedReady,
+                                    userCoinValue = userData.coinValue,
+                                    scale = scale,
+                                    alpha = alpha,
+                                    setShouldAnimate = { boolValue ->
+                                        shouldAnimate = boolValue
+                                    },
+                                    setIsFlippingForward = { boolValue ->
+                                        isFlippingForward = boolValue
+                                    },
+                                    setShowCoinInfoDialog = { boolValue ->
+                                        showCoinInfoDialog = boolValue
+                                    },
+                                    onMoveLeft = {
+                                        homeViewModel.moveLeft()
+                                    },
+                                    onMoveRight = {
+                                        homeViewModel.moveRight()
+                                    },
+                                    onInvokerClicked = {
+                                        onInvokerClicked()
+                                    },
+                                    updateCoinValue = { value ->
+                                        authViewModel.updateCoinValue(
+                                            value
+                                        )
                                     }
 
-                                }
+                                )
+                            }
+
+                            3 -> {
+                                HomeJokeComposable(currentIndex = currentIndex,
+                                    animatedRotationY = animatedRotationY,
+                                    isRewardedReady = isRewardedReady,
+                                    scale = scale,
+                                    alpha = alpha,
+                                    setShouldAnimate = { boolValue ->
+                                        shouldAnimate = boolValue
+                                    },
+                                    setIsFlippingForward = { boolValue ->
+                                        isFlippingForward = boolValue
+                                    },
+                                    setShowCoinInfoDialog = { boolValue ->
+                                        showCoinInfoDialog = boolValue
+                                    },
+                                    onMoveLeft = {
+                                        homeViewModel.moveLeft()
+                                    },
+                                    onMoveRight = {
+                                        homeViewModel.moveRight()
+                                    },
+                                    onJokeClicked = {
+                                        onJokeClicked()
+                                    },
+                                    updateJokeCoinValue = { value ->
+
+                                    })
                             }
                         }
 
-                        ArrowButton(true, currentIndex) {
-                            shouldAnimate = true
-                            isFlippingForward = true
-                            homeViewModel.moveRight()
-                        }
+
                     }
 
                     Row(
@@ -562,7 +531,7 @@ fun ArrowButton(isRightArrow: Boolean, currentIndex: Int, onClick: () -> Unit) {
 
 fun isArrowEnabled(isRightArrow: Boolean, currentIndex: Int): Boolean {
     return if (isRightArrow) {
-        currentIndex < 2
+        currentIndex < 3
     } else {
         currentIndex > 0
     }

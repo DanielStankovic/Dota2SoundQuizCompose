@@ -13,6 +13,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.Pick
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.joke.JokeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.LeaderboardScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.leaderboardhistory.LeaderboardHistoryScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.AttributionScreen
@@ -59,6 +60,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onInvokerClicked = {
                     navController.navigate(InvokerExplanationDestination)
+                },
+                onJokeClicked = {
+                    navController.navigate(JokeDestination)
                 },
                 onOptionsClicked = {
                     navController.navigate(OptionsDestination)
@@ -268,6 +272,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                     navController.navigate(LeaderboardDestination(leaderboardId))
                 }
             )
+        }
+
+        composable<JokeDestination> {
+            JokeScreen()
         }
     }
 }

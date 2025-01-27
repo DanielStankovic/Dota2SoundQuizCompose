@@ -25,6 +25,7 @@ object Constants {
     const val FF_30_SCORE_MIN = 3.0
     const val FF_60_SCORE_MIN = 8.0
     const val FF_90_SCORE_MIN = 18.0
+    const val JOKE_COIN_COST = 1
 
     const val LAST_SYNC_KEY = "last_sync"
 
