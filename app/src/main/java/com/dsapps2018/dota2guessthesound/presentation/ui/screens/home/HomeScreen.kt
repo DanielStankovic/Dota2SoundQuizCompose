@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -75,6 +76,7 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.findActivity
 import com.dsapps2018.dota2guessthesound.data.util.openDiscordInviteLink
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatusComposable
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
@@ -126,6 +128,11 @@ fun HomeScreen(
         finishedListener = { shouldAnimate = false },
         label = "RotatingButton"
     )
+
+
+    BackHandler {
+        context.findActivity()?.finish()
+    }
 
     LaunchedEffect(currentIndex) {
         if (shouldAnimate) {
