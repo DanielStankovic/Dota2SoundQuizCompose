@@ -61,3 +61,6 @@ object FaqDestination
 
 @Serializable
 object LeaderboardHistoryDestination
+
+@Serializable
+object SpinWheelDestination

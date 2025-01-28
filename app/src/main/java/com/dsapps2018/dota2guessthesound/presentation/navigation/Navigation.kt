@@ -24,6 +24,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.playagain.PlayA
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.profile.ProfileScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz.QuizScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.rewards.RewardsScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.spinwheel.SpinWheelScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen.SyncScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen.forceupdate.ForceUpdateScreen
 
@@ -67,7 +68,8 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                     navController.navigate(ProfileDestination)
                 },
                 onQuestionClicked = {
-                    navController.navigate(FaqDestination)
+                    navController.navigate(SpinWheelDestination)
+//                    navController.navigate(FaqDestination)
                 },
                 onLeaderboardClicked = {
                     navController.navigate(LeaderboardDestination(null))
@@ -268,6 +270,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                     navController.navigate(LeaderboardDestination(leaderboardId))
                 }
             )
+        }
+
+        composable<SpinWheelDestination> {
+            SpinWheelScreen()
         }
     }
 }
