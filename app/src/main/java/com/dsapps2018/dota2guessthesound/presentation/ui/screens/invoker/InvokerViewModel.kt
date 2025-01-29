@@ -62,6 +62,9 @@ class InvokerViewModel @Inject constructor(
     private val _isTimerRunning = MutableStateFlow(true)
     val isTimerRunning = _isTimerRunning.asStateFlow()
 
+    private val _canInvoke = MutableStateFlow(false)
+    val canInvoke = _canInvoke.asStateFlow()
+
     private val _gameTimer = MutableStateFlow(0)
     val gameTimer = _gameTimer.asStateFlow()
 
@@ -91,6 +94,7 @@ class InvokerViewModel @Inject constructor(
                 delay(2000L)
                 resetTimer()
                 playNextSound()
+                _canInvoke.value = true
             }
         }
     }

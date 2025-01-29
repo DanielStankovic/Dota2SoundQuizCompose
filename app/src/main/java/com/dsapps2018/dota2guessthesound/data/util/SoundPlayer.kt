@@ -14,6 +14,8 @@ class SoundPlayer(
 
     fun reset() = mediaPlayer.reset()
 
+    fun release() = mediaPlayer.release()
+
     fun stop() = mediaPlayer.stop()
 
     fun playSound(path: String) {

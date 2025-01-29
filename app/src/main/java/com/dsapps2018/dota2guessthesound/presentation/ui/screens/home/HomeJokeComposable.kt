@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.toDp
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 
 @Composable
@@ -46,6 +47,7 @@ fun HomeJokeComposable(
     onMoveLeft: () -> Unit,
     onMoveRight: () -> Unit,
     onJokeClicked: () -> Unit,
+    onJokeSoundClicked: () -> Unit,
     updateJokeCoinValue: (Int) -> Unit
 ) {
     val context = LocalContext.current
@@ -54,18 +56,30 @@ fun HomeJokeComposable(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(
+        Column (
             modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            Image(
+                painter = painterResource(R.drawable.sound_button),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(100.toDp())
+                    .offset(y = (-16).toDp())
+                    .clickable{
+                        onJokeSoundClicked()
+                    }
+            )
             Image(
                 painter = painterResource(R.drawable.ogre_joke),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 20.dp, top = 20.dp),
+                    .padding(bottom = 10.dp),
                 contentScale = ContentScale.Fit
             )
+
         }
 
         Row(
@@ -95,26 +109,28 @@ fun HomeJokeComposable(
                     paddingValues = PaddingValues(
                         horizontal = 30.dp
                     ),
-                    enabled = true,
+                    enabled = false,
+                    isComingSoonBtn = true,
                     maxLines = 1,
                     text = stringResource(R.string.daily_joke_lbl),
                     textColor = Color.White,
                     contentScale = ContentScale.Fit) {
                     onJokeClicked()
                 }
-                Image(painter = painterResource(R.drawable.joke_coin),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 25.dp)
-                        .offset(y = (-10).dp)
-                        .size(40.dp)
-                        .rotate(-45f)
-                        .clickable {
-                            setShowCoinInfoDialog(true)
-                        }
-                        .align(Alignment.TopStart)
-
-                )
+                //TODO Za kasnije kad se ubaci logika
+//                Image(painter = painterResource(R.drawable.joke_coin),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .padding(start = 25.dp)
+//                        .offset(y = (-10).dp)
+//                        .size(40.dp)
+//                        .rotate(-45f)
+//                        .clickable {
+//                            setShowCoinInfoDialog(true)
+//                        }
+//                        .align(Alignment.TopStart)
+//
+//                )
             }
             ArrowButton(true, currentIndex) {
                 setShouldAnimate(true)
@@ -123,25 +139,26 @@ fun HomeJokeComposable(
             }
         }
 
-        Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.Center){
-            if (isRewardedReady) {
-                Image(painter = painterResource(R.drawable.watch_ad_joke),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 20.dp)
-                        .offset(y = 20.dp)
-                        .clickable {
-                            showRewardedAd(context, onRewarded = {
-                                updateJokeCoinValue(Constants.JOKE_COIN_COST)
-                            }, onAdDismissed = {})
-                        }
-                        .scale(scale)
-                        .alpha(alpha))
-            } else {
-                Spacer(modifier = Modifier.fillMaxSize().padding(top = 20.dp))
-            }
+        Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.Center) {
+            //TODO Otkomentarisati
+//            if (isRewardedReady) {
+//                Image(painter = painterResource(R.drawable.watch_ad_joke),
+//                    contentDescription = null,
+//                    contentScale = ContentScale.Fit,
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(top = 20.dp)
+//                        .offset(y = 20.dp)
+//                        .clickable {
+//                            showRewardedAd(context, onRewarded = {
+//                                updateJokeCoinValue(Constants.JOKE_COIN_COST)
+//                            }, onAdDismissed = {})
+//                        }
+//                        .scale(scale)
+//                        .alpha(alpha))
+//            } else {
+//                Spacer(modifier = Modifier.fillMaxSize().padding(top = 20.dp))
+//            }
         }
     }
 }

@@ -56,6 +56,7 @@ fun InvokerScreen(
     val speedLevel by invokerViewModel.speedLevel.collectAsStateWithLifecycle()
     val soundTimer by invokerViewModel.soundTimer.collectAsStateWithLifecycle()
     val maxProgress by invokerViewModel.maxProgress.collectAsStateWithLifecycle()
+    val canInvoke by invokerViewModel.canInvoke.collectAsStateWithLifecycle()
 
     val animatedProgress by animateFloatAsState(
         targetValue = soundTimer / maxProgress.toFloat(),
@@ -266,6 +267,7 @@ fun InvokerScreen(
                         modifier = Modifier
                             .size(80.dp)
                             .clickable {
+                                if(!canInvoke) return@clickable
                                 invokerViewModel.checkAnswer()
                             })
                 }

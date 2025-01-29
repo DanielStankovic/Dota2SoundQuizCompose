@@ -22,6 +22,7 @@ fun MenuButton(
     textColor: Color,
     paddingValues: PaddingValues,
     enabled: Boolean = true,
+    isComingSoonBtn: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     contentScale: ContentScale,
     onClick: () -> Unit
@@ -39,7 +40,7 @@ fun MenuButton(
             )
             .padding(paddingValues)
             .paint(
-                painterResource(id = if (enabled) R.drawable.button_bg else R.drawable.button_disabled_bg),
+                painterResource(id = getButtonImageId(isComingSoonBtn, enabled)),
                 contentScale = contentScale
             ),
         contentAlignment = Alignment.Center
@@ -54,4 +55,9 @@ fun MenuButton(
             modifier = Modifier.padding(8.dp)
         )
     }
+}
+
+private fun getButtonImageId(isComingSoon: Boolean, enabled: Boolean): Int {
+        if(isComingSoon) return R.drawable.fast_finger_coming_soon
+        return if(enabled) R.drawable.button_bg else R.drawable.button_disabled_bg
 }

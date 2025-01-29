@@ -157,6 +157,7 @@ class AuthViewModel @Inject constructor(
     fun updateCoinValue(value: Int) = viewModelScope.launch{
         try {
             userDataRepository.updateCoinValue(value)
+            userDataRepository.syncUserData()
         } catch (e: Exception) {
             firebaseCrashlytics.recordException(e)
             _authEventStatus.emit(AuthEvent.Error(context.getString(R.string.login_error)))

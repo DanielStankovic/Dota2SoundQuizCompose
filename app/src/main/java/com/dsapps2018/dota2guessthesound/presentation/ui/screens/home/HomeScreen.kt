@@ -277,7 +277,23 @@ fun HomeScreen(
                                     }
                                 })
                         Spacer(Modifier.weight(1f))
-                        AnimatedIcon(currentIndex)
+                        Text(
+                            userData.coinValue.toString(),
+                            color = Color.White,
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Image(painter = painterResource(R.drawable.coin_blank),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable {
+                                    showCoinInfoDialog = true
+                                })
+                        //TODO Ovo za kasnije implementacija sa fadein/faceout
+//                        AnimatedIcon(currentIndex)
 
                     }
 
@@ -391,6 +407,9 @@ fun HomeScreen(
                                     },
                                     onJokeClicked = {
                                         onJokeClicked()
+                                    },
+                                    onJokeSoundClicked = {
+                                        homeViewModel.playJokeSound()
                                     },
                                     updateJokeCoinValue = { value ->
 
