@@ -27,6 +27,8 @@ class QuizViewModel @Inject constructor(
     private val networkConnectivityObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
+    var additionalLifeUsed: Boolean = false
+
     private val fullList = mutableListOf<SoundModel>()
     private val playedSounds = mutableListOf<SoundModel>()
     private val remainingSounds = mutableListOf<SoundModel>()
@@ -65,17 +67,17 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-    private fun playSoundFromSoundModel(currentSound: SoundModel?){
+    private fun playSoundFromSoundModel(currentSound: SoundModel?) {
         currentSound?.let {
-            if(it.isLocal){
+            if (it.isLocal) {
                 val resourceId = SoundFileMapper.map[it.spellName]
-                if(resourceId == null){
+                if (resourceId == null) {
                     return
                 }
                 val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
                 soundPlayer.playSoundFromResource(uri)
-            }else{
-                if(it.soundFileLink.isNotEmpty()) {
+            } else {
+                if (it.soundFileLink.isNotEmpty()) {
                     soundPlayer.playSound(it.soundFileLink)
                 }
             }
@@ -136,6 +138,12 @@ class QuizViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         soundPlayer.stop()
+    }
+
+    fun generateAndPlaySound() {
+        viewModelScope.launch {
+            playNextSound()
+        }
     }
 
 }

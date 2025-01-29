@@ -38,12 +38,15 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
+import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.toDp
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedImages
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.WatchAdContinueDialog
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -59,6 +62,7 @@ fun QuizScreen(
     val context = LocalContext.current
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
     val animationTrigger by quizViewModel.triggerAnimation.collectAsStateWithLifecycle()
+    val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
 
     var buttonOptionsList: List<String> by remember {
         mutableStateOf(
@@ -75,6 +79,7 @@ fun QuizScreen(
     }
 
     var showDialog by remember { mutableStateOf(false) }
+    var showWatchAdContinueDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         quizViewModel.quizEvent.collect { quizEvent ->
@@ -89,8 +94,12 @@ fun QuizScreen(
                 }
 
                 QuizEventState.WrongSound -> {
-                    showInterstitial(context) {
-                        onPlayAgain(score, false)
+                    if (!quizViewModel.additionalLifeUsed && isRewardedReady) {
+                        showWatchAdContinueDialog = true
+                    } else {
+                        showInterstitial(context) {
+                            onPlayAgain(score, false)
+                        }
                     }
                 }
 
@@ -120,6 +129,36 @@ fun QuizScreen(
                 messageText = context.getString(R.string.error_connection_lost_msg),
                 optionText = context.getString(R.string.lbl_ok),
                 dismissible = false
+            )
+
+            if (showWatchAdContinueDialog) WatchAdContinueDialog(
+                onDismiss = {
+                    showWatchAdContinueDialog = false
+                },
+                onSkipClicked = {
+                    showWatchAdContinueDialog = false
+                    showInterstitial(context) {
+                        onPlayAgain(score, false)
+                    }
+                },
+                onWatchAdClicked = {
+                    showWatchAdContinueDialog = false
+                    showRewardedAd(context, onRewarded = {
+                        //If we played sound here the sound would play while the
+                        //ad is still fully visible which is bad. This way, we just set the flag
+                        //and check this flag onAdDismissed which is triggered when we close the ad.
+                        //Back button does not work when ad is fully visible, so user can not
+                        //exit the ad and trigger onPlayAgain, but we still include it to safe guard.
+                        quizViewModel.additionalLifeUsed = true
+
+                    }, onAdDismissed = {
+                        if (quizViewModel.additionalLifeUsed) {
+                            quizViewModel.generateAndPlaySound()
+                        } else {
+                            onPlayAgain(score, false)
+                        }
+                    })
+                }
             )
 
             Box(
@@ -245,12 +284,16 @@ fun QuizScreen(
                         }
                     }
 
-                    Box(modifier = Modifier
-                        .padding(top = 40.dp)
-                        .fillMaxWidth()
-                        .height(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                            context, currentScreenWidth
-                        ).height.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 40.dp)
+                            .fillMaxWidth()
+                            .height(
+                                AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                                    context, currentScreenWidth
+                                ).height.dp
+                            )
+                    ) {
                         AndroidView(
                             // on below line specifying width for ads.
                             factory = { context ->
