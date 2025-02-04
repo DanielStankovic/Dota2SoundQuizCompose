@@ -64,25 +64,6 @@ class SyncRepository @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun syncRemoteConfig(): ConfigDto {
-        return try {
-
-            postgrest.from(Constants.TABLE_CONFIG).select(
-                Columns.raw(
-                    """
-            forced_version: data->forced_version,
-            delete_version: data->delete_version,
-            recommended_version: data->recommended_version
-            """
-                        .trimIndent()
-                )
-            ).decodeSingle<ConfigDto>()
-
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
     suspend fun syncCasterType() {
         try {
             val modifiedDate = casterTypeDao.getModifiedDate() ?: getInitialModifiedDate()

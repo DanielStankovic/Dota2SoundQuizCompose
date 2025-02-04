@@ -10,7 +10,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -72,7 +71,6 @@ import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.findActivity
 import com.dsapps2018.dota2guessthesound.data.util.openDiscordInviteLink
-import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedIcon
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatusComposable
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.coininfo.CoinInfoDialog
@@ -99,6 +97,7 @@ fun HomeScreen(
     onProfileClicked: () -> Unit,
     onQuestionClicked: () -> Unit,
     onLeaderboardClicked: () -> Unit,
+    onUpdateRequired: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
@@ -111,12 +110,15 @@ fun HomeScreen(
     val lastSyncDate by authViewModel.modifiedDateFlow.collectAsStateWithLifecycle()
     val currentIndex by homeViewModel.currentIndex.collectAsStateWithLifecycle()
     val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
-
+    val updateRequiredStatus by homeViewModel.updateRequiredStatus.collectAsStateWithLifecycle()
     var targetRotation by remember { mutableFloatStateOf(0f) }
     var isFlippingForward by remember { mutableStateOf(true) }
     var shouldAnimate by remember { mutableStateOf(false) }
     var showCoinInfoDialog by remember { mutableStateOf(false) }
 
+    if (updateRequiredStatus) {
+        onUpdateRequired()
+    }
 
     val animatedRotationY by animateFloatAsState(
         targetValue = targetRotation,
@@ -174,6 +176,10 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    LaunchedEffect(true) {
+        homeViewModel.checkForcedVersion()
     }
 
 

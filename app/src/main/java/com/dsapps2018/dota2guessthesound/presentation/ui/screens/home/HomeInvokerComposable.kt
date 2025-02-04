@@ -113,7 +113,7 @@ fun HomeInvokerComposable(
                     contentScale = ContentScale.Fit) {
                     onInvokerClicked()
                 }
-                Image(painter = painterResource(R.drawable.coin_70),
+                Image(painter = painterResource(R.drawable.coin_200),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 25.dp)

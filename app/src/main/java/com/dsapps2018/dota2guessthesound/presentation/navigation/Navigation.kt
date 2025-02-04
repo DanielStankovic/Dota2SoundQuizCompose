@@ -75,6 +75,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onLeaderboardClicked = {
                     navController.navigate(LeaderboardDestination(null))
+                },
+                onUpdateRequired = {
+                    navController.navigate(ForceUpdateDestination)
                 }
             )
         }

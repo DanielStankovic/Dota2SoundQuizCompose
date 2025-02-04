@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.SyncRepository
 import com.dsapps2018.dota2guessthesound.data.repository.UserDataRepository
+import com.dsapps2018.dota2guessthesound.data.util.Constants.FORCED_VERSION_TAG
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -31,6 +33,7 @@ class SyncScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sharedPreferences: SharedPreferences,
     private val syncRepository: SyncRepository,
+    private val configRepository: ConfigRepository,
     private val userDataRepository: UserDataRepository,
     private val leaderboardRepository: LeaderboardRepository,
     private val firebaseCrashlytics: FirebaseCrashlytics
@@ -114,7 +117,9 @@ class SyncScreenViewModel @Inject constructor(
             delay(1000L)
 
             sendNextEvent()
-            val configDto = syncRepository.syncRemoteConfig()
+            val configDto = configRepository.getRemoteConfig()
+            val currentTimestamp = System.currentTimeMillis()
+            sharedPreferences.edit().putLong(FORCED_VERSION_TAG, currentTimestamp).apply()
             if (configDto.forcedVersion > BuildConfig.VERSION_CODE) {
                 _progressStatus.emit(ProgressUpdateEvent.ProgressUpdateRequired)
                 return@launch
