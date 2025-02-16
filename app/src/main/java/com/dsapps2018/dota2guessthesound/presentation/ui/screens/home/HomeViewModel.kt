@@ -36,7 +36,7 @@ class HomeViewModel @Inject constructor(
     val updateRequiredStatus = _updateRequiredStatus.asStateFlow()
 
     companion object {
-        private const val MAX_INDEX = 3
+        private const val MAX_INDEX = 4
     }
 
     val coroutineExceptionHandler: CoroutineExceptionHandler =
@@ -76,7 +76,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun moveToJokeIndex() {
-        _currentIndex.value = 3
+        _currentIndex.value = 4
     }
 
     fun playJokeSound() {

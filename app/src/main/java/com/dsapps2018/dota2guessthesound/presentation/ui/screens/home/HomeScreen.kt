@@ -91,6 +91,7 @@ import io.github.jan.supabase.auth.status.SessionStatus
 fun HomeScreen(
     onQuizClicked: () -> Unit,
     onFastFingerClicked: () -> Unit,
+    onJourneyClicked: () -> Unit,
     onInvokerClicked: () -> Unit,
     onJokeClicked: () -> Unit,
     onOptionsClicked: () -> Unit,
@@ -357,6 +358,27 @@ fun HomeScreen(
                             }
 
                             2 -> {
+                                HomeJourneyComposable(currentIndex = currentIndex,
+                                    isLoggedIn = authState is SessionStatus.Authenticated ,
+                                    animatedRotationY = animatedRotationY,
+                                    setShouldAnimate = { boolValue ->
+                                        shouldAnimate = boolValue
+                                    },
+                                    setIsFlippingForward = { boolValue ->
+                                        isFlippingForward = boolValue
+                                    },
+                                    onMoveLeft = {
+                                        homeViewModel.moveLeft()
+                                    },
+                                    onMoveRight = {
+                                        homeViewModel.moveRight()
+                                    },
+                                    onJourneyClicked = {
+                                        onJourneyClicked()
+                                    })
+                            }
+
+                            3 -> {
                                 HomeInvokerComposable(currentIndex = currentIndex,
                                     animatedRotationY = animatedRotationY,
                                     isRewardedReady = isRewardedReady,
@@ -390,7 +412,7 @@ fun HomeScreen(
                                 )
                             }
 
-                            3 -> {
+                            4 -> {
                                 HomeJokeComposable(currentIndex = currentIndex,
                                     animatedRotationY = animatedRotationY,
                                     isRewardedReady = isRewardedReady,
@@ -563,7 +585,7 @@ fun ArrowButton(isRightArrow: Boolean, currentIndex: Int, onClick: () -> Unit) {
 
 fun isArrowEnabled(isRightArrow: Boolean, currentIndex: Int): Boolean {
     return if (isRightArrow) {
-        currentIndex < 3
+        currentIndex < 4
     } else {
         currentIndex > 0
     }

@@ -14,6 +14,8 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.joke.JokeScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.JourneyGameScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.JourneyLevelScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.LeaderboardScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.leaderboardhistory.LeaderboardHistoryScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.AttributionScreen
@@ -34,80 +36,63 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = SyncDestination) {
 
         composable<SyncDestination> {
-            SyncScreen(
-                onUpdateRequired = {
-                    navController.navigate(ForceUpdateDestination)
-                },
-                onSyncFinished = {
-                    navController.navigate(HomeDestination) {
-                        popUpTo<SyncDestination> {
-                            inclusive = true
-                            saveState = false
-                        }
-                        restoreState = false
+            SyncScreen(onUpdateRequired = {
+                navController.navigate(ForceUpdateDestination)
+            }, onSyncFinished = {
+                navController.navigate(HomeDestination) {
+                    popUpTo<SyncDestination> {
+                        inclusive = true
+                        saveState = false
                     }
+                    restoreState = false
                 }
-            )
+            })
         }
 
         composable<HomeDestination> {
-            HomeScreen(
-                onQuizClicked = {
-                    navController.navigate(QuizModeDestination)
-                },
-                onFastFingerClicked = {
-                    navController.navigate(PickTimeDestination)
-                },
-                onInvokerClicked = {
-                    navController.navigate(InvokerExplanationDestination)
-                },
-                onJokeClicked = {
-                    navController.navigate(JokeDestination)
-                },
-                onOptionsClicked = {
-                    navController.navigate(OptionsDestination)
-                },
-                onProfileClicked = {
-                    navController.navigate(ProfileDestination)
-                },
-                onQuestionClicked = {
-                    navController.navigate(FaqDestination)
-                },
-                onLeaderboardClicked = {
-                    navController.navigate(LeaderboardDestination(null))
-                },
-                onUpdateRequired = {
-                    navController.navigate(ForceUpdateDestination)
-                }
-            )
+            HomeScreen(onQuizClicked = {
+                navController.navigate(QuizModeDestination)
+            }, onFastFingerClicked = {
+                navController.navigate(PickTimeDestination)
+            }, onJourneyClicked = {
+                navController.navigate(JourneyLevelDestination)
+            }, onInvokerClicked = {
+                navController.navigate(InvokerExplanationDestination)
+            }, onJokeClicked = {
+                navController.navigate(JokeDestination)
+            }, onOptionsClicked = {
+                navController.navigate(OptionsDestination)
+            }, onProfileClicked = {
+                navController.navigate(ProfileDestination)
+            }, onQuestionClicked = {
+                navController.navigate(FaqDestination)
+            }, onLeaderboardClicked = {
+                navController.navigate(LeaderboardDestination(null))
+            }, onUpdateRequired = {
+                navController.navigate(ForceUpdateDestination)
+            })
         }
 
         composable<QuizModeDestination> {
-            QuizScreen(
-                onPlayAgain = { score, answeredAll ->
-                    navController.navigate(route = PlayAgainDestination(score, answeredAll)) {
-                        popUpTo<HomeDestination> {
-                            inclusive = false
-                            saveState = false
-                        }
-                        restoreState = false
+            QuizScreen(onPlayAgain = { score, answeredAll ->
+                navController.navigate(route = PlayAgainDestination(score, answeredAll)) {
+                    popUpTo<HomeDestination> {
+                        inclusive = false
+                        saveState = false
                     }
+                    restoreState = false
                 }
-            )
+            })
         }
 
         composable<FastFingerModeDestination> { backStackEntry ->
             val fastFingerDestination: FastFingerModeDestination = backStackEntry.toRoute()
 
-            FastFingerScreen(
-                initialTime = fastFingerDestination.time,
+            FastFingerScreen(initialTime = fastFingerDestination.time,
                 onPlayAgain = { scoreGuessed, scoreTotal, time, answeredAll ->
                     navController.navigate(
                         route = PlayAgainFastFingerDestination(
-                            scoreGuessed,
-                            scoreTotal,
-                            time,
-                            answeredAll
+                            scoreGuessed, scoreTotal, time, answeredAll
                         )
                     ) {
                         popUpTo<HomeDestination> {
@@ -120,17 +105,15 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         }
 
         composable<PickTimeDestination> {
-            PickTimeScreen(
-                onPlayClicked = { time ->
-                    navController.navigate(route = FastFingerModeDestination(time)) {
-                        popUpTo<HomeDestination> {
-                            inclusive = false
-                            saveState = false
-                        }
-                        restoreState = false
+            PickTimeScreen(onPlayClicked = { time ->
+                navController.navigate(route = FastFingerModeDestination(time)) {
+                    popUpTo<HomeDestination> {
+                        inclusive = false
+                        saveState = false
                     }
+                    restoreState = false
                 }
-            )
+            })
         }
 
         composable<InvokerExplanationDestination> {
@@ -164,8 +147,7 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         composable<PlayAgainDestination> { backStackEntry ->
             val playAgainDestination: PlayAgainDestination = backStackEntry.toRoute()
 
-            PlayAgainScreen(
-                score = playAgainDestination.score,
+            PlayAgainScreen(score = playAgainDestination.score,
                 answeredAll = playAgainDestination.answeredAll,
                 onPlayAgain = {
                     navController.navigate(route = QuizModeDestination) {
@@ -182,8 +164,7 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             val playAgainFastFingerDestination: PlayAgainFastFingerDestination =
                 backStackEntry.toRoute()
 
-            PlayAgainFastFingerScreen(
-                scoreGuessed = playAgainFastFingerDestination.scoreGuessed,
+            PlayAgainFastFingerScreen(scoreGuessed = playAgainFastFingerDestination.scoreGuessed,
                 scoreTotal = playAgainFastFingerDestination.scoreTotal,
                 answeredAll = playAgainFastFingerDestination.answeredAll,
                 time = playAgainFastFingerDestination.time,
@@ -201,28 +182,21 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         composable<PlayAgainInvokerDestination> { backStackEntry ->
             val playAgainInvokerDestination: PlayAgainInvokerDestination = backStackEntry.toRoute()
 
-            PlayAgainInvokerScreen(
-                score = playAgainInvokerDestination.score,
-                onPlayAgain = {
-                    navController.popBackStack(route = HomeDestination, false)
-                })
+            PlayAgainInvokerScreen(score = playAgainInvokerDestination.score, onPlayAgain = {
+                navController.popBackStack(route = HomeDestination, false)
+            })
         }
 
         composable<OptionsDestination> {
-            OptionsScreen(
-                onProfileClick = {
-                    navController.navigate(route = ProfileDestination)
-                },
-                onPrivacyPolicyClick = {
-                    navController.navigate(route = PrivacyDestination)
-                },
-                onChangelogClick = {
-                    navController.navigate(route = ChangelogDestination)
-                },
-                onAttributionsClicked = {
-                    navController.navigate(route = AttributionDestination)
-                }
-            )
+            OptionsScreen(onProfileClick = {
+                navController.navigate(route = ProfileDestination)
+            }, onPrivacyPolicyClick = {
+                navController.navigate(route = PrivacyDestination)
+            }, onChangelogClick = {
+                navController.navigate(route = ChangelogDestination)
+            }, onAttributionsClicked = {
+                navController.navigate(route = AttributionDestination)
+            })
         }
 
         composable<PrivacyDestination> {
@@ -245,8 +219,7 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
 
             val leaderboardDestination: LeaderboardDestination = backStackEntry.toRoute()
 
-            LeaderboardScreen(
-                isHistory = leaderboardDestination.leaderboardId != null,
+            LeaderboardScreen(isHistory = leaderboardDestination.leaderboardId != null,
                 onHistoryClicked = {
                     navController.navigate(route = LeaderboardHistoryDestination)
                 },
@@ -270,15 +243,23 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         }
 
         composable<LeaderboardHistoryDestination> {
-            LeaderboardHistoryScreen(
-                onLeaderboardClicked = { leaderboardId ->
-                    navController.navigate(LeaderboardDestination(leaderboardId))
-                }
-            )
+            LeaderboardHistoryScreen(onLeaderboardClicked = { leaderboardId ->
+                navController.navigate(LeaderboardDestination(leaderboardId))
+            })
         }
 
         composable<JokeDestination> {
             JokeScreen()
+        }
+
+        composable<JourneyLevelDestination> {
+            JourneyLevelScreen { levelNum ->
+                navController.navigate(JourneyGameDestination(levelNum))
+            }
+        }
+
+        composable<JourneyGameDestination> {
+            JourneyGameScreen()
         }
     }
 }

@@ -64,3 +64,9 @@ object LeaderboardHistoryDestination
 
 @Serializable
 object JokeDestination
+
+@Serializable
+object JourneyLevelDestination
+
+@Serializable
+data class JourneyGameDestination(val levelNum: Int)

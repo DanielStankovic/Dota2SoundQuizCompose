@@ -41,6 +41,7 @@
     //Home Screen
     <string name="quiz_lbl">Quiz</string>
     <string name="fast_finger_lbl">Fast Finger</string>
+    <string name="hero_journey_lbl">Hero\'s Journey</string>
     <string name="invoker_lbl">Invoker</string>
     <string name="daily_joke_lbl">Daily Joke</string>
     <string name="permission_required_lbl">Permission Required</string>
