@@ -32,6 +32,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    sourceSets.getByName("main") {
+        res.setSrcDirs(listOf("src/main/res", "src/main/hero_images"))
+    }
+
     room {
         schemaDirectory("$projectDir/schemas")
     }

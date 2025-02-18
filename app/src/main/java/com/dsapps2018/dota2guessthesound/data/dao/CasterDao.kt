@@ -27,4 +27,7 @@ interface CasterDao {
     @Query("DELETE FROM Caster")
     suspend fun truncateTable()
 
+    @Query("SELECT name FROM Caster WHERE id IN (:heroIds) and isActive = 1")
+    suspend fun getCasterNames(heroIds: List<Int>): List<String>
+
 }

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
+import com.dsapps2018.dota2guessthesound.data.model.JourneySoundModel
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
 import kotlinx.coroutines.flow.Flow
 
@@ -16,7 +17,7 @@ interface SoundDao {
     suspend fun getModifiedDate(): String?
 
     @Transaction
-    suspend fun insertAllTransaction(list: List<SoundEntity>){
+    suspend fun insertAllTransaction(list: List<SoundEntity>) {
         list.chunked(50).forEach { chunk ->
             insertAll(chunk)
         }
@@ -42,5 +43,8 @@ interface SoundDao {
 
     @Query("SELECT s.id, s.spellName, s.soundFileLink, s.isLocal FROM Sound s INNER JOIN Caster c ON c.id = s.casterId WHERE c.name LIKE '%Invoker%' AND s.spellName NOT LIKE '%Invoke%'")
     fun getInvokerSounds(): Flow<List<SoundModel>>
+
+    @Query("SELECT  s.id, s.spellName, s.soundFileLink, s.isLocal, CASE WHEN c.id IS NULL THEN 0 ELSE 1 END  AS isCorrectSound FROM Sound s LEFT JOIN Caster c ON c.id = s.casterId AND c.id IN (:heroIds) WHERE s.isActive = 1")
+    suspend fun getJourneySounds(heroIds: List<Int>): List<JourneySoundModel>
 
 }

@@ -36,11 +36,12 @@ fun JourneyLevelScreen(
                     )
                     .paint(
                         painterResource(id = R.drawable.journey_bg),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.FillBounds
                     ),
 
                 ) {
                 Column(
+                    modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically)
                 ) {

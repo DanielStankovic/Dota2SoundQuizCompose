@@ -21,6 +21,11 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideResources(@ApplicationContext context: Context) =
+        context.resources
+
+    @Provides
+    @Singleton
     fun provideSharedPrefs(@ApplicationContext context: Context) =
         context.getSharedPreferences("Dota2SharedPrefs", Context.MODE_PRIVATE)
 
