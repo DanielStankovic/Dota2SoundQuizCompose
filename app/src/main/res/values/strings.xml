@@ -129,6 +129,7 @@
     //JourneyGame Screen
     <string name="level_fetch_error">Error getting Level data from the server.\n\nTry again…</string>
     <string name="level_no_data">No data added for the current Level.\n\nPlease, check again later…</string>
+    <string name="sounds_selected_total">Sounds: %1$d / %2$d</string>
 
 
 </resources>

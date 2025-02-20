@@ -104,3 +104,4 @@ fun openDiscordInviteLink(context: Context, inviteLink: String) {
 fun createSupabaseImgPath(bucketId: String, imageFileName: String): String {
     return "${BuildConfig.BASE_URL}/storage/v1/object/public/$bucketId/$imageFileName"
 }
+

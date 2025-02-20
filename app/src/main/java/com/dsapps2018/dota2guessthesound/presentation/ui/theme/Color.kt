@@ -15,6 +15,7 @@ val DialogBackground = Color(0xFF303030)
 val DialogOnBackground = Color(0xFFA1BBFA)
 val LeaderboardBackground = Color(0xFF262729)
 val LeaderboardOnBackground = Color(0xFF7e8ba9)
+val JourneyButtonBackground = Color(0xFF25262b)
 
 val Exort = Color(0xFFFA8D4E)
 val Wex = Color(0xFFEC6BB1)
