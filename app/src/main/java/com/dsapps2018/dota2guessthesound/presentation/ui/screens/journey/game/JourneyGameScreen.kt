@@ -170,7 +170,7 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
             ),
             border = BorderStroke(1.dp, Color.Cyan.copy(alpha = 0.7f)),
             modifier = Modifier
-                .size(120.dp, 60.dp)
+                .size(80.dp, 40.dp)
                 .clickable {
                     viewModel.submitAnswer()
                 }
@@ -189,7 +189,7 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
                 Text(
                     text = "Submit",
                     color = Color.White,
-                    fontSize = 20.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
@@ -221,34 +221,34 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(
-                    AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                        context, currentScreenWidth
-                    ).height.dp
-                )
-        ) {
-            AndroidView(
-                // on below line specifying width for ads.
-                modifier = Modifier.fillMaxWidth(), factory = { context ->
-                    // on below line specifying ad view.
-                    AdView(context).apply {
-                        // on below line specifying ad size
-                        setAdSize(
-                            AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                                context, currentScreenWidth
-                            )
-                        )
-                        // on below line specifying ad unit id
-                        // currently added a test ad unit id.
-                        adUnitId = context.getString(R.string.banner_id)
-                        // calling load ad to load our ad.
-                        loadAd(AdRequest.Builder().build())
-                    }
-                })
-        }
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(
+//                    AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+//                        context, currentScreenWidth
+//                    ).height.dp
+//                )
+//        ) {
+//            AndroidView(
+//                // on below line specifying width for ads.
+//                modifier = Modifier.fillMaxWidth(), factory = { context ->
+//                    // on below line specifying ad view.
+//                    AdView(context).apply {
+//                        // on below line specifying ad size
+//                        setAdSize(
+//                            AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+//                                context, currentScreenWidth
+//                            )
+//                        )
+//                        // on below line specifying ad unit id
+//                        // currently added a test ad unit id.
+//                        adUnitId = context.getString(R.string.banner_id)
+//                        // calling load ad to load our ad.
+//                        loadAd(AdRequest.Builder().build())
+//                    }
+//                })
+//        }
     }
 }
 

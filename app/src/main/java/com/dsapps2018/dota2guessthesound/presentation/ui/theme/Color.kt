@@ -20,3 +20,10 @@ val JourneyButtonBackground = Color(0xFF25262b)
 val Exort = Color(0xFFFA8D4E)
 val Wex = Color(0xFFEC6BB1)
 val Quas = Color(0xFF22D9E5)
+
+val PlayLevel = Color(0xFFCB6908)
+
+val PlayLevelTextGradient = listOf(
+    Color(0xFFBEBDBD),
+    Color(0xFFEAEAE7)
+)

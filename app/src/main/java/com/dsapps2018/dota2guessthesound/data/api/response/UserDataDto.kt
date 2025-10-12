@@ -30,6 +30,8 @@ data class UserDataDto(
     var ninetyPlayed: Int,
     @SerialName("coin_value")
     var coinValue: Int,
+    @SerialName("journey_level")
+    var journeyLevel: Int,
     @SerialName("modified_at")
     var modifiedAt: String,
 )
@@ -48,6 +50,7 @@ fun getInitialServerUserData(userId: String): UserDataDto{
         ninetySecondsScore = 0.0,
         ninetyPlayed = 0,
         coinValue = 0,
+        journeyLevel = 1,
         modifiedAt = getCurrentDate()
     )
 }

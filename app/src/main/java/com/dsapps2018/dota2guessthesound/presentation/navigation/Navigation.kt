@@ -253,9 +253,11 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         }
 
         composable<JourneyLevelDestination> {
-            JourneyLevelScreen { levelNum ->
-                navController.navigate(JourneyGameDestination(levelNum))
-            }
+            JourneyLevelScreen(
+                onLevelClicked = { levelNum ->
+                    navController.navigate(JourneyGameDestination(levelNum))
+                }
+            )
         }
 
         composable<JourneyGameDestination> {

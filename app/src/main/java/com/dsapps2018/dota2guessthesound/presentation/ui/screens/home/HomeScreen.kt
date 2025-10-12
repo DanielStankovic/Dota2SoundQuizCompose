@@ -71,6 +71,7 @@ import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.findActivity
 import com.dsapps2018.dota2guessthesound.data.util.openDiscordInviteLink
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatusComposable
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.PermissionDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.coininfo.CoinInfoDialog
@@ -89,6 +90,7 @@ import io.github.jan.supabase.auth.status.SessionStatus
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     onQuizClicked: () -> Unit,
     onFastFingerClicked: () -> Unit,
     onJourneyClicked: () -> Unit,
@@ -100,8 +102,7 @@ fun HomeScreen(
     onLeaderboardClicked: () -> Unit,
     onUpdateRequired: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
@@ -485,34 +486,7 @@ fun HomeScreen(
                             )
                         }
                     }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                                    context, currentScreenWidth
-                                ).height.dp
-                            )
-                    ) {
-                        AndroidView(
-                            // on below line specifying width for ads.
-                            modifier = Modifier.fillMaxWidth(), factory = { context ->
-                                // on below line specifying ad view.
-                                AdView(context).apply {
-                                    // on below line specifying ad size
-                                    setAdSize(
-                                        AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                                            context, currentScreenWidth
-                                        )
-                                    )
-                                    // on below line specifying ad unit id
-                                    // currently added a test ad unit id.
-                                    adUnitId = context.getString(R.string.banner_id)
-                                    // calling load ad to load our ad.
-                                    loadAd(AdRequest.Builder().build())
-                                }
-                            })
-                    }
+                    BannerView()
                 }
 
 

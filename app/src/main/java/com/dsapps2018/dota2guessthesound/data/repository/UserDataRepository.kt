@@ -41,6 +41,7 @@ class UserDataRepository @Inject constructor(
                         "ninety_score",
                         "ninety_played",
                         "coin_value",
+                        "journey_level"
                     )
                 ) {
                     filter {
@@ -83,6 +84,9 @@ class UserDataRepository @Inject constructor(
                     maxOf(serverUserData.sixtySecondsScore, localUserData.sixtySecondsScore)
                 val maxNinetySecondsScore =
                     maxOf(serverUserData.ninetySecondsScore, localUserData.ninetySecondsScore)
+
+                val maxJourneyLevel = maxOf(serverUserData.journeyLevel, localUserData.journeyLevel)
+
                 //SERVER
                 serverUserData.apply {
                     quizScore = maxQuizScore
@@ -90,6 +94,7 @@ class UserDataRepository @Inject constructor(
                     thirtySecondsScore = maxThirtySecondsScore
                     sixtySecondsScore = maxSixtySecondsScore
                     ninetySecondsScore = maxNinetySecondsScore
+                    journeyLevel = maxJourneyLevel
                 }
 
                 //LOCAL
@@ -99,29 +104,8 @@ class UserDataRepository @Inject constructor(
                     thirtySecondsScore = maxThirtySecondsScore
                     sixtySecondsScore = maxSixtySecondsScore
                     ninetySecondsScore = maxNinetySecondsScore
+                    journeyLevel = maxJourneyLevel
                 }
-
-//                serverUserData.quizScore = maxOf(serverUserData.quizScore, localUserData.quizScore)
-//                serverUserData.invokerScore =
-//                    maxOf(serverUserData.invokerScore, localUserData.invokerScore)
-//                serverUserData.thirtySecondsScore =
-//                    maxOf(serverUserData.thirtySecondsScore, localUserData.thirtySecondsScore)
-//                serverUserData.sixtySecondsScore =
-//                    maxOf(serverUserData.sixtySecondsScore, localUserData.sixtySecondsScore)
-//                serverUserData.ninetySecondsScore =
-//                    maxOf(serverUserData.ninetySecondsScore, localUserData.ninetySecondsScore)
-//
-//                //LOCAL
-//                localUserData.quizScore = maxOf(serverUserData.quizScore, localUserData.quizScore)
-//                localUserData.invokerScore =
-//                    maxOf(serverUserData.invokerScore, localUserData.invokerScore)
-//                localUserData.thirtySecondsScore =
-//                    maxOf(serverUserData.thirtySecondsScore, localUserData.thirtySecondsScore)
-//                localUserData.sixtySecondsScore =
-//                    maxOf(serverUserData.sixtySecondsScore, localUserData.sixtySecondsScore)
-//                localUserData.ninetySecondsScore =
-//                    maxOf(serverUserData.ninetySecondsScore, localUserData.ninetySecondsScore)
-
 
                 //Times played Update
 
