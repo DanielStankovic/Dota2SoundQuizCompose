@@ -42,50 +42,68 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
+import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.WatchAdContinueDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
 
 @Composable
 fun JourneyGameScreen(
-    modifier: Modifier = Modifier, viewModel: JourneyGameViewModel = hiltViewModel()
+    modifier: Modifier = Modifier,
+    viewModel: JourneyGameViewModel = hiltViewModel(),
+    onNavigateToResultScreen: (Int, Boolean) -> Unit
 ) {
 
-    val journeyState by viewModel.journeyDataState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val showWatchAdContinueDialog by viewModel.showWatchAdContinueDialog.collectAsStateWithLifecycle()
+    val levelNum by viewModel.levelNum.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.gameEvent.collect { gameEvent ->
             when (gameEvent) {
-                JourneyGameEvent.Correct -> {
-                    Toast.makeText(context, "CORRECT!", Toast.LENGTH_LONG).show()
+                is JourneyGameEvent.Correct -> {
+                   onNavigateToResultScreen(levelNum, true)
                 }
 
-                JourneyGameEvent.NotEnoughSelected -> {
-                    Toast.makeText(context, "Not enough sounds selected!", Toast.LENGTH_LONG).show()
-                }
-
-                JourneyGameEvent.TooManySelected -> {
-                    Toast.makeText(context, "Too many sounds selected!", Toast.LENGTH_LONG).show()
-                }
-
-                JourneyGameEvent.Wrong -> {
-                    Toast.makeText(context, "WRONG!", Toast.LENGTH_LONG).show()
+                is JourneyGameEvent.GameOver -> {
+                    onNavigateToResultScreen(levelNum, false)
                 }
             }
         }
     }
 
-    Scaffold(contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
+    Scaffold(
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         content = { padding ->
+            if (showWatchAdContinueDialog) WatchAdContinueDialog(onDismiss = {
+                viewModel.setShowWatchAdContinueDialog(false)
+            }, onSkipClicked = {
+                viewModel.setShowWatchAdContinueDialog(false)
+                showInterstitial(context) {
+                    onNavigateToResultScreen(levelNum, false)
+                }
+            }, onWatchAdClicked = {
+                viewModel.setShowWatchAdContinueDialog(false)
+
+                showRewardedAd(context, onRewarded = {
+                    //If we played sound here the sound would play while the
+                    //ad is still fully visible which is bad. This way, we just set the flag
+                    //and check this flag onAdDismissed which is triggered when we close the ad.
+                    //Back button does not work when ad is fully visible, so user can not
+                    //exit the ad and trigger onPlayAgain, but we still include it to safe guard.
+                    viewModel.additionalLifeUsed = true
+                    viewModel.increaseNumOfHearts()
+
+                }, onAdDismissed = {
+
+                })
+            })
             Box(
                 modifier
                     .fillMaxSize()
@@ -99,23 +117,25 @@ fun JourneyGameScreen(
                     ),
 
                 ) {
-                JourneyGameContent(journeyState, viewModel)
+                JourneyGameContent(viewModel)
             }
         })
 }
 
 @Composable
-fun JourneyGameContent(journeyState: JourneyLevelFetchState, viewModel: JourneyGameViewModel) {
+fun JourneyGameContent(viewModel: JourneyGameViewModel) {
+    val state by viewModel.journeyDataState.collectAsStateWithLifecycle()
+    val journeyState = state
     when (journeyState) {
-        JourneyLevelFetchState.Loading -> {
+        JourneyGameFetchState.Loading -> {
             LoadingContent()
         }
 
-        is JourneyLevelFetchState.Error -> {
+        is JourneyGameFetchState.Error -> {
             ErrorOrEmptyContent(journeyState.error)
         }
 
-        is JourneyLevelFetchState.Success -> {
+        is JourneyGameFetchState.Success -> {
             JourneyGameData(journeyState.data, viewModel)
         }
     }
@@ -138,10 +158,8 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        SoundCountRow(
-            level = journeyState.level,
-            viewModel = viewModel,
-            totalCorrectSounds = journeyState.totalCorrectSounds
+        StatusInfoRow(
+            viewModel = viewModel, totalCorrectSounds = journeyState.totalCorrectSounds
         )
 
         Row(
@@ -202,13 +220,14 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            columns = GridCells.Fixed(3),
-            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
+            columns = GridCells.Fixed(4),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
         ) {
             items(items = journeyState.soundList, key = { it.soundModel.id }) { sound ->
 
-                SoundCard(selectedState = viewModel.selectedSoundState.getValue(sound.soundModel.id),
+                SoundCard(
+                    selectedState = viewModel.selectedSoundState.getValue(sound.soundModel.id),
                     onCardClicked = {
                         viewModel.toggleSoundCardState(sound.soundModel.id)
                     },
@@ -220,57 +239,30 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
                 Spacer(modifier = Modifier.height(2.dp))
             }
         }
-
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(
-//                    AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-//                        context, currentScreenWidth
-//                    ).height.dp
-//                )
-//        ) {
-//            AndroidView(
-//                // on below line specifying width for ads.
-//                modifier = Modifier.fillMaxWidth(), factory = { context ->
-//                    // on below line specifying ad view.
-//                    AdView(context).apply {
-//                        // on below line specifying ad size
-//                        setAdSize(
-//                            AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-//                                context, currentScreenWidth
-//                            )
-//                        )
-//                        // on below line specifying ad unit id
-//                        // currently added a test ad unit id.
-//                        adUnitId = context.getString(R.string.banner_id)
-//                        // calling load ad to load our ad.
-//                        loadAd(AdRequest.Builder().build())
-//                    }
-//                })
-//        }
     }
 }
 
 @Composable
-fun SoundCountRow(level: Int, viewModel: JourneyGameViewModel, totalCorrectSounds: Int) {
-    val selectedSounds = viewModel.selectedSoundState.values.count { x -> x == true }
+fun StatusInfoRow(viewModel: JourneyGameViewModel, totalCorrectSounds: Int) {
+    val selectedSounds = viewModel.selectedSoundState.values.count { selected -> selected }
+    val numOfHearts by viewModel.numOfHearts.collectAsStateWithLifecycle()
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.Start
     ) {
-        Text(
-            "Level: $level",
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
-
+        repeat(numOfHearts) {
+            Image(
+                painterResource(R.drawable.ic_heart),
+                contentDescription = "",
+                modifier = Modifier.size(30.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
         Text(
             stringResource(
                 R.string.sounds_selected_total, selectedSounds, totalCorrectSounds

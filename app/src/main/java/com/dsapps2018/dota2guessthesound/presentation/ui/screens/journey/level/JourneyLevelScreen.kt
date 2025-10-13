@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -43,9 +44,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.data.model.LevelModel
+import com.dsapps2018.dota2guessthesound.data.api.response.JourneyLevelDto
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevel
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevelTextGradient
@@ -54,29 +59,24 @@ import kotlin.math.absoluteValue
 @Composable
 fun JourneyLevelScreen(
     modifier: Modifier = Modifier,
-    onLevelClicked: (Int) -> Unit,
-    onBackClicked: () -> Unit = {},
-    userCompletedLevel: Int = 5 // For now, assume user completed first 5 levels
+    levelViewModel: JourneyLevelViewModel = hiltViewModel(),
+    onLevelClicked: (Int) -> Unit
 ) {
-    val totalLevels = 100
-    val currentLevel = userCompletedLevel + 1 // Next level to play
-    val levelList = (1..100).map {
-        LevelModel(it, emptyList())
-    }
+
+    val journeyLevelState by levelViewModel.journeyLevelState.collectAsStateWithLifecycle()
+    val journeyProgressText by levelViewModel.journeyProgressText.collectAsStateWithLifecycle()
 
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         topBar = {
             JourneyLevelTopBar(
-                currentLevel = currentLevel,
-                totalLevels = totalLevels
+                progressText = journeyProgressText
             )
         },
         content = { padding ->
             Column(
                 Modifier.padding(
-                    bottom = padding.calculateBottomPadding(),
-                    top = padding.calculateTopPadding()
+                    bottom = padding.calculateBottomPadding(), top = padding.calculateTopPadding()
                 )
             ) {
                 Box(
@@ -87,27 +87,45 @@ fun JourneyLevelScreen(
                             contentScale = ContentScale.FillBounds
                         )
                 ) {
-
-                    LevelData(
-                        levels = levelList,
-                        totalItems = levelList.size,
-                        userCompletedLevel = 5
-                    ) { level ->
-                        onLevelClicked(level)
-                    }
+                    JourneyLevelContent(
+                        journeyLevelState, levelViewModel, onLevelClicked = { level ->
+                            onLevelClicked(level)
+                        })
                 }
                 BannerView()
             }
 
+        })
+}
+
+@Composable
+fun JourneyLevelContent(
+    state: JourneyLevelFetchState, viewModel: JourneyLevelViewModel, onLevelClicked: (Int) -> Unit
+) {
+    when (state) {
+        JourneyLevelFetchState.Loading -> {
+            LoadingContent()
         }
-    )
+
+        is JourneyLevelFetchState.Error -> {
+            ErrorOrEmptyContent(state.error)
+        }
+
+        is JourneyLevelFetchState.Success -> {
+            LevelData(
+                levels = state.data,
+                totalItems = state.data.size,
+                levelViewModel = viewModel,
+                onLevelClicked = onLevelClicked
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JourneyLevelTopBar(
-    currentLevel: Int,
-    totalLevels: Int
+    progressText: String
 ) {
     TopAppBar(
         title = {
@@ -122,13 +140,12 @@ fun JourneyLevelTopBar(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Level $currentLevel of $totalLevels",
+                    text = progressText,
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 14.sp
                 )
             }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
+        }, colors = TopAppBarDefaults.topAppBarColors(
             containerColor = JourneyButtonBackground.copy(alpha = 0.9f)
         )
     )
@@ -136,26 +153,23 @@ fun JourneyLevelTopBar(
 
 @Composable
 fun LevelData(
-    levels: List<LevelModel>,
+    levels: List<JourneyLevelDto>,
     totalItems: Int,
-    userCompletedLevel: Int = 5,
+    levelViewModel: JourneyLevelViewModel,
     onLevelClicked: (Int) -> Unit,
 ) {
 
-    val pagerState = rememberPagerState(initialPage = userCompletedLevel) {
+    val currentLevel by levelViewModel.journeyLevel.collectAsStateWithLifecycle()
+
+    val pagerState = rememberPagerState(initialPage = currentLevel) {
         totalItems
     }
 
     HorizontalPager(
-        state = pagerState,
-        contentPadding = PaddingValues(50.dp)
+        state = pagerState, contentPadding = PaddingValues(50.dp)
     ) {
         LevelCardContent(
-            it,
-            levels[it],
-            userCompletedLevel,
-            pagerState,
-            onItemClicked = onLevelClicked
+            it, levels[it], currentLevel, pagerState, onItemClicked = onLevelClicked
         )
     }
 }
@@ -163,7 +177,7 @@ fun LevelData(
 @Composable
 fun LevelCardContent(
     index: Int,
-    levelModel: LevelModel,
+    levelModel: JourneyLevelDto,
     userCompletedLevel: Int,
     pagerState: PagerState,
     onItemClicked: (Int) -> Unit
@@ -178,12 +192,8 @@ fun LevelCardContent(
             "Level\n${levelModel.level}",
             style = TextStyle(
                 brush = Brush.linearGradient(
-                    colors = PlayLevelTextGradient,
-                    start = Offset(0f, 0f),
-                    end = Offset(0f, 200f)
-                ),
-                fontWeight = FontWeight.Bold,
-                fontSize = 40.sp
+                    colors = PlayLevelTextGradient, start = Offset(0f, 0f), end = Offset(0f, 200f)
+                ), fontWeight = FontWeight.Bold, fontSize = 40.sp
             ),
             textAlign = TextAlign.Center,
         )
@@ -228,7 +238,6 @@ fun LevelCardContent(
                 )
 
         ) {
-
             Image(
                 painterResource(
                     when {

@@ -148,6 +148,16 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
+    fun updateJourneyLevel(level: Int) {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            scoreRepository.getUserData()?.let { userData ->
+                userData.journeyLevel = level
+                userData.modifiedAt = getCurrentDate()
+                scoreRepository.updateUserData(userData)
+            }
+        }
+    }
+
     fun calculateFastFingerScore(guessed: Int, total: Int): Double {
         if (total == 0) return 0.0
         val accuracy = guessed.toDouble() / total

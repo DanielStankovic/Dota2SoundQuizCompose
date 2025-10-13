@@ -50,7 +50,7 @@ fun getInitialServerUserData(userId: String): UserDataDto{
         ninetySecondsScore = 0.0,
         ninetyPlayed = 0,
         coinValue = 0,
-        journeyLevel = 1,
+        journeyLevel = 0,
         modifiedAt = getCurrentDate()
     )
 }

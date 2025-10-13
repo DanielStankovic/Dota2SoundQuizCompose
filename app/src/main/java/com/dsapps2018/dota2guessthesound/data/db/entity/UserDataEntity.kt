@@ -30,7 +30,7 @@ data class UserDataEntity(
     var syncedNinetyPlayed: Int,
     var coinValue: Int,
     var syncedCoinValue: Int,
-    @ColumnInfo(defaultValue = "1")
+    @ColumnInfo(defaultValue = "0")
     var journeyLevel: Int,
     @field:TypeConverters(DateTypeConverter::class)
     var modifiedAt: String,
@@ -57,7 +57,7 @@ fun getInitialUserData(): UserDataEntity{
         syncedNinetyPlayed = 0,
         coinValue = 0,
         syncedCoinValue = 0,
-        journeyLevel = 1,
+        journeyLevel = 0,
         modifiedAt = getInitialModifiedDate(),
         lastSyncAt = System.currentTimeMillis()
     )

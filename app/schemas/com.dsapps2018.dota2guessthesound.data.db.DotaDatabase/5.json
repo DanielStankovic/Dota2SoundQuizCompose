@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "2ad1e1db8d5596f822e2ba68aeb598a9",
+    "identityHash": "d4b4accd418f4703d8a94debd7ce38f4",
     "entities": [
       {
         "tableName": "CasterType",
@@ -195,7 +195,7 @@
       },
       {
         "tableName": "UserData",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userId` TEXT, `quizScore` INTEGER NOT NULL, `quizPlayed` INTEGER NOT NULL, `syncedQuizPlayed` INTEGER NOT NULL, `invokerScore` INTEGER NOT NULL, `invokerPlayed` INTEGER NOT NULL, `syncedInvokerPlayed` INTEGER NOT NULL, `thirtySecondsScore` REAL NOT NULL, `thirtyPlayed` INTEGER NOT NULL, `syncedThirtyPlayed` INTEGER NOT NULL, `sixtySecondsScore` REAL NOT NULL, `sixtyPlayed` INTEGER NOT NULL, `syncedSixtyPlayed` INTEGER NOT NULL, `ninetySecondsScore` REAL NOT NULL, `ninetyPlayed` INTEGER NOT NULL, `syncedNinetyPlayed` INTEGER NOT NULL, `coinValue` INTEGER NOT NULL, `syncedCoinValue` INTEGER NOT NULL, `journeyLevel` INTEGER NOT NULL DEFAULT 1, `modifiedAt` TEXT NOT NULL, `lastSyncAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userId` TEXT, `quizScore` INTEGER NOT NULL, `quizPlayed` INTEGER NOT NULL, `syncedQuizPlayed` INTEGER NOT NULL, `invokerScore` INTEGER NOT NULL, `invokerPlayed` INTEGER NOT NULL, `syncedInvokerPlayed` INTEGER NOT NULL, `thirtySecondsScore` REAL NOT NULL, `thirtyPlayed` INTEGER NOT NULL, `syncedThirtyPlayed` INTEGER NOT NULL, `sixtySecondsScore` REAL NOT NULL, `sixtyPlayed` INTEGER NOT NULL, `syncedSixtyPlayed` INTEGER NOT NULL, `ninetySecondsScore` REAL NOT NULL, `ninetyPlayed` INTEGER NOT NULL, `syncedNinetyPlayed` INTEGER NOT NULL, `coinValue` INTEGER NOT NULL, `syncedCoinValue` INTEGER NOT NULL, `journeyLevel` INTEGER NOT NULL DEFAULT 0, `modifiedAt` TEXT NOT NULL, `lastSyncAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -316,7 +316,7 @@
             "columnName": "journeyLevel",
             "affinity": "INTEGER",
             "notNull": true,
-            "defaultValue": "1"
+            "defaultValue": "0"
           },
           {
             "fieldPath": "modifiedAt",
@@ -488,7 +488,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2ad1e1db8d5596f822e2ba68aeb598a9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd4b4accd418f4703d8a94debd7ce38f4')"
     ]
   }
 }

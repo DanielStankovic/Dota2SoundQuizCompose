@@ -12,6 +12,8 @@ class ScoreRepository @Inject constructor(
 
     fun getUserDataFlow() = userDataDao.getUserDataFlow()
 
+    fun getUserJourneyLevelFlow() = userDataDao.getUserJourneyLevelFlow()
+
     fun getLastSyncDate() = userDataDao.getLastSyncDate()
 
     suspend fun updateUserData(userDataEntity: UserDataEntity) = userDataDao.update(userDataEntity)
