@@ -1,12 +1,12 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,32 +19,28 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -71,7 +67,6 @@ import com.dsapps2018.dota2guessthesound.data.api.response.JourneyLevelDto
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
-import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevel
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevelTextGradient
@@ -162,9 +157,7 @@ fun JourneyLevelTopBar(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = progressText,
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontSize = 14.sp
+                    text = progressText, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp
                 )
             }
         }, colors = TopAppBarDefaults.topAppBarColors(
@@ -205,7 +198,9 @@ fun LevelData(
             visible = isVisible,
             enter = fadeIn() + slideInHorizontally { it / 2 },
             exit = fadeOut() + slideOutHorizontally { it / 2 },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 10.dp, end = 10.dp)
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 10.dp, end = 10.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -218,10 +213,11 @@ fun LevelData(
 
                     .clickable {
                         scope.launch { pagerState.animateScrollToPage(currentLevel) }
-                    }
-            ) {
+                    }) {
                 Image(
-                    modifier = Modifier.size(35.dp).align(Alignment.Center),
+                    modifier = Modifier
+                        .size(35.dp)
+                        .align(Alignment.Center),
                     painter = painterResource(R.drawable.ic_path),
                     contentDescription = null,
                 )
@@ -240,6 +236,29 @@ fun LevelCardContent(
     onItemClicked: (Int) -> Unit
 ) {
     val pageOffset = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
+    val scope = rememberCoroutineScope()
+
+    // Animation state for shake effect
+    val shakeOffset = remember { Animatable(0f) }
+    val isShaking = remember { mutableStateOf(false) }
+
+    // Shake animation function
+    suspend fun performShake() {
+        if (isShaking.value) return // Prevent multiple shakes at once
+
+        isShaking.value = true
+
+        // Shake left and right
+        repeat(3) {
+            shakeOffset.animateTo(15f, tween(75))
+            shakeOffset.animateTo(-15f, tween(75))
+        }
+
+        // Return to center
+        shakeOffset.animateTo(0f, tween(75))
+        isShaking.value = false
+
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -259,13 +278,14 @@ fun LevelCardContent(
 
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent,
-            ),
+            containerColor = Color.Transparent,
+        ),
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier
                 .height(270.dp)
                 .aspectRatio(0.67f)
                 .padding(2.dp)
+                .offset(x = shakeOffset.value.dp)
                 .graphicsLayer {
                     lerp(
                         start = 0.85f.dp,
@@ -293,6 +313,17 @@ fun LevelCardContent(
                         Modifier
                     }
                 )
+                .clickable {
+                    if (levelModel.level <= userCompletedLevel + 1) {
+                        // Level is unlocked, perform normal click
+                        onItemClicked(levelModel.level)
+                    } else {
+                        // Level is locked, perform shake animation
+                        scope.launch {
+                            performShake()
+                        }
+                    }
+                }
 
         ) {
             Image(
@@ -303,11 +334,7 @@ fun LevelCardContent(
                         else -> R.drawable.level_locked_bg
                     }
                 ),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(enabled = levelModel.level <= userCompletedLevel + 1) {
-                        onItemClicked(levelModel.level)
-                    },
+                modifier = Modifier.fillMaxSize(),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
             )
