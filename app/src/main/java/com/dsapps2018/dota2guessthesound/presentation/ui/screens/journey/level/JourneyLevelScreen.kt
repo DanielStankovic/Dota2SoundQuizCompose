@@ -1,5 +1,12 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,22 +21,35 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -51,9 +71,11 @@ import com.dsapps2018.dota2guessthesound.data.api.response.JourneyLevelDto
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevel
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevelTextGradient
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
@@ -158,20 +180,55 @@ fun LevelData(
     levelViewModel: JourneyLevelViewModel,
     onLevelClicked: (Int) -> Unit,
 ) {
-
+    val scope = rememberCoroutineScope()
     val currentLevel by levelViewModel.journeyLevel.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(initialPage = currentLevel) {
         totalItems
     }
-
-    HorizontalPager(
-        state = pagerState, contentPadding = PaddingValues(50.dp)
-    ) {
-        LevelCardContent(
-            it, levels[it], currentLevel, pagerState, onItemClicked = onLevelClicked
-        )
+    val isVisible by remember {
+        derivedStateOf { pagerState.currentPage != currentLevel }
     }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        HorizontalPager(
+            state = pagerState, contentPadding = PaddingValues(50.dp)
+        ) {
+            LevelCardContent(
+                it, levels[it], currentLevel, pagerState, onItemClicked = onLevelClicked
+            )
+        }
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn() + slideInHorizontally { it / 2 },
+            exit = fadeOut() + slideOutHorizontally { it / 2 },
+            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 10.dp, end = 10.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(shape = CircleShape)
+                    .paint(
+                        painterResource(id = R.drawable.button_disabled_bg),
+                        contentScale = ContentScale.FillBounds
+                    )
+
+                    .clickable {
+                        scope.launch { pagerState.animateScrollToPage(currentLevel) }
+                    }
+            ) {
+                Image(
+                    modifier = Modifier.size(35.dp).align(Alignment.Center),
+                    painter = painterResource(R.drawable.ic_path),
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -206,7 +263,7 @@ fun LevelCardContent(
             ),
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier
-                .height(300.dp)
+                .height(270.dp)
                 .aspectRatio(0.67f)
                 .padding(2.dp)
                 .graphicsLayer {
