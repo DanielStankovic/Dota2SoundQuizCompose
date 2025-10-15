@@ -33,7 +33,7 @@ android {
     }
 
     sourceSets.getByName("main") {
-        res.setSrcDirs(listOf("src/main/res", "src/main/hero_images"))
+        res.setSrcDirs(listOf("src/main/res", "src/main/hero_images", "src/main/affix_images"))
     }
 
     room {
