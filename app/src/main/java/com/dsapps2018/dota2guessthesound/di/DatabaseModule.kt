@@ -2,6 +2,7 @@ package com.dsapps2018.dota2guessthesound.di
 
 import android.content.Context
 import androidx.room.Room
+import com.dsapps2018.dota2guessthesound.data.dao.AffixDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
@@ -74,6 +75,12 @@ object DatabaseModule {
     @Provides
     fun provideFaqDao(database: DotaDatabase): FaqDao {
         return database.faqDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAffixDao(database: DotaDatabase): AffixDao {
+        return database.affixDao()
     }
 
 }

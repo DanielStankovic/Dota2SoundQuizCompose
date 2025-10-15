@@ -8,5 +8,7 @@ data class JourneyLevelDto(
     @SerialName("id")
     val id: Int,
     @SerialName("level")
-    val level: Int
+    val level: Int,
+    @SerialName("affixes")
+    val affixes: List<Int>
 )

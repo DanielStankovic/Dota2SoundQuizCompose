@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
@@ -43,8 +44,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
@@ -64,9 +67,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.api.response.JourneyLevelDto
+import com.dsapps2018.dota2guessthesound.data.model.AffixModel
+import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.composables.AffixInfoBottomSheet
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevel
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevelTextGradient
@@ -168,13 +174,14 @@ fun JourneyLevelTopBar(
 
 @Composable
 fun LevelData(
-    levels: List<JourneyLevelDto>,
+    levels: List<JourneyLevelModel>,
     totalItems: Int,
     levelViewModel: JourneyLevelViewModel,
     onLevelClicked: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val currentLevel by levelViewModel.journeyLevel.collectAsStateWithLifecycle()
+    val currentAffix by levelViewModel.currentAffix.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(initialPage = currentLevel) {
         totalItems
@@ -191,8 +198,14 @@ fun LevelData(
             state = pagerState, contentPadding = PaddingValues(50.dp)
         ) {
             LevelCardContent(
-                it, levels[it], currentLevel, pagerState, onItemClicked = onLevelClicked
-            )
+                it,
+                levels[it],
+                currentLevel,
+                pagerState,
+                onItemClicked = onLevelClicked,
+                onAffixIconClicked = { affix ->
+                    levelViewModel.setCurrentAffix(affix)
+                })
         }
         AnimatedVisibility(
             visible = isVisible,
@@ -205,18 +218,13 @@ fun LevelData(
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(shape = CircleShape)
-                    .paint(
-                        painterResource(id = R.drawable.button_disabled_bg),
-                        contentScale = ContentScale.FillBounds
-                    )
-
+                    .clip(shape = RoundedCornerShape(15.dp))
                     .clickable {
                         scope.launch { pagerState.animateScrollToPage(currentLevel) }
                     }) {
                 Image(
                     modifier = Modifier
-                        .size(35.dp)
+                        .matchParentSize()
                         .align(Alignment.Center),
                     painter = painterResource(R.drawable.ic_path),
                     contentDescription = null,
@@ -225,15 +233,22 @@ fun LevelData(
         }
     }
 
+    currentAffix?.let { affix ->
+        AffixInfoBottomSheet(
+            affixName = affix.affix, affixDescription = affix.description, onDismiss = {
+                levelViewModel.setCurrentAffix(null)
+            })
+    }
 }
 
 @Composable
 fun LevelCardContent(
     index: Int,
-    levelModel: JourneyLevelDto,
+    levelModel: JourneyLevelModel,
     userCompletedLevel: Int,
     pagerState: PagerState,
-    onItemClicked: (Int) -> Unit
+    onItemClicked: (Int) -> Unit,
+    onAffixIconClicked: (AffixModel) -> Unit
 ) {
     val pageOffset = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
     val scope = rememberCoroutineScope()
@@ -269,7 +284,7 @@ fun LevelCardContent(
             style = TextStyle(
                 brush = Brush.linearGradient(
                     colors = PlayLevelTextGradient, start = Offset(0f, 0f), end = Offset(0f, 200f)
-                ), fontWeight = FontWeight.Bold, fontSize = 40.sp
+                ), fontWeight = FontWeight.Bold, fontSize = 30.sp
             ),
             textAlign = TextAlign.Center,
         )
@@ -339,6 +354,26 @@ fun LevelCardContent(
                 contentScale = ContentScale.FillBounds
             )
 
+        }
+        Spacer(Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+        ) {
+            levelModel.affixes.forEach { affix ->
+                Image(
+                    painter = painterResource(affix.iconResourceId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .alpha(1f - pageOffset.absoluteValue)
+                        .clickable {
+                            onAffixIconClicked(affix)
+                        })
+            }
         }
     }
 

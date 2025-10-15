@@ -1,7 +1,8 @@
 package com.dsapps2018.dota2guessthesound.data.model
 
-data class JourneyLevelModel(
+data class AffixModel(
     val id: Int,
-    val level: Int,
-    val affixes: List<Int>
+    val affix: String,
+    val description: String,
+    val iconResourceId: Int
 )

@@ -4,12 +4,14 @@ import androidx.room.TypeConverter
 import com.dsapps2018.dota2guessthesound.data.api.response.AnswerDto
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.encodeToJsonElement
 
-class AnswerListTypeConverter {
+class JsonElementTypeConverter {
 
     @TypeConverter
-    fun fromList(value : List<AnswerDto>) = Json.encodeToString(value)
+    fun fromJsonElement(value : JsonElement) = value.toString()
 
     @TypeConverter
-    fun toList(value: String) = Json.decodeFromString<List<AnswerDto>>(value)
+    fun toJsonElement(value: String) = Json.encodeToJsonElement(value)
 }

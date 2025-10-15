@@ -1,14 +1,7 @@
-package com.dsapps2018.dota2guessthesound.data.api.response
+package com.dsapps2018.dota2guessthesound.data.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class JourneyLevelDto(
-    @SerialName("id")
+data class JourneyLevelModel(
     val id: Int,
-    @SerialName("level")
     val level: Int,
-    @SerialName("affixes")
-    val affixes: List<Int>
+    val affixes: List<AffixModel>
 )

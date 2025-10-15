@@ -1,12 +1,14 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level
 
 import android.content.Context
+import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.model.AffixModel
+import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.data.repository.JourneyLevelRepository
 import com.dsapps2018.dota2guessthesound.data.repository.ScoreRepository
-import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.JourneyGameFetchState
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,7 +18,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +26,7 @@ import javax.inject.Inject
 class JourneyLevelViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     scoreRepository: ScoreRepository,
+    private val resources: Resources,
     private val firebaseCrashlytics: FirebaseCrashlytics,
     private val journeyLevelRepository: JourneyLevelRepository
 ) : ViewModel() {
@@ -55,6 +57,12 @@ class JourneyLevelViewModel @Inject constructor(
         initialValue = ""
     )
 
+    private val _showAffixBottomSheet = MutableStateFlow(false)
+    val showAffixBottomSheet = _showAffixBottomSheet.asStateFlow()
+
+    private val _currentAffix: MutableStateFlow<AffixModel?> = MutableStateFlow(null)
+    val currentAffix = _currentAffix.asStateFlow()
+
     val coroutineExceptionHandler: CoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, throwable ->
             firebaseCrashlytics.recordException(throwable)
@@ -65,8 +73,35 @@ class JourneyLevelViewModel @Inject constructor(
     init {
         viewModelScope.launch(coroutineExceptionHandler) {
             _journeyLevelState.value = JourneyLevelFetchState.Loading
-            val levelData = journeyLevelRepository.getLevelsData()
+            val affixList = journeyLevelRepository.getAllAffixes()
+            val levelData = journeyLevelRepository.getLevelsData().map { level ->
+                JourneyLevelModel(
+                    id = level.id,
+                    level = level.level,
+                    affixes = level.affixes.map { level ->
+                       val affix = affixList.find { x -> x.id == level }!!
+                        AffixModel(
+                            id = affix.id,
+                            affix = affix.affix,
+                            description = affix.description,
+                            iconResourceId = resources.getIdentifier(
+                                "affix_${affix.affix.lowercase().replace(" ", "_")}",
+                                "drawable",
+                                context.packageName
+                            )
+                        )
+                    }
+                )
+            }
             _journeyLevelState.value = JourneyLevelFetchState.Success(levelData)
         }
+    }
+
+    fun setShowAffixBottomSheet(show: Boolean){
+        _showAffixBottomSheet.value = show
+    }
+
+    fun setCurrentAffix(affix: AffixModel?){
+        _currentAffix.value = affix
     }
 }

@@ -8,13 +8,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.EnvironmentCompat
 import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.api.response.AffixDto
 import com.dsapps2018.dota2guessthesound.data.api.response.CasterDto
 import com.dsapps2018.dota2guessthesound.data.api.response.CasterTypeDto
 import com.dsapps2018.dota2guessthesound.data.api.response.ChangelogDto
-import com.dsapps2018.dota2guessthesound.data.api.response.ConfigDto
 import com.dsapps2018.dota2guessthesound.data.api.response.FaqDto
 import com.dsapps2018.dota2guessthesound.data.api.response.GameModeDto
 import com.dsapps2018.dota2guessthesound.data.api.response.SoundDto
+import com.dsapps2018.dota2guessthesound.data.dao.AffixDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterTypeDao
 import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
@@ -23,6 +24,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDetailsDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
+import com.dsapps2018.dota2guessthesound.data.db.entity.AffixEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.CasterTypeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
@@ -57,6 +59,7 @@ class SyncRepository @Inject constructor(
     private val casterDao: CasterDao,
     private val changelogDao: ChangelogDao,
     private val faqDao: FaqDao,
+    private val affixDao: AffixDao,
     private val soundDao: SoundDao,
     private val userDataDao: UserDataDao,
     private val gameModeDao: GameModeDao,
@@ -204,6 +207,43 @@ class SyncRepository @Inject constructor(
 
             faqDao.deleteAll(faqList)
             faqDao.insertAll(faqList)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun syncAffixData() {
+        try {
+            val modifiedDate = affixDao.getModifiedDate() ?: getInitialModifiedDate()
+            val affixList = postgrest
+                .from(Constants.TABLE_AFFIXES)
+                .select(
+                    columns = Columns.list(
+                        "id",
+                        "affix",
+                        "description",
+                        "data",
+                        "modified_at",
+                        "active"
+                    )
+                ) {
+                    filter {
+                        gt("modified_at", modifiedDate)
+                    }
+                    order("modified_at", Order.ASCENDING)
+                }.decodeList<AffixDto>().map { x ->
+                    AffixEntity(
+                        x.id,
+                        x.affix,
+                        x.description,
+                        x.data,
+                        x.modifiedAt,
+                        x.isActive
+                    )
+                }
+
+            affixDao.deleteAll(affixList)
+            affixDao.insertAll(affixList)
         } catch (e: Exception) {
             throw e
         }
@@ -361,6 +401,7 @@ class SyncRepository @Inject constructor(
             gameModeDao.truncateTable()
             changelogDao.truncateTable()
             faqDao.truncateTable()
+            affixDao.truncateTable()
             soundDao.truncateTable()
             leaderboardDetailsDao.truncateTable()
 

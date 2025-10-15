@@ -18,6 +18,7 @@ object Constants {
     const val TABLE_REWARDS = "rewards"
     const val TABLE_JOURNEY = "journey"
     const val TABLE_FAQ = "faq"
+    const val TABLE_AFFIXES = "affixes"
 
     const val DISCORD_INV_LINK = "https://discord.gg/2aH27NKEdA"
     const val DISCORD_PACKAGE_NAME = "com.discord"

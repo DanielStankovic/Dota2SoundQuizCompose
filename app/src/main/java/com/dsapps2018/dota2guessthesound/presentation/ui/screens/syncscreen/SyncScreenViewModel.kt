@@ -69,6 +69,7 @@ class SyncScreenViewModel @Inject constructor(
             "Syncing game mode",
             "Syncing changelog",
             "Syncing faq",
+            "Syncing affix data",
             "Syncing leaderboard data",
             "Syncing user data",
             "Syncing sounds",
@@ -151,6 +152,9 @@ class SyncScreenViewModel @Inject constructor(
 
             sendNextEvent()
             syncRepository.syncFaq()
+
+            sendNextEvent()
+            syncRepository.syncAffixData()
 
             sendNextEvent()
             leaderboardRepository.sendUnsentDetails()
