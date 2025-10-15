@@ -3,6 +3,7 @@ package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,12 +17,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -30,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -51,6 +56,7 @@ import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.WatchAdContinueDialog
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.TimerDisplay
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 
 @Composable
@@ -68,7 +74,7 @@ fun JourneyGameScreen(
         viewModel.gameEvent.collect { gameEvent ->
             when (gameEvent) {
                 is JourneyGameEvent.Correct -> {
-                   onNavigateToResultScreen(levelNum, true)
+                    onNavigateToResultScreen(levelNum, true)
                 }
 
                 is JourneyGameEvent.GameOver -> {
@@ -151,6 +157,10 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
             150f
         )
 
+    // Collect affix states
+    val affixUIState by viewModel.affixUIState.collectAsStateWithLifecycle()
+    val timerState by viewModel.timerState.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -158,25 +168,62 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
+        // Show timer if Race Against Time affix is active
+        if (affixUIState.showTimer && timerState != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                TimerDisplay(timerState = timerState!!)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         StatusInfoRow(
-            viewModel = viewModel, totalCorrectSounds = journeyState.totalCorrectSounds
+            viewModel = viewModel,
+            totalCorrectSounds = journeyState.totalCorrectSounds,
+            affixUIState = affixUIState
         )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = imageRowPadding),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            journeyState.radiantHeroImages.forEach { img ->
-                Image(
-                    painterResource(img),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(imageSize.dp),
-                )
+        // Show hero images based on affix settings (Hidden Hero affix can hide them)
+        if (affixUIState.showHeroImages) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = imageRowPadding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                journeyState.radiantHeroImages.forEach { img ->
+                    val imageModifier = if (affixUIState.blurHeroImages) {
+                        // Blurred Vision affix
+                        Modifier
+                            .size(imageSize.dp)
+                            .blur(radius = affixUIState.blurIntensity.dp)
+                    } else {
+                        Modifier.size(imageSize.dp)
+                    }
+
+                    Image(
+                        painterResource(img),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = imageModifier,
+                    )
+                }
             }
+        } else {
+            // Show placeholder text when heroes are hidden
+            Text(
+                text = "Heroes are hidden!",
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 16.sp,
+                modifier = Modifier.padding(vertical = 20.dp)
+            )
         }
 
         Spacer(Modifier.height(12.dp))
@@ -225,7 +272,6 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
         ) {
             items(items = journeyState.soundList, key = { it.soundModel.id }) { sound ->
-
                 SoundCard(
                     selectedState = viewModel.selectedSoundState.getValue(sound.soundModel.id),
                     onCardClicked = {
@@ -233,7 +279,9 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
                     },
                     onSoundIconClicked = {
                         viewModel.playSound(sound.soundModel)
-                    })
+                    },
+                    remainingPlays = viewModel.getRemainingPlays()
+                )
             }
             item {
                 Spacer(modifier = Modifier.height(2.dp))
@@ -243,7 +291,11 @@ fun JourneyGameData(journeyState: JourneyGameModel, viewModel: JourneyGameViewMo
 }
 
 @Composable
-fun StatusInfoRow(viewModel: JourneyGameViewModel, totalCorrectSounds: Int) {
+fun StatusInfoRow(
+    viewModel: JourneyGameViewModel,
+    totalCorrectSounds: Int,
+    affixUIState: com.dsapps2018.dota2guessthesound.data.affix.AffixUIState
+) {
     val selectedSounds = viewModel.selectedSoundState.values.count { selected -> selected }
     val numOfHearts by viewModel.numOfHearts.collectAsStateWithLifecycle()
 
@@ -254,23 +306,46 @@ fun StatusInfoRow(viewModel: JourneyGameViewModel, totalCorrectSounds: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
-        repeat(numOfHearts) {
-            Image(
-                painterResource(R.drawable.ic_heart),
-                contentDescription = "",
-                modifier = Modifier.size(30.dp),
-                contentScale = ContentScale.Crop
-            )
+        // Show hearts based on affix settings (some affixes might hide hearts)
+        if (affixUIState.showHearts) {
+            repeat(numOfHearts) {
+                Image(
+                    painterResource(R.drawable.ic_heart),
+                    contentDescription = "",
+                    modifier = Modifier.size(30.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
+
         Spacer(modifier = Modifier.weight(1f))
+        // Show sound counter or custom message based on affix settings
+        val markedSoundsString =
+            if (affixUIState.showMarkedSoundCounter) selectedSounds.toString() else "?"
+        val totalSoundsString =
+            if (affixUIState.showSoundCounter) totalCorrectSounds.toString() else "?"
+
         Text(
-            stringResource(
-                R.string.sounds_selected_total, selectedSounds, totalCorrectSounds
+            text = stringResource(
+                R.string.sounds_selected_total,
+                markedSoundsString,
+                totalSoundsString
             ),
-            color = if (selectedSounds > totalCorrectSounds) Color.Red.copy(alpha = 0.7f) else Color.White,
+            color = Color.White,
             textAlign = TextAlign.Center,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
+
+        // Show remaining sound plays if Echo Limit affix is active
+        viewModel.getRemainingPlays()?.let { remaining ->
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Plays: $remaining",
+                color = if (remaining <= 2) Color.Red else Color.Yellow,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

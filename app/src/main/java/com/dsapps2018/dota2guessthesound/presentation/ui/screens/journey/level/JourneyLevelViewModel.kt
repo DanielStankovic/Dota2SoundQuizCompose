@@ -88,7 +88,8 @@ class JourneyLevelViewModel @Inject constructor(
                                 "affix_${affix.affix.lowercase().replace(" ", "_")}",
                                 "drawable",
                                 context.packageName
-                            )
+                            ),
+                            data = affix.data
                         )
                     }
                 )

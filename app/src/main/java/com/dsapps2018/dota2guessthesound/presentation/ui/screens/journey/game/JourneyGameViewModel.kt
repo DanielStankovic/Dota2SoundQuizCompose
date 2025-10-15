@@ -16,7 +16,9 @@ import com.dsapps2018.dota2guessthesound.data.repository.JourneyRepository
 import com.dsapps2018.dota2guessthesound.data.util.SoundFileMapper
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayer
 import com.dsapps2018.dota2guessthesound.presentation.navigation.JourneyGameDestination
+import com.dsapps2018.dota2guessthesound.data.affix.*
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import kotlinx.coroutines.delay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -39,7 +41,7 @@ class JourneyGameViewModel @Inject constructor(
 ) : ViewModel() {
 
     var additionalLifeUsed: Boolean = false
-
+    var isSuddenDeath: Boolean = false
     private val destination = savedStateHandle.toRoute<JourneyGameDestination>()
 
     val levelNum: StateFlow<Int> = MutableStateFlow(destination.levelNum)
@@ -60,6 +62,17 @@ class JourneyGameViewModel @Inject constructor(
 
     private val _showWatchAdContinueDialog = MutableStateFlow(false)
     val showWatchAdContinueDialog = _showWatchAdContinueDialog.asStateFlow()
+
+    // Affix system state
+    private lateinit var affixEngine: AffixEngine
+    private var soundPlayCount = 0
+    private var maxSoundPlays: Int? = null
+
+    private val _affixUIState = MutableStateFlow(AffixUIState())
+    val affixUIState = _affixUIState.asStateFlow()
+
+    private val _timerState = MutableStateFlow<TimerState?>(null)
+    val timerState = _timerState.asStateFlow()
 
     val coroutineExceptionHandler: CoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, throwable ->
@@ -89,8 +102,37 @@ class JourneyGameViewModel @Inject constructor(
                     "affix_${affix.affix.lowercase().replace(" ", "_")}",
                     "drawable",
                     context.packageName
-                )
+                ),
+                data = affix.data
             )
+        }
+
+        // Initialize affix engine with current level's affixes
+        affixEngine = AffixEngine(currentAffixes)
+
+        // Apply affix modifications
+        val affixUIState = affixEngine.applyUIModifications()
+        val affixGameState = affixEngine.applyGameplayModifications(AffixGameState())
+
+        // Update UI state
+        _affixUIState.value = affixUIState
+
+        // Apply heart count modifications from affixes
+        affixGameState.modifiedHeartCount?.let { newHeartCount ->
+            _numOfHearts.value = newHeartCount
+        }
+
+        // Apply sudden death modifications from affixes
+        isSuddenDeath = affixGameState.isSuddenDeath
+
+        // Set up timer if any affix requires it
+        affixEngine.getTimerConfiguration()?.let { timerConfig ->
+            startTimer(timerConfig.durationMs)
+        }
+
+        // Set up sound limitations if any affix requires them
+        affixEngine.getSoundLimitations()?.let { limitations ->
+            maxSoundPlays = limitations.maxPlays
         }
         val heroIds = levelData.radiantHeroes + levelData.direHeroes
         val journeySounds = journeyRepository.getJourneySounds(heroIds)
@@ -124,7 +166,17 @@ class JourneyGameViewModel @Inject constructor(
     }
 
     fun playSound(currentSound: SoundModel?) {
+        // Check sound limitations from affixes
+        maxSoundPlays?.let { maxPlays ->
+            if (soundPlayCount >= maxPlays) {
+                // Could emit an event here to show "no more plays allowed" message
+                return
+            }
+        }
+
         currentSound?.let {
+            soundPlayCount++
+
             if (it.isLocal) {
                 val resourceId = SoundFileMapper.map[it.spellName]
                 if (resourceId == null) {
@@ -144,37 +196,28 @@ class JourneyGameViewModel @Inject constructor(
         val correctSounds =
             (_journeyDataState.value as JourneyGameFetchState.Success).data.soundList.filter { x -> x.isCorrectSound }
                 .map { x -> x.soundModel.id }
+                .toSet()
 
-        val selectedSounds = _selectedSoundStates.filter { x -> x.value == true }.keys
+        val selectedSounds = _selectedSoundStates.filter { x -> x.value == true }.keys.toSet()
 
-//        if (selectedSounds.size > correctSounds.size) {
-//            _gameEvent.emit(JourneyGameEvent.Wrong)
-//
-//        }
-//        if (selectedSounds.size < correctSounds.size) {
-//            _gameEvent.emit(JourneyGameEvent.Wrong)
-//        }
-//        if (correctSounds.containsAll(selectedSounds)) {
-//            _gameEvent.emit(JourneyGameEvent.Correct)
-//        } else {
-//            _gameEvent.emit(JourneyGameEvent.Wrong)
-//        }
+        // Use affix engine to validate answer (handles mirror mode, etc.)
+        val validationResult = affixEngine.modifyAnswerValidation(selectedSounds, correctSounds)
 
-        if (
-            selectedSounds.size == correctSounds.size &&
-            correctSounds.containsAll(selectedSounds)
-        ) {
+        if (validationResult.isCorrect) {
             _gameEvent.emit(JourneyGameEvent.Correct)
         } else {
             _numOfHearts.value--
             if (_numOfHearts.value <= 0) {
-                if(!additionalLifeUsed){
-                    _showWatchAdContinueDialog.value = true
-                }else{
+                if (isSuddenDeath) {
                     _gameEvent.emit(JourneyGameEvent.GameOver)
+                } else {
+                    if (!additionalLifeUsed) {
+                        _showWatchAdContinueDialog.value = true
+                    } else {
+                        _gameEvent.emit(JourneyGameEvent.GameOver)
+                    }
                 }
             }
-
         }
     }
 
@@ -186,9 +229,38 @@ class JourneyGameViewModel @Inject constructor(
         _numOfHearts.value++
     }
 
+    fun getRemainingPlays(): Int? {
+        return maxSoundPlays?.let { max -> max - soundPlayCount }
+    }
+
+    private fun startTimer(durationMs: Long) {
+        viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
+            val endTime = startTime + durationMs
+
+            while (System.currentTimeMillis() < endTime) {
+                val remaining = endTime - System.currentTimeMillis()
+                _timerState.value = TimerState(
+                    remainingMs = remaining,
+                    totalMs = durationMs,
+                    isWarning = remaining < durationMs / 4 // Warning at 25% remaining
+                )
+                delay(100) // Update every 100ms
+            }
+
+            // Time's up! Game over
+            _gameEvent.emit(JourneyGameEvent.GameOver)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         soundPlayer.stop()
     }
-
 }
+
+data class TimerState(
+    val remainingMs: Long,
+    val totalMs: Long,
+    val isWarning: Boolean
+)

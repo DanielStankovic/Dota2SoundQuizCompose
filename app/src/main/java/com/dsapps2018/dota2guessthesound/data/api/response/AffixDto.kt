@@ -2,7 +2,7 @@ package com.dsapps2018.dota2guessthesound.data.api.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class AffixDto(
@@ -13,7 +13,7 @@ data class AffixDto(
     @SerialName("description")
     val description: String,
     @SerialName("data")
-    val data: JsonElement,
+    val data: JsonObject,
     @SerialName("modified_at")
     val modifiedAt: String,
     @SerialName("active")
