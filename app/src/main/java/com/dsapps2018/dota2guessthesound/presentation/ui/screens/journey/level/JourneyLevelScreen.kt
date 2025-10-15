@@ -41,10 +41,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -54,6 +55,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -63,10 +65,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.data.api.response.JourneyLevelDto
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
@@ -89,6 +90,9 @@ fun JourneyLevelScreen(
     val journeyLevelState by levelViewModel.journeyLevelState.collectAsStateWithLifecycle()
     val journeyProgressText by levelViewModel.journeyProgressText.collectAsStateWithLifecycle()
 
+    // State to track banner height
+    var bannerHeight by remember { mutableIntStateOf(0) }
+
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         topBar = {
@@ -97,25 +101,27 @@ fun JourneyLevelScreen(
             )
         },
         content = { padding ->
-            Column(
-                Modifier.padding(
-                    bottom = padding.calculateBottomPadding(), top = padding.calculateTopPadding()
-                )
+            Box(
+                modifier = modifier
+                    .padding(
+                        bottom = padding.calculateBottomPadding(),
+                        top = padding.calculateTopPadding()
+                    )
+                    .paint(
+                        painterResource(id = R.drawable.journey_bg),
+                        contentScale = ContentScale.FillBounds
+                    )
             ) {
-                Box(
-                    modifier = modifier
-                        .weight(1f)
-                        .paint(
-                            painterResource(id = R.drawable.journey_bg),
-                            contentScale = ContentScale.FillBounds
-                        )
-                ) {
-                    JourneyLevelContent(
-                        journeyLevelState, levelViewModel, onLevelClicked = { level ->
-                            onLevelClicked(level)
-                        })
-                }
-                BannerView()
+                JourneyLevelContent(
+                    journeyLevelState, levelViewModel, bannerHeight, onLevelClicked = { level ->
+                        onLevelClicked(level)
+                    })
+                BannerView(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    onHeightMeasured = { height ->
+                        bannerHeight = height
+                    }
+                )
             }
 
         })
@@ -123,7 +129,10 @@ fun JourneyLevelScreen(
 
 @Composable
 fun JourneyLevelContent(
-    state: JourneyLevelFetchState, viewModel: JourneyLevelViewModel, onLevelClicked: (Int) -> Unit
+    state: JourneyLevelFetchState,
+    viewModel: JourneyLevelViewModel,
+    bannerHeight: Int,
+    onLevelClicked: (Int) -> Unit
 ) {
     when (state) {
         JourneyLevelFetchState.Loading -> {
@@ -139,6 +148,7 @@ fun JourneyLevelContent(
                 levels = state.data,
                 totalItems = state.data.size,
                 levelViewModel = viewModel,
+                bannerHeight = bannerHeight,
                 onLevelClicked = onLevelClicked
             )
         }
@@ -177,6 +187,7 @@ fun LevelData(
     levels: List<JourneyLevelModel>,
     totalItems: Int,
     levelViewModel: JourneyLevelViewModel,
+    bannerHeight: Int,
     onLevelClicked: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -213,7 +224,10 @@ fun LevelData(
             exit = fadeOut() + slideOutHorizontally { it / 2 },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 10.dp, end = 10.dp)
+                .padding(
+                    bottom = (bannerHeight + 10).dp,
+                    end = 10.dp
+                )
         ) {
             Box(
                 modifier = Modifier
@@ -282,9 +296,8 @@ fun LevelCardContent(
         Text(
             "Level\n${levelModel.level}",
             style = TextStyle(
-                brush = Brush.linearGradient(
-                    colors = PlayLevelTextGradient, start = Offset(0f, 0f), end = Offset(0f, 200f)
-                ), fontWeight = FontWeight.Bold, fontSize = 30.sp
+                shadow = Shadow(color = Color.Black, offset = Offset(x = 0f, y = 10f)),
+                color = Color.White, fontWeight = FontWeight.Bold, fontSize = 30.sp
             ),
             textAlign = TextAlign.Center,
         )
@@ -293,8 +306,8 @@ fun LevelCardContent(
 
         Card(
             colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent,
-        ),
+                containerColor = Color.Transparent,
+            ),
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier
                 .height(270.dp)

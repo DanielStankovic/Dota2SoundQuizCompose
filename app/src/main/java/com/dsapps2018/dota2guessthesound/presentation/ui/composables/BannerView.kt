@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -15,18 +16,26 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 
 @Composable
-fun BannerView() {
+fun BannerView(
+    modifier: Modifier = Modifier,
+    onHeightMeasured: (Int) -> Unit = {}
+) {
     val context = LocalContext.current
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
+    
+    val bannerHeight = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+        context, currentScreenWidth
+    ).height
+
+    // Report the height when the composable is first composed
+    LaunchedEffect(bannerHeight) {
+        onHeightMeasured(bannerHeight)
+    }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(
-                AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                    context, currentScreenWidth
-                ).height.dp
-            )
+            .height(bannerHeight.dp)
     ) {
         AndroidView(
             // on below line specifying width for ads.

@@ -23,17 +23,22 @@ fun TimerDisplay(timerState: TimerState) {
         modifier = Modifier.size(40.dp),
         contentAlignment = Alignment.Center
     ) {
-        val text = "${seconds}s"
+        val text = if (timerState.isPaused) "||" else "${seconds}s"
 
-        // Adjust text size based on text length
-        val fontSize = when (text.length) {
-            2 -> 24.sp
-            3 -> 18.sp
+        // Adjust text size based on text length and state
+        val fontSize = when {
+            timerState.isPaused -> 20.sp // Pause symbol
+            text.length == 2 -> 24.sp
+            text.length == 3 -> 18.sp
             else -> 14.sp
         }
 
         CircularProgressIndicator(
-            color = if(timerState.isWarning) Color.Red.copy(alpha = 0.7f) else Color.Cyan.copy(alpha = 0.7f),
+            color = when {
+                timerState.isPaused -> Color.Yellow.copy(alpha = 0.7f)
+                timerState.isWarning -> Color.Red.copy(alpha = 0.7f)
+                else -> Color.Cyan.copy(alpha = 0.7f)
+            },
             modifier = Modifier.matchParentSize(),
             progress = { progress },
             strokeWidth = 3.dp
@@ -42,7 +47,7 @@ fun TimerDisplay(timerState: TimerState) {
         Text(
             text,
             fontSize = fontSize,
-            color = Color.White,
+            color = if (timerState.isPaused) Color.Yellow else Color.White,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

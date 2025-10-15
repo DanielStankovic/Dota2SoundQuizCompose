@@ -3,6 +3,7 @@ package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game
 import android.content.Context
 import android.content.res.Resources
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -22,6 +23,7 @@ import kotlinx.coroutines.delay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,6 +75,14 @@ class JourneyGameViewModel @Inject constructor(
 
     private val _timerState = MutableStateFlow<TimerState?>(null)
     val timerState = _timerState.asStateFlow()
+
+    // Enhanced timer management
+    private var timerJob: Job? = null
+    private var timerStartTime: Long = 0L
+    private var timerDurationMs: Long = 0L
+    private var timerPausedAt: Long = 0L
+    private var timerRemainingWhenPaused: Long = 0L
+    private var isTimerPaused: Boolean = false
 
     val coroutineExceptionHandler: CoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, throwable ->
@@ -127,7 +137,7 @@ class JourneyGameViewModel @Inject constructor(
 
         // Set up timer if any affix requires it
         affixEngine.getTimerConfiguration()?.let { timerConfig ->
-            startTimer(timerConfig.durationMs)
+            initializeTimer(timerConfig.durationMs)
         }
 
         // Set up sound limitations if any affix requires them
@@ -213,6 +223,7 @@ class JourneyGameViewModel @Inject constructor(
                 } else {
                     if (!additionalLifeUsed) {
                         _showWatchAdContinueDialog.value = true
+                        pauseTimer()
                     } else {
                         _gameEvent.emit(JourneyGameEvent.GameOver)
                     }
@@ -233,34 +244,82 @@ class JourneyGameViewModel @Inject constructor(
         return maxSoundPlays?.let { max -> max - soundPlayCount }
     }
 
-    private fun startTimer(durationMs: Long) {
-        viewModelScope.launch {
-            val startTime = System.currentTimeMillis()
-            val endTime = startTime + durationMs
+    private fun initializeTimer(durationMs: Long) {
+        Log.d("$$$", "Usao u initalize Timer")
+        timerDurationMs = durationMs
+        timerStartTime = System.currentTimeMillis()
+        isTimerPaused = false
+        startTimerCoroutine()
+    }
+    
+    private fun startTimerCoroutine() {
+        timerJob?.cancel() // Cancel any existing timer
+        timerJob = viewModelScope.launch {
+            Log.d("$$$", "Usao u startTimerCoroutine, isTimerPuased je $isTimerPaused")
 
-            while (System.currentTimeMillis() < endTime) {
+            val startTime = if (isTimerPaused) {
+                // Resume from where we paused
+                isTimerPaused = false
+                System.currentTimeMillis() - (timerDurationMs - timerRemainingWhenPaused)
+            } else {
+                // Fresh start
+                System.currentTimeMillis()
+            }
+
+            val endTime = startTime + (if (isTimerPaused) timerRemainingWhenPaused else timerDurationMs)
+            
+            while (System.currentTimeMillis() < endTime && !isTimerPaused) {
                 val remaining = endTime - System.currentTimeMillis()
                 _timerState.value = TimerState(
                     remainingMs = remaining,
-                    totalMs = durationMs,
-                    isWarning = remaining < durationMs / 4 // Warning at 25% remaining
+                    totalMs = timerDurationMs,
+                    isWarning = remaining < timerDurationMs / 4,
+                    isPaused = false
                 )
                 delay(100) // Update every 100ms
             }
-
-            // Time's up! Game over
-            _gameEvent.emit(JourneyGameEvent.GameOver)
+            
+            // Time's up! (only trigger if not paused)
+            if (!isTimerPaused) {
+                _gameEvent.emit(JourneyGameEvent.GameOver)
+            }
         }
+    }
+    
+    private fun pauseTimer() {
+        if (timerJob?.isActive == true && !isTimerPaused) {
+            isTimerPaused = true
+            timerPausedAt = System.currentTimeMillis()
+            timerRemainingWhenPaused = _timerState.value?.remainingMs ?: 0L
+            
+            // Update UI to show paused state
+            _timerState.value = _timerState.value?.copy(isPaused = true)
+            
+            timerJob?.cancel()
+        }
+    }
+    
+    private fun resumeTimer() {
+        if (isTimerPaused && timerRemainingWhenPaused > 0) {
+            startTimerCoroutine()
+        }
+    }
+
+    fun resumeTimerAfterAd() {
+        resumeTimer()
     }
 
     override fun onCleared() {
         super.onCleared()
         soundPlayer.stop()
+        // Cancel timer to prevent memory leaks
+        timerJob?.cancel()
     }
 }
 
 data class TimerState(
     val remainingMs: Long,
     val totalMs: Long,
-    val isWarning: Boolean
+    val isWarning: Boolean,
+    val isPaused: Boolean = false
 )

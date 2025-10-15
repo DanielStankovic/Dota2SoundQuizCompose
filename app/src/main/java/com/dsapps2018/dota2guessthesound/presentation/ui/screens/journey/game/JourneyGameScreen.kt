@@ -47,9 +47,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
@@ -68,6 +69,7 @@ fun JourneyGameScreen(
 
     val context = LocalContext.current
     val showWatchAdContinueDialog by viewModel.showWatchAdContinueDialog.collectAsStateWithLifecycle()
+    val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
     val levelNum by viewModel.levelNum.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -87,29 +89,41 @@ fun JourneyGameScreen(
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         content = { padding ->
-            if (showWatchAdContinueDialog) WatchAdContinueDialog(onDismiss = {
-                viewModel.setShowWatchAdContinueDialog(false)
-            }, onSkipClicked = {
-                viewModel.setShowWatchAdContinueDialog(false)
-                showInterstitial(context) {
-                    onNavigateToResultScreen(levelNum, false)
+            if (showWatchAdContinueDialog) {
+                if(isRewardedReady) {
+                    WatchAdContinueDialog(onDismiss = {
+                        viewModel.setShowWatchAdContinueDialog(false)
+                    }, onSkipClicked = {
+                        viewModel.setShowWatchAdContinueDialog(false)
+                        // No need to resume timer since game is ending
+                        showInterstitial(context) {
+                            onNavigateToResultScreen(levelNum, false)
+                        }
+                    }, onWatchAdClicked = {
+                        viewModel.setShowWatchAdContinueDialog(false)
+
+                        showRewardedAd(context, onRewarded = {
+                            //If we played sound here the sound would play while the
+                            //ad is still fully visible which is bad. This way, we just set the flag
+                            //and check this flag onAdDismissed which is triggered when we close the ad.
+                            //Back button does not work when ad is fully visible, so user can not
+                            //exit the ad and trigger onPlayAgain, but we still include it to safe guard.
+                            viewModel.additionalLifeUsed = true
+                            viewModel.increaseNumOfHearts()
+
+                        }, onAdDismissed = {
+                            // Resume timer after ad is dismissed
+                            viewModel.resumeTimerAfterAd()
+                        })
+                    })
+                }else{
+                    viewModel.setShowWatchAdContinueDialog(false)
+                    // No need to resume timer since game is ending
+                    showInterstitial(context) {
+                        onNavigateToResultScreen(levelNum, false)
+                    }
                 }
-            }, onWatchAdClicked = {
-                viewModel.setShowWatchAdContinueDialog(false)
-
-                showRewardedAd(context, onRewarded = {
-                    //If we played sound here the sound would play while the
-                    //ad is still fully visible which is bad. This way, we just set the flag
-                    //and check this flag onAdDismissed which is triggered when we close the ad.
-                    //Back button does not work when ad is fully visible, so user can not
-                    //exit the ad and trigger onPlayAgain, but we still include it to safe guard.
-                    viewModel.additionalLifeUsed = true
-                    viewModel.increaseNumOfHearts()
-
-                }, onAdDismissed = {
-
-                })
-            })
+            }
             Box(
                 modifier
                     .fillMaxSize()
