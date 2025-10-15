@@ -14,5 +14,7 @@ data class JourneyDto(
     @SerialName("dire_heroes")
     val direHeroes: List<Int>,
     @SerialName("max_sounds")
-    val maxSounds: Int
+    val maxSounds: Int,
+    @SerialName("affixes")
+    val affixes: List<Int>,
 )

@@ -1,8 +1,10 @@
 package com.dsapps2018.dota2guessthesound.data.repository
 
 import com.dsapps2018.dota2guessthesound.data.api.response.JourneyDto
+import com.dsapps2018.dota2guessthesound.data.dao.AffixDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
+import com.dsapps2018.dota2guessthesound.data.db.entity.AffixEntity
 import com.dsapps2018.dota2guessthesound.data.model.JourneySoundModel
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import io.github.jan.supabase.postgrest.Postgrest
@@ -12,7 +14,8 @@ import javax.inject.Inject
 class JourneyRepository @Inject constructor(
     private val postgrest: Postgrest,
     private val soundDao: SoundDao,
-    private val casterDao: CasterDao
+    private val casterDao: CasterDao,
+    private val affixDao: AffixDao
 ) {
 
     suspend fun getLevelData(levelNum: Int): JourneyDto {
@@ -26,6 +29,7 @@ class JourneyRepository @Inject constructor(
                         "radiant_heroes",
                         "dire_heroes",
                         "max_sounds",
+                        "affixes"
                     )
                 ) {
                     filter {
@@ -43,6 +47,10 @@ class JourneyRepository @Inject constructor(
 
     suspend fun getCasterNames(heroIds: List<Int>): List<String>{
         return casterDao.getCasterNames(heroIds)
+    }
+
+    suspend fun getAllAffixes(): List<AffixEntity>{
+        return affixDao.getAllAffixes()
     }
 
 }

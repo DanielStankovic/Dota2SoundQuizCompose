@@ -110,15 +110,6 @@ fun AffixInfoBottomSheet(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(24.dp))
-//                    MenuButton(
-//                        modifier = Modifier
-//                            .height(70.dp)
-//                            .width(120.dp),
-//                        paddingValues = PaddingValues(),
-//                        text = "Close", textColor = Color.White,
-//                        contentScale = ContentScale.Fit,
-//                        onClick = onDismiss
-//                    )
                 }
             }
         }

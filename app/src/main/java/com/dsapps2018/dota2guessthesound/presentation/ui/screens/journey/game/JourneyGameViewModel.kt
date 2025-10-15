@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
 import com.dsapps2018.dota2guessthesound.data.repository.JourneyRepository
@@ -76,6 +77,21 @@ class JourneyGameViewModel @Inject constructor(
         _journeyDataState.value = JourneyGameFetchState.Loading
 
         val levelData = journeyRepository.getLevelData(levelNum.value)
+        val affixList = journeyRepository.getAllAffixes()
+
+        val currentAffixes = levelData.affixes.map { level ->
+            val affix = affixList.find { x -> x.id == level }!!
+            AffixModel(
+                id = affix.id,
+                affix = affix.affix,
+                description = affix.description,
+                iconResourceId = resources.getIdentifier(
+                    "affix_${affix.affix.lowercase().replace(" ", "_")}",
+                    "drawable",
+                    context.packageName
+                )
+            )
+        }
         val heroIds = levelData.radiantHeroes + levelData.direHeroes
         val journeySounds = journeyRepository.getJourneySounds(heroIds)
         val (correctSounds, incorrectSounds) = journeySounds.partition { it.isCorrectSound }
