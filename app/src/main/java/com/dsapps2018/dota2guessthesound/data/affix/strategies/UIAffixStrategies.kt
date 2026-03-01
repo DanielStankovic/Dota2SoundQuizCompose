@@ -16,11 +16,11 @@ class HiddenMarksAffixStrategy : AffixStrategy {
 /**
  * Affix that blurs hero images
  */
-class BlurredVisionAffixStrategy : AffixStrategy {
+class BlurredVisionAffixStrategy(val blur: String?) : AffixStrategy {
     override fun modifyUI(currentState: AffixUIState): AffixUIState {
         return currentState.copy(
             blurHeroImages = true,
-            blurIntensity = 25f // Blur radius
+            blurIntensity = blur?.toFloat() ?: 7f // Blur radius
         )
     }
 }

@@ -21,7 +21,12 @@ class AffixEngine(private val activeAffixes: List<AffixModel>) {
         return activeAffixes.mapNotNull { affix ->
             when (affix.affix.lowercase().replace(" ", "_")) {
                 "hidden_marks" -> HiddenMarksAffixStrategy()
-                "blurred_vision" -> BlurredVisionAffixStrategy()
+                "blurred_vision", "blurred_vision_2" -> BlurredVisionAffixStrategy(
+                    getValueFromData(
+                        affix,
+                        "blur"
+                    )
+                )
                 "race_against_time" -> RaceAgainstTimeAffixStrategy(
                     getValueFromData(
                         affix,
