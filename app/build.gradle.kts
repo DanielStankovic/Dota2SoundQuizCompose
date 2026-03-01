@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -52,13 +53,28 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
 
+    val localProps = Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) load(f.inputStream())
+    }
+
     buildTypes {
         android.buildFeatures.buildConfig = true
 
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
+            signingConfigs {
+                getByName("release").apply {
+                    val keystorePath = localProps.getProperty("KEYSTORE_PATH")
+                    if (keystorePath != null) {
+                        storeFile = file(keystorePath)
+                        storePassword = localProps.getProperty("STORE_PASSWORD")
+                        keyAlias = localProps.getProperty("KEY_ALIAS")
+                        keyPassword = localProps.getProperty("KEY_PASSWORD")
+                    }
+                }
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
