@@ -14,7 +14,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    //Test commetn
     @Provides
     @Singleton
     fun provideSoundPlayer(@ApplicationContext context: Context) =
