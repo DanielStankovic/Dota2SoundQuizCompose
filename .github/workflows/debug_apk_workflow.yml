@@ -51,7 +51,7 @@ jobs:
             **Branch:** ${{ github.ref_name }}
             **Commit:** ${{ github.sha }}
             **Build:** ${{ steps.timestamp.outputs.value }}
-          files: app/build/outputs/apk/debug/app-${{ steps.timestamp.outputs.value }}.apk
+          files: app/build/outputs/apk/staging/debug/app-${{ steps.timestamp.outputs.value }}.apk
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
