@@ -39,12 +39,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
+import com.dsapps2018.dota2guessthesound.data.quiz.MultipleChoiceEvent
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.toDp
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedImages
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
-import com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz.QuizEventState
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -97,27 +97,27 @@ fun FastFingerScreen(
     LaunchedEffect(Unit) {
         fastFingerViewModel.quizEvent.collect { quizEvent ->
             when (quizEvent) {
-                is QuizEventState.SoundReady -> {
+                is MultipleChoiceEvent.SoundReady -> {
                     buttonOptionsList = quizEvent.buttonOptions
                 }
 
-                QuizEventState.CorrectSound -> {
+                MultipleChoiceEvent.Correct -> {
                     score = (score.first + 1 to score.second + 1)
                     fastFingerViewModel.triggerCorrectImageAnimation()
                 }
 
-                QuizEventState.WrongSound -> {
+                MultipleChoiceEvent.Wrong -> {
                     score = (score.first to score.second + 1)
                     fastFingerViewModel.triggerWrongImageAnimation()
                 }
 
-                QuizEventState.NoMoreSounds -> {
+                MultipleChoiceEvent.NoMoreSounds -> {
                     showInterstitial(context) {
                         onPlayAgain(score.first, score.second, initialTime, true)
                     }
                 }
 
-                QuizEventState.ConnectionLost -> {
+                MultipleChoiceEvent.ConnectionLost -> {
                     showDialog = true
                 }
             }

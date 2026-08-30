@@ -41,6 +41,7 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
+import com.dsapps2018.dota2guessthesound.data.quiz.MultipleChoiceEvent
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.toDp
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.AnimatedImages
@@ -84,17 +85,17 @@ fun QuizScreen(
     LaunchedEffect(Unit) {
         quizViewModel.quizEvent.collect { quizEvent ->
             when (quizEvent) {
-                is QuizEventState.SoundReady -> {
+                is MultipleChoiceEvent.SoundReady -> {
                     buttonOptionsList = quizEvent.buttonOptions
                 }
 
-                QuizEventState.CorrectSound -> {
+                MultipleChoiceEvent.Correct -> {
                     score++
                     quizViewModel.triggerImageAnimation()
                 }
 
-                QuizEventState.WrongSound -> {
-                    if (!quizViewModel.additionalLifeUsed && isRewardedReady) {
+                MultipleChoiceEvent.Wrong -> {
+                    if (quizViewModel.extraLifeGate.canOfferContinue() && isRewardedReady) {
                         showWatchAdContinueDialog = true
                     } else {
                         showInterstitial(context) {
@@ -103,13 +104,13 @@ fun QuizScreen(
                     }
                 }
 
-                QuizEventState.NoMoreSounds -> {
+                MultipleChoiceEvent.NoMoreSounds -> {
                     showInterstitial(context) {
                         onPlayAgain(score, true)
                     }
                 }
 
-                QuizEventState.ConnectionLost -> {
+                MultipleChoiceEvent.ConnectionLost -> {
                     showDialog = true
                 }
             }
@@ -149,10 +150,10 @@ fun QuizScreen(
                         //and check this flag onAdDismissed which is triggered when we close the ad.
                         //Back button does not work when ad is fully visible, so user can not
                         //exit the ad and trigger onPlayAgain, but we still include it to safe guard.
-                        quizViewModel.additionalLifeUsed = true
+                        quizViewModel.extraLifeGate.markUsed()
 
                     }, onAdDismissed = {
-                        if (quizViewModel.additionalLifeUsed) {
+                        if (quizViewModel.extraLifeGate.used) {
                             quizViewModel.generateAndPlaySound()
                         } else {
                             onPlayAgain(score, false)

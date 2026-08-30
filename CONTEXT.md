@@ -28,6 +28,14 @@ _Avoid_: SoundPlayer (when you mean the domain capability), play helper
 One boot-time sync of catalog data, optional wipe, leaderboard flush, Player Progress, and sound downloads, reported as progress events.
 _Avoid_: Sync repository (as the domain name), boot sync pipeline
 
+**Multiple Choice Sound Round**:
+A Quiz or Fast Finger run over a shuffled sound pool with four name options per sound. Wrong-answer policy differs by mode (stay vs advance).
+_Avoid_: Quiz round (when you mean the shared module), sound deck
+
+**Extra Life Gate**:
+Whether the player has already used the one-shot rewarded continue in a classic Quiz run.
+_Avoid_: additional life flag (as the domain name), continue dialog (the UI)
+
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (notably ADR-0001 sync policy, ADR-0002 Player Progress repository, ADR-0003 Journey Round, ADR-0004 Sound Playback, ADR-0005 Sync Session). ADR-0002–0005 include **Revert** sections if those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0007). ADR-0002–0007 include **Revert** sections where those deepens need to be rolled back.
