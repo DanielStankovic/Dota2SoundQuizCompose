@@ -1,0 +1,12 @@
+---
+description: Lint-only verification; no builds or automated tests unless the user explicitly asks
+alwaysApply: true
+---
+
+# Verification
+
+- After edits: check Lint / IDE diagnostics on touched files. That is enough unless told otherwise.
+- Do **not** build or run the project (`./gradlew`, Assemble, install, emulator) unless the user explicitly asks.
+- Never add, generate, expand, or propose unit/instrumented tests or new `*Test.kt` under `app/src/test` / `androidTest`.
+
+Full policy: `docs/agents/verification.md`.
