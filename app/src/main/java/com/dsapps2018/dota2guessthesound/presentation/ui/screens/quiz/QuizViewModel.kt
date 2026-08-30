@@ -1,17 +1,13 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz
 
-import android.content.Context
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
 import com.dsapps2018.dota2guessthesound.data.repository.QuizRepository
-import com.dsapps2018.dota2guessthesound.data.util.SoundFileMapper
-import com.dsapps2018.dota2guessthesound.data.util.SoundPlayer
+import com.dsapps2018.dota2guessthesound.data.util.SoundPlayback
 import com.dsapps2018.dota2guessthesound.data.util.connectivity.ConnectivityObserver
 import com.dsapps2018.dota2guessthesound.data.util.connectivity.NetworkConnectivityObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,9 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val quizRepository: QuizRepository,
-    private val soundPlayer: SoundPlayer,
+    private val soundPlayback: SoundPlayback,
     private val networkConnectivityObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
@@ -63,24 +58,7 @@ class QuizViewModel @Inject constructor(
         }
         currentSound?.let {
             _quizEvent.emit(QuizEventState.SoundReady(getButtonOptions(it)))
-            playSoundFromSoundModel(it)
-        }
-    }
-
-    private fun playSoundFromSoundModel(currentSound: SoundModel?) {
-        currentSound?.let {
-            if (it.isLocal) {
-                val resourceId = SoundFileMapper.map[it.spellName]
-                if (resourceId == null) {
-                    return
-                }
-                val uri = Uri.parse("android.resource://${context.packageName}/$resourceId")
-                soundPlayer.playSoundFromResource(uri)
-            } else {
-                if (it.soundFileLink.isNotEmpty()) {
-                    soundPlayer.playSound(it.soundFileLink)
-                }
-            }
+            soundPlayback.play(it)
         }
     }
 
@@ -105,16 +83,12 @@ class QuizViewModel @Inject constructor(
     }
 
     fun playSound() {
-        playSoundFromSoundModel(currentSound)
-//        soundPlayer.playSound(currentSound?.soundFileLink!!)
-//        if(!mediaPlayer.isPlaying){
-//            mediaPlayer.start()
-//        }
+        currentSound?.let { soundPlayback.play(it) }
     }
 
     fun onAnswerClicked(answer: String) {
         viewModelScope.launch {
-            soundPlayer.stop()
+            soundPlayback.stop()
 
             if (answer == currentSound?.spellName) {
                 _quizEvent.emit(QuizEventState.CorrectSound)
@@ -137,7 +111,7 @@ class QuizViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        soundPlayer.stop()
+        soundPlayback.stop()
     }
 
     fun generateAndPlaySound() {
