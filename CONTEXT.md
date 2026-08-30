@@ -24,6 +24,10 @@ _Avoid_: Journey session, Journey game (as the domain name for the module)
 Playing a spell `SoundModel` (local resource or remote URL), or a raw resource id, without callers knowing mapper/Uri details.
 _Avoid_: SoundPlayer (when you mean the domain capability), play helper
 
+**Sync Session**:
+One boot-time sync of catalog data, optional wipe, leaderboard flush, Player Progress, and sound downloads, reported as progress events.
+_Avoid_: Sync repository (as the domain name), boot sync pipeline
+
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (notably ADR-0001 sync policy, ADR-0002 Player Progress repository, ADR-0003 Journey Round, ADR-0004 Sound Playback). ADR-0002–0004 include **Revert** sections if those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (notably ADR-0001 sync policy, ADR-0002 Player Progress repository, ADR-0003 Journey Round, ADR-0004 Sound Playback, ADR-0005 Sync Session). ADR-0002–0005 include **Revert** sections if those deepens need to be rolled back.

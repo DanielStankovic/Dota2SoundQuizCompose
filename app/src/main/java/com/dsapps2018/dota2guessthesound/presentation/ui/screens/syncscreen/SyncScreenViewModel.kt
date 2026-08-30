@@ -1,55 +1,38 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.syncscreen
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dsapps2018.dota2guessthesound.BuildConfig
-import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
-import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
-import com.dsapps2018.dota2guessthesound.data.repository.SyncRepository
-import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
-import com.dsapps2018.dota2guessthesound.data.util.Constants.FORCED_VERSION_TAG
+import com.dsapps2018.dota2guessthesound.data.sync.SyncProgress
+import com.dsapps2018.dota2guessthesound.data.sync.SyncSession
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SyncScreenViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val sharedPreferences: SharedPreferences,
-    private val syncRepository: SyncRepository,
-    private val configRepository: ConfigRepository,
-    private val playerProgressRepository: PlayerProgressRepository,
-    private val leaderboardRepository: LeaderboardRepository,
-    private val firebaseCrashlytics: FirebaseCrashlytics
+    private val syncSession: SyncSession,
+    private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ViewModel() {
 
-    private val _progressStatus = MutableSharedFlow<ProgressUpdateEvent>(10)
-    val progressStatus: SharedFlow<ProgressUpdateEvent> = _progressStatus.asSharedFlow()
+    private val _progressStatus = MutableSharedFlow<SyncProgress>(replay = 10)
+    val progressStatus: SharedFlow<SyncProgress> = _progressStatus.asSharedFlow()
 
     private val _triviaData = MutableStateFlow("")
     val triviaData = _triviaData.asStateFlow()
 
-    private var syncIndex = 0
+    private var syncJob: Job? = null
 
     companion object {
-
-        private val triviaList = listOf<String>(
+        private val triviaList = listOf(
             "If you explore the Dota 2 map in certain patches, you might spot hidden Easter eggs, like a frog on a lily pad—a nod to the mysterious Dota developer, IceFrog.",
             "Pudge, one of the most popular heroes, inspired a custom game called \"Pudge Wars\" in Warcraft III, where players used his \"Hook\" ability to pull each other. This game mode has its own loyal following even today!",
             " At The International tournaments, Valve creates a real-life version of the Secret Shop where fans can buy exclusive Dota 2 merchandise not available elsewhere.",
@@ -60,38 +43,7 @@ class SyncScreenViewModel @Inject constructor(
             "Dota 2 holds a Guinness World Record for the largest single prize pool in eSports, with The International’s prize pool topping \$40 million in 2020.",
             "The longest pro Dota 2 match lasted over three hours, testing players’ endurance as they fought through multiple attempts to end the game in a record-breaking stalemate."
         )
-
-        private val syncList = listOf<String>(
-            "Checking game data",
-            "Downloading config files",
-            "Syncing caster type",
-            "Syncing casters",
-            "Syncing game mode",
-            "Syncing changelog",
-            "Syncing faq",
-            "Syncing affix data",
-            "Syncing leaderboard data",
-            "Syncing user data",
-            "Syncing sounds",
-            "Sync finished"
-        )
     }
-
-    val coroutineExceptionHandler: CoroutineExceptionHandler =
-        CoroutineExceptionHandler { coroutineContext, throwable ->
-            viewModelScope.launch {
-                firebaseCrashlytics.recordException(throwable)
-                _progressStatus.emit(
-                    ProgressUpdateEvent.ProgressError(
-                        throwable.message
-                            ?: context.getString(
-                                R.string.sync_unknown_error,
-                                syncList[syncIndex - 1]
-                            )
-                    )
-                )
-            }
-        }
 
     init {
         startTriviaRotation()
@@ -112,91 +64,18 @@ class SyncScreenViewModel @Inject constructor(
     }
 
     private fun startSync() {
-        viewModelScope.launch(coroutineExceptionHandler) {
-
-            sendNextEvent()
-            delay(1000L)
-
-            sendNextEvent()
-            val configDto = configRepository.getRemoteConfig()
-            val currentTimestamp = System.currentTimeMillis()
-            sharedPreferences.edit().putLong(FORCED_VERSION_TAG, currentTimestamp).apply()
-            if (configDto.forcedVersion > BuildConfig.VERSION_CODE) {
-                _progressStatus.emit(ProgressUpdateEvent.ProgressUpdateRequired)
-                return@launch
-            }
-
-            if (configDto.deleteVersion == BuildConfig.VERSION_CODE) {
-                val isDeletedForVersion = sharedPreferences.getBoolean(
-                    "DELETED_FOR_VER_${configDto.deleteVersion}",
-                    false
-                )
-                if (!isDeletedForVersion) {
-                   syncRepository.deleteDatabaseData(configDto.deleteVersion)
+        syncJob?.cancel()
+        syncJob = viewModelScope.launch {
+            syncSession.run().collect { progress ->
+                if (progress is SyncProgress.Error) {
+                    firebaseCrashlytics.recordException(Exception(progress.message))
                 }
+                _progressStatus.emit(progress)
             }
-
-            syncRepository.insertInitialUserData()
-
-            sendNextEvent()
-            syncRepository.syncCasterType()
-
-            sendNextEvent()
-            syncRepository.syncCaster()
-
-            sendNextEvent()
-            syncRepository.syncGameMode()
-
-            sendNextEvent()
-            syncRepository.syncChangelog()
-
-            sendNextEvent()
-            syncRepository.syncFaq()
-
-            sendNextEvent()
-            syncRepository.syncAffixData()
-
-            sendNextEvent()
-            leaderboardRepository.sendUnsentDetails()
-
-            sendNextEvent()
-            playerProgressRepository.sync()
-
-            sendNextEvent()
-            syncRepository.syncSound().onEach { progressUpdate ->
-                val prog = ProgressUpdateEvent.ProgressUpdate(
-                    (syncIndex + progressUpdate.first).toFloat(),
-                    syncList.size.toFloat(),
-                    context.getString(R.string.downloading_msg, progressUpdate.second)
-                )
-
-                _progressStatus.emit(prog)
-            }.onCompletion {
-                _progressStatus.emit(
-                    ProgressUpdateEvent.ProgressUpdate(
-                        syncList.size.toFloat(),
-                        syncList.size.toFloat(),
-                        syncList.last()
-                    )
-                )
-                _progressStatus.emit(ProgressUpdateEvent.SyncFinished)
-            }.collect()
         }
     }
 
-    private suspend fun sendNextEvent() {
-        _progressStatus.emit(
-            ProgressUpdateEvent.ProgressUpdate(
-                (syncIndex + 1).toFloat(),
-                syncList.size.toFloat(),
-                syncList[syncIndex]
-            )
-        )
-        syncIndex++
-    }
-
     fun restartSync() {
-        syncIndex = 0
         startSync()
     }
 }

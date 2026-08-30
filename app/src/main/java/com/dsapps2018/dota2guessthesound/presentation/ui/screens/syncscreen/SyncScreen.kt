@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.sync.SyncProgress
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.ProgressColor
@@ -42,7 +43,7 @@ fun SyncScreen(
     onUpdateRequired: () -> Unit
 ) {
     var currentProgress by remember {
-        mutableStateOf(ProgressUpdateEvent.ProgressUpdate(0f, 0f, Constants.EMPTY_STRING))
+        mutableStateOf(SyncProgress.Update(0f, 0f, Constants.EMPTY_STRING))
     }
 
     val triviaData by syncScreenViewModel.triviaData.collectAsStateWithLifecycle()
@@ -53,19 +54,19 @@ fun SyncScreen(
     LaunchedEffect(Unit) {
         syncScreenViewModel.progressStatus.collect { progressStatusEvent ->
             when (progressStatusEvent) {
-                is ProgressUpdateEvent.ProgressError -> {
+                is SyncProgress.Error -> {
                     showDialog = true
                 }
 
-                is ProgressUpdateEvent.ProgressUpdate -> {
+                is SyncProgress.Update -> {
                     currentProgress = progressStatusEvent
                 }
 
-                ProgressUpdateEvent.ProgressUpdateRequired -> {
+                SyncProgress.UpdateRequired -> {
                     onUpdateRequired()
                 }
 
-                ProgressUpdateEvent.SyncFinished -> {
+                SyncProgress.Finished -> {
                     onSyncFinished()
                 }
             }
@@ -145,7 +146,7 @@ fun SyncScreen(
     )
 }
 
-private fun calculateProgress(currentProgress: ProgressUpdateEvent.ProgressUpdate): Float {
+private fun calculateProgress(currentProgress: SyncProgress.Update): Float {
     val progress = currentProgress.progress / currentProgress.maxProgress
     return if (!progress.isNaN()) {
         progress

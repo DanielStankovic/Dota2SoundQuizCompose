@@ -1,4 +1,4 @@
-package com.dsapps2018.dota2guessthesound.data.repository
+package com.dsapps2018.dota2guessthesound.data.sync
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -32,7 +32,11 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.FaqEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
+import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
+import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
+import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.Constants.FORCED_VERSION_TAG
 import com.dsapps2018.dota2guessthesound.data.util.getInitialModifiedDate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.postgrest.Postgrest
@@ -44,14 +48,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.io.File
 import javax.inject.Inject
 
-class SyncRepository @Inject constructor(
+/**
+ * Deep Data-layer module for a Sync Session (boot catalog + progress sync).
+ * See docs/adr/0005-sync-session.md.
+ */
+class SyncSession @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val postgrest: Postgrest,
     private val storage: Storage,
@@ -64,10 +74,133 @@ class SyncRepository @Inject constructor(
     private val userDataDao: UserDataDao,
     private val gameModeDao: GameModeDao,
     private val leaderboardDetailsDao: LeaderboardDetailsDao,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val configRepository: ConfigRepository,
+    private val playerProgressRepository: PlayerProgressRepository,
+    private val leaderboardRepository: LeaderboardRepository,
 ) {
 
-    suspend fun syncCasterType() {
+    companion object {
+        private val stepLabels = listOf(
+            "Checking game data",
+            "Downloading config files",
+            "Syncing caster type",
+            "Syncing casters",
+            "Syncing game mode",
+            "Syncing changelog",
+            "Syncing faq",
+            "Syncing affix data",
+            "Syncing leaderboard data",
+            "Syncing user data",
+            "Syncing sounds",
+            "Sync finished",
+        )
+    }
+
+    /**
+     * Runs the full boot sync pipeline, emitting [SyncProgress] for UI.
+     */
+    fun run(): Flow<SyncProgress> = channelFlow {
+        var syncIndex = 0
+
+        suspend fun sendNextStep() {
+            send(
+                SyncProgress.Update(
+                    (syncIndex + 1).toFloat(),
+                    stepLabels.size.toFloat(),
+                    stepLabels[syncIndex]
+                )
+            )
+            syncIndex++
+        }
+
+        try {
+            sendNextStep()
+            delay(1000L)
+
+            sendNextStep()
+            val configDto = configRepository.getRemoteConfig()
+            sharedPreferences.edit()
+                .putLong(FORCED_VERSION_TAG, System.currentTimeMillis())
+                .apply()
+            if (configDto.forcedVersion > BuildConfig.VERSION_CODE) {
+                send(SyncProgress.UpdateRequired)
+                return@channelFlow
+            }
+
+            if (configDto.deleteVersion == BuildConfig.VERSION_CODE) {
+                val isDeletedForVersion = sharedPreferences.getBoolean(
+                    "DELETED_FOR_VER_${configDto.deleteVersion}",
+                    false
+                )
+                if (!isDeletedForVersion) {
+                    deleteDatabaseData(configDto.deleteVersion)
+                }
+            }
+
+            insertInitialUserData()
+
+            sendNextStep()
+            syncCasterType()
+
+            sendNextStep()
+            syncCaster()
+
+            sendNextStep()
+            syncGameMode()
+
+            sendNextStep()
+            syncChangelog()
+
+            sendNextStep()
+            syncFaq()
+
+            sendNextStep()
+            syncAffixData()
+
+            sendNextStep()
+            leaderboardRepository.sendUnsentDetails()
+
+            sendNextStep()
+            playerProgressRepository.sync()
+
+            sendNextStep()
+            syncSound().collect { progressUpdate ->
+                send(
+                    SyncProgress.Update(
+                        (syncIndex + progressUpdate.first).toFloat(),
+                        stepLabels.size.toFloat(),
+                        applicationContext.getString(
+                            R.string.downloading_msg,
+                            progressUpdate.second
+                        )
+                    )
+                )
+            }
+
+            send(
+                SyncProgress.Update(
+                    stepLabels.size.toFloat(),
+                    stepLabels.size.toFloat(),
+                    stepLabels.last()
+                )
+            )
+            send(SyncProgress.Finished)
+        } catch (t: Throwable) {
+            val failedStep = stepLabels.getOrNull((syncIndex - 1).coerceAtLeast(0))
+                ?: stepLabels.first()
+            send(
+                SyncProgress.Error(
+                    t.message ?: applicationContext.getString(
+                        R.string.sync_unknown_error,
+                        failedStep
+                    )
+                )
+            )
+        }
+    }
+
+    private suspend fun syncCasterType() {
         try {
             val modifiedDate = casterTypeDao.getModifiedDate() ?: getInitialModifiedDate()
             val casterTypeList = postgrest
@@ -89,7 +222,7 @@ class SyncRepository @Inject constructor(
         }
     }
 
-    suspend fun syncCaster() {
+    private suspend fun syncCaster() {
         try {
             val modifiedDate = casterDao.getModifiedDate() ?: getInitialModifiedDate()
             val casterList = postgrest
@@ -118,7 +251,7 @@ class SyncRepository @Inject constructor(
         }
     }
 
-    suspend fun syncGameMode() {
+    private suspend fun syncGameMode() {
         try {
             val modifiedDate = gameModeDao.getModifiedDate() ?: getInitialModifiedDate()
             val gameModeList = postgrest
@@ -147,7 +280,7 @@ class SyncRepository @Inject constructor(
         }
     }
 
-    suspend fun syncChangelog() {
+    private suspend fun syncChangelog() {
         try {
             val modifiedDate = changelogDao.getModifiedDate() ?: getInitialModifiedDate()
             val changelogList = postgrest
@@ -175,7 +308,7 @@ class SyncRepository @Inject constructor(
         }
     }
 
-    suspend fun syncFaq() {
+    private suspend fun syncFaq() {
         try {
             val modifiedDate = faqDao.getModifiedDate() ?: getInitialModifiedDate()
             val faqList = postgrest
@@ -212,7 +345,7 @@ class SyncRepository @Inject constructor(
         }
     }
 
-    suspend fun syncAffixData() {
+    private suspend fun syncAffixData() {
         try {
             val modifiedDate = affixDao.getModifiedDate() ?: getInitialModifiedDate()
             val affixList = postgrest
@@ -249,7 +382,7 @@ class SyncRepository @Inject constructor(
         }
     }
 
-    fun syncSound(): Flow<Pair<Float, String>> {
+    private fun syncSound(): Flow<Pair<Float, String>> {
         return channelFlow {
             try {
                 val modifiedDate =
@@ -386,14 +519,14 @@ class SyncRepository @Inject constructor(
         return directory
     }
 
-    suspend fun insertInitialUserData() {
+    private suspend fun insertInitialUserData() {
         val userData = userDataDao.getUserData()
         if (userData != null) return
         val userDataInitial = getInitialUserData()
         userDataDao.insert(userDataInitial)
     }
 
-    suspend fun deleteDatabaseData(deleteVersion: Int) {
+    private suspend fun deleteDatabaseData(deleteVersion: Int) {
         try {
             userDataDao.truncateTable()
             casterTypeDao.truncateTable()
