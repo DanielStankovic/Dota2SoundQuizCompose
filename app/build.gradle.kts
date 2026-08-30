@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Properties
 
 plugins {
@@ -12,12 +10,6 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
     alias(libs.plugins.room)
-}
-
-val buildTime: String = if (project.hasProperty("buildTime")) {
-    project.property("buildTime") as String
-} else {
-    SimpleDateFormat("ddMMyyHH").format(Date())
 }
 
 android {
@@ -44,17 +36,10 @@ android {
         applicationId = "com.dsapps2018.dota2guessthesound"
         minSdk = 29
         targetSdk = 35
-        versionCode = buildTime.toInt()
+        versionCode = 16
         versionName = "2.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    applicationVariants.all {
-        outputs.all {
-            this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            outputFileName = "app-${buildTime}.apk"
-        }
     }
 
     room {
