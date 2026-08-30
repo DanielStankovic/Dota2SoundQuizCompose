@@ -8,7 +8,7 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.data.repository.JourneyLevelRepository
-import com.dsapps2018.dota2guessthesound.data.repository.ScoreRepository
+import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class JourneyLevelViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    scoreRepository: ScoreRepository,
+    playerProgressRepository: PlayerProgressRepository,
     private val resources: Resources,
     private val firebaseCrashlytics: FirebaseCrashlytics,
     private val journeyLevelRepository: JourneyLevelRepository
@@ -35,7 +35,7 @@ class JourneyLevelViewModel @Inject constructor(
         MutableStateFlow<JourneyLevelFetchState>(JourneyLevelFetchState.Loading)
     val journeyLevelState = _journeyLevelState.asStateFlow()
 
-    val journeyLevel: StateFlow<Int> = scoreRepository.getUserJourneyLevelFlow().stateIn(
+    val journeyLevel: StateFlow<Int> = playerProgressRepository.journeyLevel().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = 0

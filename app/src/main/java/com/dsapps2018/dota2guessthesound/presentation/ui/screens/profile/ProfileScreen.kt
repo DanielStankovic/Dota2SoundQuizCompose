@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
+import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoginStatusComposable
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.OptionsItem
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
@@ -58,7 +58,7 @@ fun ProfileScreen(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val authState by authViewModel.authStatus.collectAsStateWithLifecycle()
-    val userData by authViewModel.userData.collectAsStateWithLifecycle()
+    val progress by authViewModel.progress.collectAsStateWithLifecycle()
     val lastSyncDate by authViewModel.modifiedDateFlow.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showDialog by remember { mutableStateOf(false) }
@@ -195,7 +195,7 @@ fun ProfileScreen(
                     }
                     Spacer(modifier = Modifier.height(40.dp))
 
-                    UserDataComposable(selectedIndex, userData)
+                    UserDataComposable(selectedIndex, progress)
 
                     Spacer(modifier = Modifier.weight(1f))
                     if (authState is SessionStatus.Authenticated) {
@@ -215,7 +215,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun UserDataComposable(index: Int, userData: UserDataEntity) {
+fun UserDataComposable(index: Int, progress: PlayerProgress) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -224,13 +224,13 @@ fun UserDataComposable(index: Int, userData: UserDataEntity) {
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Text(
-            "Times played\n\n${getTimesPlayed(index, userData)}",
+            "Times played\n\n${getTimesPlayed(index, progress)}",
             color = Color.White,
             fontSize = 22.sp,
             textAlign = TextAlign.Center
         )
         Text(
-            "High score\n\n${getHighScore(index, userData)}",
+            "High score\n\n${getHighScore(index, progress)}",
             color = Color.White,
             fontSize = 22.sp,
             textAlign = TextAlign.Center
@@ -239,24 +239,24 @@ fun UserDataComposable(index: Int, userData: UserDataEntity) {
 
 }
 
-private fun getTimesPlayed(index: Int, userData: UserDataEntity): Int {
+private fun getTimesPlayed(index: Int, progress: PlayerProgress): Int {
     return when (index) {
-        0 -> userData.quizPlayed
-        1 -> userData.thirtyPlayed
-        2 -> userData.sixtyPlayed
-        3 -> userData.ninetyPlayed
-        4 -> userData.invokerPlayed
+        0 -> progress.quizPlayed
+        1 -> progress.thirtyPlayed
+        2 -> progress.sixtyPlayed
+        3 -> progress.ninetyPlayed
+        4 -> progress.invokerPlayed
         else -> 0
     }
 }
 
-private fun getHighScore(index: Int, userData: UserDataEntity): Number {
+private fun getHighScore(index: Int, progress: PlayerProgress): Number {
     return when (index) {
-        0 -> userData.quizScore
-        1 -> userData.thirtySecondsScore
-        2 -> userData.sixtySecondsScore
-        3 -> userData.ninetySecondsScore
-        4 -> userData.invokerScore
+        0 -> progress.quizScore
+        1 -> progress.thirtySecondsScore
+        2 -> progress.sixtySecondsScore
+        3 -> progress.ninetySecondsScore
+        4 -> progress.invokerScore
         else -> 0
     }
 }

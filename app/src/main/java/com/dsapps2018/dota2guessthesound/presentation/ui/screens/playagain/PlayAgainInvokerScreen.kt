@@ -68,7 +68,7 @@ fun PlayAgainInvokerScreen(
     }
 
     scoreViewModel.updateInvokerScore(score)
-    val userData by scoreViewModel.userData.collectAsStateWithLifecycle()
+    val progress by scoreViewModel.progress.collectAsStateWithLifecycle()
 
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
@@ -107,7 +107,7 @@ fun PlayAgainInvokerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        stringResource(R.string.highscore_invoker, userData.invokerScore),
+                        stringResource(R.string.highscore_invoker, progress.invokerScore),
                         textAlign = TextAlign.Center,
                         fontSize = 22.sp,
                         color = Color.White

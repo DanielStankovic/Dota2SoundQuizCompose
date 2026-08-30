@@ -7,19 +7,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
+import com.dsapps2018.dota2guessthesound.data.model.initialPlayerProgress
 import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
+import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants.FORCED_VERSION_TAG
 import com.dsapps2018.dota2guessthesound.data.util.Constants.PERMISSION_CHECK_TAG
 import com.dsapps2018.dota2guessthesound.data.util.Constants.TEN_DAYS_MILLIS
 import com.dsapps2018.dota2guessthesound.data.util.Constants.THREE_DAYS_MILLIS
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayer
+import com.dsapps2018.dota2guessthesound.data.util.formatTimestampToLocalDateTime
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +35,7 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sharedPreferences: SharedPreferences,
     private val configRepository: ConfigRepository,
+    private val playerProgressRepository: PlayerProgressRepository,
     private val firebaseCrashlytics: FirebaseCrashlytics,
     private val soundPlayer: SoundPlayer,
 ) : ViewModel() {
@@ -35,16 +43,36 @@ class HomeViewModel @Inject constructor(
     private val _updateRequiredStatus = MutableStateFlow<Boolean>(false)
     val updateRequiredStatus = _updateRequiredStatus.asStateFlow()
 
+    val progress: StateFlow<PlayerProgress> = playerProgressRepository.progress.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = initialPlayerProgress()
+    )
+
+    val lastSyncDate: StateFlow<String> = playerProgressRepository.lastSyncAt().map { date ->
+        formatTimestampToLocalDateTime(date)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = "--Data not synced--"
+    )
+
     companion object {
         private const val MAX_INDEX = 4
     }
 
     val coroutineExceptionHandler: CoroutineExceptionHandler =
-        CoroutineExceptionHandler { coroutineContext, throwable ->
+        CoroutineExceptionHandler { _, throwable ->
             viewModelScope.launch {
                 firebaseCrashlytics.recordException(throwable)
             }
         }
+
+    fun adjustCoins(delta: Int) {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            playerProgressRepository.adjustCoins(delta)
+        }
+    }
 
     private val _currentIndex = MutableStateFlow(0)
     val currentIndex: StateFlow<Int> = _currentIndex

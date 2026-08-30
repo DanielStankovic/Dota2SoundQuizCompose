@@ -108,8 +108,8 @@ fun HomeScreen(
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
     val snackbarHostState = remember { SnackbarHostState() }
     val authState by authViewModel.authStatus.collectAsStateWithLifecycle()
-    val userData by authViewModel.userData.collectAsStateWithLifecycle()
-    val lastSyncDate by authViewModel.modifiedDateFlow.collectAsStateWithLifecycle()
+    val progress by homeViewModel.progress.collectAsStateWithLifecycle()
+    val lastSyncDate by homeViewModel.lastSyncDate.collectAsStateWithLifecycle()
     val currentIndex by homeViewModel.currentIndex.collectAsStateWithLifecycle()
     val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
     val updateRequiredStatus by homeViewModel.updateRequiredStatus.collectAsStateWithLifecycle()
@@ -286,7 +286,7 @@ fun HomeScreen(
                                 })
                         Spacer(Modifier.weight(1f))
                         Text(
-                            userData.coinValue.toString(),
+                            progress.coinValue.toString(),
                             color = Color.White,
                             fontSize = 30.sp,
                             textAlign = TextAlign.Center,
@@ -383,7 +383,7 @@ fun HomeScreen(
                                 HomeInvokerComposable(currentIndex = currentIndex,
                                     animatedRotationY = animatedRotationY,
                                     isRewardedReady = isRewardedReady,
-                                    userCoinValue = userData.coinValue,
+                                    userCoinValue = progress.coinValue,
                                     scale = scale,
                                     alpha = alpha,
                                     setShouldAnimate = { boolValue ->
@@ -405,7 +405,7 @@ fun HomeScreen(
                                         onInvokerClicked()
                                     },
                                     updateCoinValue = { value ->
-                                        authViewModel.updateCoinValue(
+                                        homeViewModel.adjustCoins(
                                             value
                                         )
                                     }

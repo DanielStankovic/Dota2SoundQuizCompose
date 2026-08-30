@@ -9,7 +9,7 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.SyncRepository
-import com.dsapps2018.dota2guessthesound.data.repository.UserDataRepository
+import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants.FORCED_VERSION_TAG
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +34,7 @@ class SyncScreenViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val syncRepository: SyncRepository,
     private val configRepository: ConfigRepository,
-    private val userDataRepository: UserDataRepository,
+    private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
     private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
@@ -160,7 +160,7 @@ class SyncScreenViewModel @Inject constructor(
             leaderboardRepository.sendUnsentDetails()
 
             sendNextEvent()
-            userDataRepository.syncUserData()
+            playerProgressRepository.sync()
 
             sendNextEvent()
             syncRepository.syncSound().onEach { progressUpdate ->

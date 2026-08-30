@@ -133,7 +133,7 @@ fun InvokerExplanationScreen(
                         text = stringResource(R.string.play_lbl), textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
-                        authViewModel.updateCoinValue(-Constants.INVOKER_COIN_COST)
+                        authViewModel.adjustCoins(-Constants.INVOKER_COIN_COST)
                         onPlayClicked()
                     }
 

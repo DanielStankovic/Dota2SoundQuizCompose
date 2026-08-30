@@ -71,7 +71,7 @@ fun PlayAgainFastFingerScreen(
     }
 
     scoreViewModel.updateFastFingerScore(scoreGuessed, scoreTotal, time)
-    val userData by scoreViewModel.userData.collectAsStateWithLifecycle()
+    val progress by scoreViewModel.progress.collectAsStateWithLifecycle()
 
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
@@ -113,10 +113,10 @@ fun PlayAgainFastFingerScreen(
                     Text(
                         stringResource(
                             R.string.highscore_fast_finger, time, when (time) {
-                                30 -> userData.thirtySecondsScore
-                                60 -> userData.sixtySecondsScore
-                                90 -> userData.ninetySecondsScore
-                                else -> userData.thirtySecondsScore
+                                30 -> progress.thirtySecondsScore
+                                60 -> progress.sixtySecondsScore
+                                90 -> progress.ninetySecondsScore
+                                else -> progress.thirtySecondsScore
                             }
                         ),
                         textAlign = TextAlign.Center,

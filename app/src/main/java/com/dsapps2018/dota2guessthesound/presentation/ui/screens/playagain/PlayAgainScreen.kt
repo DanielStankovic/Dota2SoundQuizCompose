@@ -69,7 +69,7 @@ fun PlayAgainScreen(
     }
 
     scoreViewModel.updateQuizScore(score)
-    val userData by scoreViewModel.userData.collectAsStateWithLifecycle()
+    val progress by scoreViewModel.progress.collectAsStateWithLifecycle()
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         snackbarHost = {
@@ -107,7 +107,7 @@ fun PlayAgainScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        stringResource(R.string.highscore_quiz, userData.quizScore),
+                        stringResource(R.string.highscore_quiz, progress.quizScore),
                         textAlign = TextAlign.Center,
                         fontSize = 22.sp,
                         color = Color.White
