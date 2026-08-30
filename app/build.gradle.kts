@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -11,12 +13,20 @@ plugins {
 }
 
 android {
+    val localProps = Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) load(f.inputStream())
+    }
+
     signingConfigs {
-        create("release") {
-            storeFile = file("C:\\Users\\danie\\Downloads\\SpellSound.keystore.jks")
-            storePassword = "0642336402"
-            keyPassword = "0642336402"
-            keyAlias = "SpellSound"
+        create("release").apply {
+            val keystorePath = localProps.getProperty("KEYSTORE_PATH")
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storePassword = localProps.getProperty("STORE_PASSWORD")
+                keyAlias = localProps.getProperty("KEY_ALIAS")
+                keyPassword = localProps.getProperty("KEY_PASSWORD")
+            }
         }
     }
     namespace = "com.dsapps2018.dota2guessthesound"
