@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelsState
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
@@ -76,7 +77,6 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingCont
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.composables.AffixInfoBottomSheet
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevel
-import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevelTextGradient
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -129,24 +129,24 @@ fun JourneyLevelScreen(
 
 @Composable
 fun JourneyLevelContent(
-    state: JourneyLevelFetchState,
+    state: JourneyLevelsState,
     viewModel: JourneyLevelViewModel,
     bannerHeight: Int,
     onLevelClicked: (Int) -> Unit
 ) {
     when (state) {
-        JourneyLevelFetchState.Loading -> {
+        JourneyLevelsState.Loading -> {
             LoadingContent()
         }
 
-        is JourneyLevelFetchState.Error -> {
-            ErrorOrEmptyContent(state.error)
+        is JourneyLevelsState.Error -> {
+            ErrorOrEmptyContent(state.message)
         }
 
-        is JourneyLevelFetchState.Success -> {
+        is JourneyLevelsState.Success -> {
             LevelData(
-                levels = state.data,
-                totalItems = state.data.size,
+                levels = state.levels,
+                totalItems = state.levels.size,
                 levelViewModel = viewModel,
                 bannerHeight = bannerHeight,
                 onLevelClicked = onLevelClicked

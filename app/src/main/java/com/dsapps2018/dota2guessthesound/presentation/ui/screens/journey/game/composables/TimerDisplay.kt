@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.TimerState
+import com.dsapps2018.dota2guessthesound.data.journey.TimerState
 
 @Composable
 fun TimerDisplay(timerState: TimerState) {

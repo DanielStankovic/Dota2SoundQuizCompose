@@ -23,16 +23,14 @@ class MirrorModeAffixStrategy : AffixStrategy {
     override fun modifyAnswerValidation(
         selectedSounds: Set<Int>,
         correctSounds: Set<Int>,
+        allSoundIds: Set<Int>,
         currentResult: AnswerValidationResult
     ): AnswerValidationResult {
-        // In mirror mode, player should select the INCORRECT sounds
-        // So we need to invert the validation logic
-        val allSounds = selectedSounds + correctSounds // This would need the full sound list
-        val incorrectSounds = allSounds - correctSounds
-        
-        val isCorrectInMirrorMode = selectedSounds.size == incorrectSounds.size && 
-                                   incorrectSounds.containsAll(selectedSounds)
-        
+        val incorrectSounds = allSoundIds - correctSounds
+        val isCorrectInMirrorMode =
+            selectedSounds.size == incorrectSounds.size &&
+                incorrectSounds.containsAll(selectedSounds)
+
         return currentResult.copy(
             isCorrect = isCorrectInMirrorMode,
             originalLogic = false,

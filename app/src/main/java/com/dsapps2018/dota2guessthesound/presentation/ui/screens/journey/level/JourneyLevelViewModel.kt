@@ -1,18 +1,12 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level
 
-import android.content.Context
-import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelsState
+import com.dsapps2018.dota2guessthesound.data.journey.JourneyRound
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
-import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
-import com.dsapps2018.dota2guessthesound.data.repository.JourneyLevelRepository
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,16 +18,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JourneyLevelViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     playerProgressRepository: PlayerProgressRepository,
-    private val resources: Resources,
-    private val firebaseCrashlytics: FirebaseCrashlytics,
-    private val journeyLevelRepository: JourneyLevelRepository
+    private val journeyRound: JourneyRound,
 ) : ViewModel() {
 
-    private val _journeyLevelState =
-        MutableStateFlow<JourneyLevelFetchState>(JourneyLevelFetchState.Loading)
-    val journeyLevelState = _journeyLevelState.asStateFlow()
+    val journeyLevelState: StateFlow<JourneyLevelsState> = journeyRound.levelsState
 
     val journeyLevel: StateFlow<Int> = playerProgressRepository.journeyLevel().stateIn(
         scope = viewModelScope,
@@ -46,8 +35,8 @@ class JourneyLevelViewModel @Inject constructor(
         journeyLevel
     ) { state, level ->
         when (state) {
-            is JourneyLevelFetchState.Success -> {
-                "Level $level of ${state.data.size}"
+            is JourneyLevelsState.Success -> {
+                "Level $level of ${state.levels.size}"
             }
             else -> ""
         }
@@ -63,46 +52,17 @@ class JourneyLevelViewModel @Inject constructor(
     private val _currentAffix: MutableStateFlow<AffixModel?> = MutableStateFlow(null)
     val currentAffix = _currentAffix.asStateFlow()
 
-    val coroutineExceptionHandler: CoroutineExceptionHandler =
-        CoroutineExceptionHandler { coroutineContext, throwable ->
-            firebaseCrashlytics.recordException(throwable)
-            _journeyLevelState.value =
-                JourneyLevelFetchState.Error(context.getString(R.string.level_fetch_error))
-        }
-
     init {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            _journeyLevelState.value = JourneyLevelFetchState.Loading
-            val affixList = journeyLevelRepository.getAllAffixes()
-            val levelData = journeyLevelRepository.getLevelsData().map { level ->
-                JourneyLevelModel(
-                    id = level.id,
-                    level = level.level,
-                    affixes = level.affixes.map { level ->
-                       val affix = affixList.find { x -> x.id == level }!!
-                        AffixModel(
-                            id = affix.id,
-                            affix = affix.affix,
-                            description = affix.description,
-                            iconResourceId = resources.getIdentifier(
-                                "affix_${affix.affix.lowercase().replace(" ", "_")}",
-                                "drawable",
-                                context.packageName
-                            ),
-                            data = affix.data
-                        )
-                    }
-                )
-            }
-            _journeyLevelState.value = JourneyLevelFetchState.Success(levelData)
+        viewModelScope.launch {
+            journeyRound.loadLevels()
         }
     }
 
-    fun setShowAffixBottomSheet(show: Boolean){
+    fun setShowAffixBottomSheet(show: Boolean) {
         _showAffixBottomSheet.value = show
     }
 
-    fun setCurrentAffix(affix: AffixModel?){
+    fun setCurrentAffix(affix: AffixModel?) {
         _currentAffix.value = affix
     }
 }

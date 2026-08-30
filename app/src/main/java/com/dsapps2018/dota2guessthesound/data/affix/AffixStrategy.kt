@@ -16,11 +16,13 @@ interface AffixStrategy {
     fun modifyGameplay(currentState: AffixGameState): AffixGameState = currentState
     
     /**
-     * Modify answer validation logic
+     * Modify answer validation logic.
+     * [allSoundIds] is the full board (needed by Mirror Mode and similar).
      */
     fun modifyAnswerValidation(
         selectedSounds: Set<Int>,
         correctSounds: Set<Int>,
+        allSoundIds: Set<Int>,
         currentResult: AnswerValidationResult
     ): AnswerValidationResult = currentResult
     

@@ -74,11 +74,13 @@ class AffixEngine(private val activeAffixes: List<AffixModel>) {
     }
 
     /**
-     * Check if answer submission should be modified by affixes
+     * Check if answer submission should be modified by affixes.
+     * [allSoundIds] is the full board of sound ids on this round.
      */
     fun modifyAnswerValidation(
         selectedSounds: Set<Int>,
-        correctSounds: Set<Int>
+        correctSounds: Set<Int>,
+        allSoundIds: Set<Int>
     ): AnswerValidationResult {
         var result = AnswerValidationResult(
             isCorrect = selectedSounds.size == correctSounds.size && correctSounds.containsAll(
@@ -88,7 +90,12 @@ class AffixEngine(private val activeAffixes: List<AffixModel>) {
         )
 
         affixStrategies.forEach { strategy ->
-            result = strategy.modifyAnswerValidation(selectedSounds, correctSounds, result)
+            result = strategy.modifyAnswerValidation(
+                selectedSounds,
+                correctSounds,
+                allSoundIds,
+                result
+            )
         }
 
         return result
