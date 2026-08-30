@@ -1,12 +1,12 @@
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.android.hilt)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
     alias(libs.plugins.room)
@@ -30,12 +30,12 @@ android {
         }
     }
     namespace = "com.dsapps2018.dota2guessthesound"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.dsapps2018.dota2guessthesound"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 16
         versionName = "2.2.1"
 
@@ -43,16 +43,10 @@ android {
     }
 
     sourceSets.getByName("main") {
-        res.setSrcDirs(listOf("src/main/res", "src/main/hero_images", "src/main/affix_images"))
-    }
-
-    room {
-        schemaDirectory("$projectDir/schemas")
+        res.directories.addAll(listOf("src/main/res", "src/main/hero_images", "src/main/affix_images"))
     }
 
     buildTypes {
-        android.buildFeatures.buildConfig = true
-
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -127,12 +121,21 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
         compose = true
+        buildConfig = true
+        resValues = true
     }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
@@ -159,14 +162,13 @@ dependencies {
     //Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.compose)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     //Room
     implementation(libs.room)
     implementation(libs.room.ktx)
     implementation(libs.room.paging)
-    annotationProcessor(libs.room.compailer)
-    kapt(libs.room.compailer)
+    ksp(libs.room.compailer)
 
     //Kotlinx Serialization
     implementation(libs.kotlinx.serialization)
@@ -206,8 +208,4 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.okhttp)
 
-}
-
-kapt {
-    correctErrorTypes = true
 }
