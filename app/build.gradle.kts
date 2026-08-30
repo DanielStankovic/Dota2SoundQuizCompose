@@ -11,7 +11,7 @@ plugins {
     alias(libs.plugins.google.firebase.crashlytics)
     alias(libs.plugins.room)
 }
-//test
+
 android {
     val localProps = Properties().apply {
         val f = rootProject.file("local.properties")
