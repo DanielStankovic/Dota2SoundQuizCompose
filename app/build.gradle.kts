@@ -103,7 +103,7 @@ android {
             buildConfigField(
                 "String",
                 "WEB_CLIENT_ID",
-                "\"275175705511-o29d6dlbbfnik2rnd1ec3oo6pft33ie5.apps.googleusercontent.com\""
+                "\"275175705511-e7ghohgsoe86h9ee966ls246l1v65sek.apps.googleusercontent.com\""
             )
 
             resValue("string", "AdMob_App_Id", "ca-app-pub-3940256099942544~3347511713")
