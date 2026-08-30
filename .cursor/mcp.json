@@ -5,6 +5,13 @@
     },
     "supabase-prod": {
       "url": "https://mcp.supabase.com/mcp?project_ref=tzmsnmqbajpgwcvnokgf"
+    },
+    "asana": {
+      "url": "https://mcp.asana.com/v2/mcp",
+      "auth": {
+        "CLIENT_ID": "${env:ASANA_CLIENT_ID}",
+        "CLIENT_SECRET": "${env:ASANA_CLIENT_SECRET}"
+      }
     }
   }
 }
