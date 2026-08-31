@@ -23,7 +23,6 @@ object Constants {
     const val DISCORD_INV_LINK = "https://discord.gg/2aH27NKEdA"
     const val DISCORD_PACKAGE_NAME = "com.discord"
 
-    const val INVOKER_COIN_COST = 200
     const val FF_30_SCORE_MIN = 3.0
     const val FF_60_SCORE_MIN = 8.0
     const val FF_90_SCORE_MIN = 18.0

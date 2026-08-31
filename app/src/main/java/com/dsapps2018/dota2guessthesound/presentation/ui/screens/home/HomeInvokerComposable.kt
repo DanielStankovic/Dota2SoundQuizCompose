@@ -32,7 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
-import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 
 @Composable
@@ -40,7 +39,7 @@ fun HomeInvokerComposable(
     currentIndex: Int,
     animatedRotationY: Float,
     isRewardedReady: Boolean,
-    userCoinValue: Int,
+    canEnterInvoker: Boolean,
     scale: Float,
     alpha: Float,
     setShouldAnimate: (Boolean) -> Unit,
@@ -49,7 +48,7 @@ fun HomeInvokerComposable(
     onMoveLeft: () -> Unit,
     onMoveRight: () -> Unit,
     onInvokerClicked: () -> Unit,
-    updateCoinValue: (Int) -> Unit
+    onGrantInvokerEntryFromAd: () -> Unit,
 ) {
     val context = LocalContext.current
     Column(
@@ -67,7 +66,7 @@ fun HomeInvokerComposable(
                     modifier = Modifier
                         .clickable {
                             showRewardedAd(context, onRewarded = {
-                                updateCoinValue(Constants.INVOKER_COIN_COST)
+                                onGrantInvokerEntryFromAd()
                             }, onAdDismissed = {})
                         }
                         .height(90.dp)
@@ -106,7 +105,7 @@ fun HomeInvokerComposable(
                     paddingValues = PaddingValues(
                         horizontal = 30.dp
                     ),
-                    enabled = userCoinValue >= Constants.INVOKER_COIN_COST,
+                    enabled = canEnterInvoker,
                     maxLines = 1,
                     text = stringResource(R.string.invoker_lbl),
                     textColor = Color.White,

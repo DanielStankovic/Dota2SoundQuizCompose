@@ -44,7 +44,7 @@ class AuthViewModel @Inject constructor(
     val authEventStatus = _authEventStatus.asSharedFlow()
     val authStatus = auth.sessionStatus
 
-    /** Profile (and Invoker entry) still read progress here; Home prefers [HomeViewModel]. */
+    /** Profile still reads progress here; Home prefers [HomeViewModel]. */
     val progress: StateFlow<PlayerProgress> = playerProgressRepository.progress.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -140,15 +140,6 @@ class AuthViewModel @Inject constructor(
                 firebaseCrashlytics.recordException(e)
                 _authEventStatus.emit(AuthEvent.Error(context.getString(R.string.login_error)))
             }
-        }
-    }
-
-    fun adjustCoins(delta: Int) = viewModelScope.launch {
-        try {
-            playerProgressRepository.adjustCoins(delta)
-        } catch (e: Exception) {
-            firebaseCrashlytics.recordException(e)
-            _authEventStatus.emit(AuthEvent.Error(context.getString(R.string.login_error)))
         }
     }
 }

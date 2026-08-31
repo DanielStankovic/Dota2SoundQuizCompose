@@ -383,7 +383,7 @@ fun HomeScreen(
                                 HomeInvokerComposable(currentIndex = currentIndex,
                                     animatedRotationY = animatedRotationY,
                                     isRewardedReady = isRewardedReady,
-                                    userCoinValue = progress.coinValue,
+                                    canEnterInvoker = homeViewModel.canEnterInvoker(progress.coinValue),
                                     scale = scale,
                                     alpha = alpha,
                                     setShouldAnimate = { boolValue ->
@@ -404,10 +404,8 @@ fun HomeScreen(
                                     onInvokerClicked = {
                                         onInvokerClicked()
                                     },
-                                    updateCoinValue = { value ->
-                                        homeViewModel.adjustCoins(
-                                            value
-                                        )
+                                    onGrantInvokerEntryFromAd = {
+                                        homeViewModel.grantInvokerEntryFromAd()
                                     }
 
                                 )

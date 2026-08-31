@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.invoker.InvokerEntry
 import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
 import com.dsapps2018.dota2guessthesound.data.model.initialPlayerProgress
 import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
@@ -32,6 +33,7 @@ class HomeViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val configRepository: ConfigRepository,
     private val playerProgressRepository: PlayerProgressRepository,
+    private val invokerEntry: InvokerEntry,
     private val firebaseCrashlytics: FirebaseCrashlytics,
     private val soundPlayback: SoundPlayback,
 ) : ViewModel() {
@@ -64,9 +66,11 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-    fun adjustCoins(delta: Int) {
+    fun canEnterInvoker(coinValue: Int): Boolean = invokerEntry.canEnter(coinValue)
+
+    fun grantInvokerEntryFromAd() {
         viewModelScope.launch(coroutineExceptionHandler) {
-            playerProgressRepository.adjustCoins(delta)
+            invokerEntry.grantFromAd()
         }
     }
 

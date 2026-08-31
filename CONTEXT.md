@@ -13,7 +13,7 @@ Whether the player is signed in to the cloud account used for sync and leaderboa
 _Avoid_: User (when you mean signed-in state), profile (when you mean auth)
 
 **Invoker entry**:
-Paying coins to start an Invoker mode run. A coin spend, not a mode result.
+Paying coins to start an Invoker mode run (`InvokerEntry`: affordability, spend, matching ad grant). A coin spend, not a mode result and not the Invoker Round itself.
 _Avoid_: Invoker cost (as the domain name for the action), unlock
 
 **Invoker Round**:
@@ -42,4 +42,4 @@ _Avoid_: additional life flag (as the domain name), continue dialog (the UI)
 
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0008). ADR-0002–0008 include **Revert** sections where those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0009). ADR-0002–0009 include **Revert** sections where those deepens need to be rolled back.
