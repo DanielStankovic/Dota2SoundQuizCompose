@@ -16,6 +16,10 @@ _Avoid_: User (when you mean signed-in state), profile (when you mean auth)
 Paying coins to start an Invoker mode run. A coin spend, not a mode result.
 _Avoid_: Invoker cost (as the domain name for the action), unlock
 
+**Invoker Round**:
+One Invoker mode run: pool load, orb queue, spell recipes, hearts, dual timers, speed ladder, playback, and connectivity. Distinct from Invoker entry (the coin spend to start) and from recording the mode result.
+_Avoid_: Invoker session, Invoker game (as the domain name for the module)
+
 **Journey Round**:
 One playable Journey level attempt: loading the level, affix rules, marks, sound plays, submit, hearts, timer, and the extra-life continue gate. Distinct from the Journey level list UI and from Player Progress journey level.
 _Avoid_: Journey session, Journey game (as the domain name for the module)
@@ -38,4 +42,4 @@ _Avoid_: additional life flag (as the domain name), continue dialog (the UI)
 
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0007). ADR-0002–0007 include **Revert** sections where those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0008). ADR-0002–0008 include **Revert** sections where those deepens need to be rolled back.

@@ -38,6 +38,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
+import com.dsapps2018.dota2guessthesound.data.invoker.InvokerRoundEvent
+import com.dsapps2018.dota2guessthesound.data.invoker.OrbType
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ProgressWithTimer
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.SingleOptionDialog
 
@@ -67,13 +69,13 @@ fun InvokerScreen(
     LaunchedEffect(Unit) {
         invokerViewModel.quizEvent.collect { quizEvent ->
             when (quizEvent) {
-                is InvokerEventState.GameOver -> {
+                is InvokerRoundEvent.GameOver -> {
                     showInterstitial(context) {
                         onPlayAgain(quizEvent.gameTime)
                     }
                 }
 
-                InvokerEventState.ConnectionLost -> {
+                InvokerRoundEvent.ConnectionLost -> {
                     showConnectionDialog = true
                 }
             }
