@@ -67,7 +67,9 @@ fun PlayAgainInvokerScreen(
         }
     }
 
-    scoreViewModel.updateInvokerScore(score)
+    LaunchedEffect(score) {
+        scoreViewModel.submitInvoker(score)
+    }
     val progress by scoreViewModel.progress.collectAsStateWithLifecycle()
 
     Scaffold(

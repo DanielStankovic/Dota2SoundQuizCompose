@@ -4,10 +4,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.data.enums.GameModeEnum
 import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
 import com.dsapps2018.dota2guessthesound.data.model.initialPlayerProgress
-import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
+import com.dsapps2018.dota2guessthesound.data.progress.ModeResult
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,9 +24,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ScoreViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val playerProgressRepository: PlayerProgressRepository,
-    private val leaderboardRepository: LeaderboardRepository,
-    private val firebaseCrashlytics: FirebaseCrashlytics
+    private val modeResult: ModeResult,
+    playerProgressRepository: PlayerProgressRepository,
+    private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ViewModel() {
 
     private val _leaderboardUpdateStatus = MutableSharedFlow<LeaderboardUpdateState>()
@@ -52,60 +51,32 @@ class ScoreViewModel @Inject constructor(
         initialValue = initialPlayerProgress()
     )
 
-    fun updateQuizScore(score: Int) {
+    fun submitQuiz(score: Int) {
         viewModelScope.launch(coroutineExceptionHandler) {
-            playerProgressRepository.recordQuizResult(score)
-            if (score > 0) {
-                leaderboardRepository.updateLeaderboard(
-                    score.toDouble(),
-                    GameModeEnum.QUIZ.gameCode
-                )
-            }
+            modeResult.submitQuiz(score)
         }
     }
 
-    fun updateInvokerScore(score: Int) {
+    fun submitInvoker(score: Int) {
         viewModelScope.launch(coroutineExceptionHandler) {
-            playerProgressRepository.recordInvokerResult(score)
-            if (score > 0) {
-                leaderboardRepository.updateLeaderboard(
-                    score.toDouble(),
-                    GameModeEnum.INVOKER.gameCode
-                )
-            }
+            modeResult.submitInvoker(score)
         }
     }
 
-    fun updateFastFingerScore(guessed: Int, total: Int, time: Int) {
+    fun submitFastFinger(guessed: Int, total: Int, time: Int) {
         viewModelScope.launch(coroutineExceptionHandler) {
-            val currentScore = playerProgressRepository.calculateFastFingerScore(guessed, total)
-            playerProgressRepository.recordFastFingerResult(guessed, total, time)
-            if (currentScore > 0.0) {
-                leaderboardRepository.updateLeaderboard(
-                    currentScore,
-                    getGameModeFromTime(time).gameCode
-                )
-            }
+            modeResult.submitFastFinger(guessed, total, time)
         }
     }
 
-    fun updateJourneyLevel(level: Int) {
+    fun submitJourneyLevel(level: Int) {
         viewModelScope.launch(coroutineExceptionHandler) {
-            playerProgressRepository.advanceJourney(level)
+            modeResult.submitJourneyLevel(level)
         }
     }
 
     fun calculateFastFingerScore(guessed: Int, total: Int): Double =
-        playerProgressRepository.calculateFastFingerScore(guessed, total)
-
-    private fun getGameModeFromTime(time: Int): GameModeEnum {
-        return when (time) {
-            30 -> GameModeEnum.FF_30
-            60 -> GameModeEnum.FF_60
-            90 -> GameModeEnum.FF_90
-            else -> GameModeEnum.FF_30
-        }
-    }
+        modeResult.calculateFastFingerScore(guessed, total)
 
     sealed interface LeaderboardUpdateState {
         data object Success : LeaderboardUpdateState

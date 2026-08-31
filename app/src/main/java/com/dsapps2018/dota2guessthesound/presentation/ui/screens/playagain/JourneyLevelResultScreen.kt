@@ -71,8 +71,10 @@ fun JourneyLevelResultScreen(
         label = ""
     )
 
-    if (isLevelCompleted) {
-        scoreViewModel.updateJourneyLevel(level)
+    LaunchedEffect(isLevelCompleted, level) {
+        if (isLevelCompleted) {
+            scoreViewModel.submitJourneyLevel(level)
+        }
     }
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),

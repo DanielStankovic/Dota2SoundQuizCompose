@@ -40,6 +40,10 @@ _Avoid_: Quiz round (when you mean the shared module), sound deck
 Whether the player has already used the one-shot rewarded continue in a classic Quiz run.
 _Avoid_: additional life flag (as the domain name), continue dialog (the UI)
 
+**Mode Result**:
+Submitting the outcome of a finished mode run: write Player Progress (highs, plays, journey level, result coins) and, when applicable, enqueue an offline leaderboard score. Distinct from Invoker entry (coin spend to start) and from Sync Session.
+_Avoid_: score update (as the domain name), play-again submit
+
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0009). ADR-0002–0009 include **Revert** sections where those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0010). ADR-0002–0010 include **Revert** sections where those deepens need to be rolled back.

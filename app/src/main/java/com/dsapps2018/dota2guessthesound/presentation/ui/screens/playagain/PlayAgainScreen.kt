@@ -68,7 +68,9 @@ fun PlayAgainScreen(
         }
     }
 
-    scoreViewModel.updateQuizScore(score)
+    LaunchedEffect(score) {
+        scoreViewModel.submitQuiz(score)
+    }
     val progress by scoreViewModel.progress.collectAsStateWithLifecycle()
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),

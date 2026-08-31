@@ -70,7 +70,9 @@ fun PlayAgainFastFingerScreen(
         }
     }
 
-    scoreViewModel.updateFastFingerScore(scoreGuessed, scoreTotal, time)
+    LaunchedEffect(scoreGuessed, scoreTotal, time) {
+        scoreViewModel.submitFastFinger(scoreGuessed, scoreTotal, time)
+    }
     val progress by scoreViewModel.progress.collectAsStateWithLifecycle()
 
     Scaffold(
