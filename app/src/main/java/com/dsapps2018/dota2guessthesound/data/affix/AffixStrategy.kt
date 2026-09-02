@@ -56,7 +56,11 @@ data class AffixGameState(
     val timerDurationMs: Long? = null,
     val invertAnswerLogic: Boolean = false,
     val modifiedHeartCount: Int? = null,
-    val isSuddenDeath: Boolean = false
+    /**
+     * When false, Journey Round skips the Extra Life Gate after the last heart
+     * (Sudden Death). Fragile Spirit leaves this true.
+     */
+    val extraLifeGateAllowed: Boolean = true,
 )
 
 data class AnswerValidationResult(

@@ -65,7 +65,7 @@ class JourneyRound @Inject constructor(
     private var affixEngine: AffixEngine? = null
     private var soundPlayCount = 0
     private var maxSoundPlays: Int? = null
-    private var isSuddenDeath = false
+    private var extraLifeGateAllowed = true
     private var additionalLifeUsed = false
 
     private var timerJob: Job? = null
@@ -102,7 +102,7 @@ class JourneyRound @Inject constructor(
         additionalLifeUsed = false
         soundPlayCount = 0
         maxSoundPlays = null
-        isSuddenDeath = false
+        extraLifeGateAllowed = true
         _roundState.value = JourneyRoundState.Loading
 
         try {
@@ -118,7 +118,7 @@ class JourneyRound @Inject constructor(
             val affixUIState = engine.applyUIModifications()
             val affixGameState = engine.applyGameplayModifications(AffixGameState())
             val hearts = affixGameState.modifiedHeartCount ?: DEFAULT_HEARTS
-            isSuddenDeath = affixGameState.isSuddenDeath
+            extraLifeGateAllowed = affixGameState.extraLifeGateAllowed
 
             engine.getSoundLimitations()?.let { limitations ->
                 maxSoundPlays = limitations.maxPlays
@@ -221,7 +221,9 @@ class JourneyRound @Inject constructor(
             } else {
                 val newHearts = ready.hearts - 1
                 if (newHearts <= 0) {
-                    if (isSuddenDeath) {
+                    // Sudden Death: Extra Life Gate disabled — first fail ends the round.
+                    // Fragile Spirit / default: offer Gate once if unused.
+                    if (!extraLifeGateAllowed) {
                         _events.emit(JourneyRoundEvent.GameOver)
                     } else if (!additionalLifeUsed) {
                         pauseTimer()

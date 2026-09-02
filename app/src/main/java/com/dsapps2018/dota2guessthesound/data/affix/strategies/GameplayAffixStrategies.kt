@@ -40,20 +40,25 @@ class MirrorModeAffixStrategy : AffixStrategy {
 }
 
 /**
- * Affix that reduces heart count (makes player more fragile)
+ * Affix that reduces heart count (makes player more fragile).
+ * Extra Life Gate remains allowed after the last heart.
  */
 class FragileSpiritAffixStrategy : AffixStrategy {
     override fun modifyGameplay(currentState: AffixGameState): AffixGameState {
-        return currentState.copy(modifiedHeartCount = 1) // Only 1 heart instead of default 2
+        return currentState.copy(modifiedHeartCount = 1)
     }
 }
 
 /**
- * Affix that causes instant game over on first wrong answer
+ * Affix that starts with one heart and disables the Extra Life Gate —
+ * first wrong submit ends the Journey Round.
  */
 class SuddenDeathAffixStrategy : AffixStrategy {
     override fun modifyGameplay(currentState: AffixGameState): AffixGameState {
-        return currentState.copy(modifiedHeartCount = 1, isSuddenDeath = true) // Only 1 chance
+        return currentState.copy(
+            modifiedHeartCount = 1,
+            extraLifeGateAllowed = false,
+        )
     }
 }
 
