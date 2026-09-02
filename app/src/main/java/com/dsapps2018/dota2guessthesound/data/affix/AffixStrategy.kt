@@ -43,7 +43,11 @@ interface AffixStrategy {
 data class AffixUIState(
     val showSoundCounter: Boolean = true,
     val showMarkedSoundCounter: Boolean = true,
-    val showHeroImages: Boolean = true,
+    /**
+     * Hidden Hero: keep the hero-row Image layout, but load the `?` drawable
+     * in each portrait slot instead of the real hero art.
+     */
+    val useQuestionMarkHeroPortraits: Boolean = false,
     val blurHeroImages: Boolean = false,
     val blurIntensity: Float = 0f,
     val showHearts: Boolean = true,

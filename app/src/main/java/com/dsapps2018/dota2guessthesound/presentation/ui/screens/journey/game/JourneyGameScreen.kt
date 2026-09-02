@@ -192,38 +192,34 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
             affixUIState = affixUIState
         )
 
-        if (affixUIState.showHeroImages) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = imageRowPadding),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                journeyState.radiantHeroImages.forEach { img ->
-                    val imageModifier = if (affixUIState.blurHeroImages) {
-                        Modifier
-                            .size(imageSize.dp)
-                            .blur(radius = affixUIState.blurIntensity.dp)
-                    } else {
-                        Modifier.size(imageSize.dp)
-                    }
-
-                    Image(
-                        painterResource(img),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = imageModifier,
-                    )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = imageRowPadding),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            journeyState.radiantHeroImages.forEach { img ->
+                val portraitRes = if (affixUIState.useQuestionMarkHeroPortraits) {
+                    R.drawable.hero_question_mark
+                } else {
+                    img
                 }
+                val imageModifier = if (affixUIState.blurHeroImages) {
+                    Modifier
+                        .size(imageSize.dp)
+                        .blur(radius = affixUIState.blurIntensity.dp)
+                } else {
+                    Modifier.size(imageSize.dp)
+                }
+
+                Image(
+                    painterResource(portraitRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = imageModifier,
+                )
             }
-        } else {
-            Text(
-                text = "Heroes are hidden!",
-                color = Color.White.copy(alpha = 0.7f),
-                fontSize = 16.sp,
-                modifier = Modifier.padding(vertical = 20.dp)
-            )
         }
 
         Spacer(Modifier.height(12.dp))

@@ -26,11 +26,12 @@ class BlurredVisionAffixStrategy(val blur: String?) : AffixStrategy {
 }
 
 /**
- * Affix that completely hides hero images
+ * Affix that keeps the hero-row layout but swaps portraits for the `?` drawable.
+ * Among Heroes must not set this — it shows real visible heroes only.
  */
 class HiddenHeroAffixStrategy : AffixStrategy {
     override fun modifyUI(currentState: AffixUIState): AffixUIState {
-        return currentState.copy(showHeroImages = false)
+        return currentState.copy(useQuestionMarkHeroPortraits = true)
     }
 }
 
