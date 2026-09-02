@@ -101,8 +101,6 @@ Two Affixes share the Soundquake timer/reshuffle loop; differ on mark handling. 
 | **Soundquake** | Keep player marks; only positions shuffle | Existing `affix_soundquake` (+ optional heart-loss badge when `remove_heart`) |
 | **Soundquake Aftershock** | Clear all marks, then shuffle | New distinct icon (+ same optional heart-loss badge) |
 
-Research notes: `docs/research/hero-journey-affixes.md`.
-
 ## Decisions
 
 Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0010). ADR-0002–0010 include **Revert** sections where those deepens need to be rolled back.
