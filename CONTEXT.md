@@ -40,6 +40,10 @@ _Avoid_: hero row resolver, portrait Affix join
 Round-owned Affix status-band flags for the Journey game screen (hearts, counters, timer visibility). Distinct from AffixUIState and from Hero Portrait Policy.
 _Avoid_: AffixUIState (when you mean the Screen contract)
 
+**Journey Round Timer**:
+The Race Against Time / Soundquake interval controller inside a Journey Round (tick, pause under ads, Extra Life Gate +time / interval restart). Distinct from Affix timer enable flags.
+_Avoid_: countdown helper, Soundquake loop (as the module name)
+
 **Sound Playback**:
 Playing a spell `SoundModel` (local resource or remote URL), or a raw resource id, without callers knowing mapper/Uri details.
 _Avoid_: SoundPlayer (when you mean the domain capability), play helper
@@ -174,4 +178,4 @@ Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come fr
 
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0012). ADR-0002–0012 include **Revert** sections where those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0013). ADR-0002–0013 include **Revert** sections where those deepens need to be rolled back.

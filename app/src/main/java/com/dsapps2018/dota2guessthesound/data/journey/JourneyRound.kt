@@ -2,7 +2,6 @@ package com.dsapps2018.dota2guessthesound.data.journey
 
 import android.content.Context
 import android.content.res.Resources
-import android.util.Log
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.affix.AffixEngine
 import com.dsapps2018.dota2guessthesound.data.affix.AffixGameState
@@ -24,8 +23,6 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -69,19 +66,22 @@ class JourneyRound @Inject constructor(
     private var extraLifeGateUsed = false
     private var pendingContinueOffer: ExtraLifeContinueOffer? = null
 
-    private var timerJob: Job? = null
-    private var timerDurationMs: Long = 0L
-    private var timerRemainingWhenPaused: Long = 0L
-    private var isTimerPaused: Boolean = false
-    private var endsRoundOnTimeout: Boolean = false
     private var soundquakeClearsMarks: Boolean = false
     private var soundquakeDrainsHeart: Boolean = false
-    private var timerExtensionMs: Long = DEFAULT_TIMER_EXTENSION_SECONDS * 1000L
-    /** Armed by time buyback; started only when gameplay surface is clear (ad dismissed). */
-    private var pendingTimerStartMs: Long? = null
-    /** True while a fullscreen ad (or similar) covers the game; blocks lifecycle resume. */
-    private var timerBlockedByOverlay: Boolean = false
     private var roundScope: CoroutineScope? = null
+
+    private val timer = JourneyRoundTimer(
+        onTick = { tick -> updateReady { it.copy(timer = tick) } },
+        onMarkPaused = {
+            updateReady { ready ->
+                ready.copy(timer = ready.timer?.copy(isPaused = true))
+            }
+        },
+        onTimeout = { endsRound ->
+            if (endsRound) offerTimeExtensionOrGameOver()
+            else handleSoundquakeTimeout()
+        },
+    )
 
     suspend fun loadLevels() {
         _levelsState.value = JourneyLevelsState.Loading
@@ -107,18 +107,14 @@ class JourneyRound @Inject constructor(
 
     suspend fun startRound(levelNum: Int, scope: CoroutineScope) {
         roundScope = scope
-        clearTimer()
+        timer.resetPolicy()
         extraLifeGateUsed = false
         pendingContinueOffer = null
         soundPlayCount = 0
         maxSoundPlays = null
         extraLifeGateAllowed = true
-        endsRoundOnTimeout = false
         soundquakeClearsMarks = false
         soundquakeDrainsHeart = false
-        timerExtensionMs = DEFAULT_TIMER_EXTENSION_SECONDS * 1000L
-        pendingTimerStartMs = null
-        timerBlockedByOverlay = false
         _roundState.value = JourneyRoundState.Loading
 
         try {
@@ -187,16 +183,16 @@ class JourneyRound @Inject constructor(
             )
 
             engine.getTimerConfiguration()?.let { timerConfig ->
-                endsRoundOnTimeout = timerConfig.endsRoundOnTimeout
+                timer.endsRoundOnTimeout = timerConfig.endsRoundOnTimeout
                 val levelSeconds = levelData.timerSeconds?.takeIf { it > 0 }
                 val durationMs = when {
                     levelSeconds != null -> levelSeconds * 1000L
                     else -> timerConfig.durationMs
                 }
-                timerExtensionMs =
+                timer.extensionMs =
                     (levelData.timerExtensionSeconds?.takeIf { it > 0 }
-                        ?: DEFAULT_TIMER_EXTENSION_SECONDS) * 1000L
-                initializeTimer(durationMs, scope)
+                        ?: JourneyRoundTimer.DEFAULT_TIMER_EXTENSION_SECONDS) * 1000L
+                timer.start(durationMs, scope)
             }
         } catch (t: Throwable) {
             firebaseCrashlytics.recordException(t)
@@ -268,7 +264,7 @@ class JourneyRound @Inject constructor(
         pendingContinueOffer = null
         when (offer) {
             ExtraLifeContinueOffer.TimeExtension -> {
-                pendingTimerStartMs = timerExtensionMs
+                timer.pendingStartMs = timer.extensionMs
                 updateReady { it.copy(showContinueDialog = false, continueOffer = null) }
             }
             ExtraLifeContinueOffer.Heart, null -> {
@@ -285,8 +281,9 @@ class JourneyRound @Inject constructor(
 
     /** Fullscreen ad / overlay covering the board — pause any running timer. */
     fun onGameplaySurfaceObscured() {
-        timerBlockedByOverlay = true
-        pauseTimer()
+        val remaining =
+            (_roundState.value as? JourneyRoundState.Ready)?.timer?.remainingMs ?: 0L
+        timer.onSurfaceObscured(remaining)
     }
 
     /**
@@ -294,38 +291,27 @@ class JourneyRound @Inject constructor(
      * Starts a pending time buyback or resumes a paused countdown.
      */
     fun onGameplaySurfaceClear() {
-        timerBlockedByOverlay = false
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
-        if (ready.showContinueDialog) return
-
-        pendingTimerStartMs?.let { ms ->
-            pendingTimerStartMs = null
-            val scope = roundScope ?: return
-            initializeTimer(ms, scope)
-            return
-        }
-        resumeTimer()
+        timer.onSurfaceClear(roundScope, ready.showContinueDialog)
     }
 
     /** App background / ON_PAUSE — pause without treating as overlay (resume may still be blocked). */
     fun onHostPaused() {
-        pauseTimer()
+        val remaining =
+            (_roundState.value as? JourneyRoundState.Ready)?.timer?.remainingMs ?: 0L
+        timer.onHostPaused(remaining)
     }
 
     /** App foreground / ON_RESUME — resume only if nothing covers the board. */
     fun onHostResumed() {
-        if (timerBlockedByOverlay) return
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
-        if (ready.showContinueDialog) return
-        // Do not start pending time buyback here — that waits for ad dismiss via onGameplaySurfaceClear.
-        resumeTimer()
+        timer.onHostResumed(roundScope, ready.showContinueDialog)
     }
 
     fun clear() {
         soundPlayback.stop()
-        clearTimer()
-        pendingTimerStartMs = null
-        timerBlockedByOverlay = false
+        timer.clear()
+        timer.blockedByOverlay = false
         roundScope = null
     }
 
@@ -387,55 +373,6 @@ class JourneyRound @Inject constructor(
                 order("level", Order.ASCENDING)
             }.decodeList()
 
-    private fun initializeTimer(durationMs: Long, scope: CoroutineScope) {
-        Log.d(TAG, "initializeTimer durationMs=$durationMs")
-        timerDurationMs = durationMs
-        isTimerPaused = false
-        timerRemainingWhenPaused = 0L
-        startTimerCoroutine(scope)
-    }
-
-    private fun startTimerCoroutine(scope: CoroutineScope) {
-        timerJob?.cancel()
-        timerJob = scope.launch {
-            Log.d(TAG, "startTimerCoroutine isTimerPaused=$isTimerPaused")
-
-            val startTime = if (isTimerPaused) {
-                isTimerPaused = false
-                System.currentTimeMillis() - (timerDurationMs - timerRemainingWhenPaused)
-            } else {
-                System.currentTimeMillis()
-            }
-
-            val endTime =
-                startTime + (if (isTimerPaused) timerRemainingWhenPaused else timerDurationMs)
-
-            while (System.currentTimeMillis() < endTime && !isTimerPaused) {
-                val remaining = endTime - System.currentTimeMillis()
-                updateReady { ready ->
-                    ready.copy(
-                        timer = TimerState(
-                            remainingMs = remaining,
-                            totalMs = timerDurationMs,
-                            isWarning = remaining < timerDurationMs / 4,
-                            isPaused = false
-                        )
-                    )
-                }
-                delay(100)
-            }
-
-            if (!isTimerPaused) {
-                if (endsRoundOnTimeout) {
-                    offerTimeExtensionOrGameOver()
-                } else {
-                    handleSoundquakeTimeout()
-                }
-            }
-        }
-    }
-
-
     /**
      * Soundquake interval elapsed: reshuffle board, optionally clear marks / drain a heart,
      * then restart the interval unless Extra Life Gate or Game Over intervenes.
@@ -471,7 +408,7 @@ class JourneyRound @Inject constructor(
         }
 
         val scope = roundScope ?: return
-        initializeTimer(timerDurationMs, scope)
+        timer.start(timer.durationMs, scope)
     }
 
     /**
@@ -492,10 +429,11 @@ class JourneyRound @Inject constructor(
                 return false
             }
             if (!extraLifeGateUsed) {
-                pauseTimer()
+                val remaining = ready.timer?.remainingMs ?: 0L
+                timer.pauseCapturingRemaining(remaining)
                 pendingContinueOffer = ExtraLifeContinueOffer.Heart
                 if (restartSoundquakeTimerAfterGate) {
-                    pendingTimerStartMs = timerDurationMs
+                    timer.pendingStartMs = timer.durationMs
                 }
                 updateReady {
                     it.copy(
@@ -528,38 +466,8 @@ class JourneyRound @Inject constructor(
         }
     }
 
-    private fun pauseTimer() {
-        if (timerJob?.isActive == true && !isTimerPaused) {
-            isTimerPaused = true
-            val current = (_roundState.value as? JourneyRoundState.Ready)?.timer
-            timerRemainingWhenPaused = current?.remainingMs ?: 0L
-            updateReady { ready ->
-                ready.copy(timer = ready.timer?.copy(isPaused = true))
-            }
-            timerJob?.cancel()
-        }
-    }
-
-    private fun resumeTimer() {
-        val scope = roundScope ?: return
-        if (isTimerPaused && timerRemainingWhenPaused > 0) {
-            startTimerCoroutine(scope)
-        }
-    }
-
-    private fun clearTimer() {
-        timerJob?.cancel()
-        timerJob = null
-        isTimerPaused = false
-        timerRemainingWhenPaused = 0L
-        timerDurationMs = 0L
-        pendingTimerStartMs = null
-    }
-
     companion object {
-        private const val TAG = "JourneyRound"
         private const val DEFAULT_HEARTS = 2
-        private const val DEFAULT_TIMER_EXTENSION_SECONDS = 20
         /** Medium Echo Limit tier when Journey `echo_limit_offset` is unset. */
         private const val DEFAULT_ECHO_LIMIT_OFFSET = 5
     }
