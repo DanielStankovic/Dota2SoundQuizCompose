@@ -30,6 +30,13 @@ data class JourneyDto(
     @SerialName("blurred_hero_ids")
     val blurredHeroIds: List<Int> = emptyList(),
     /**
+     * Among Heroes: single hero id omitted from the portrait row (no `?`).
+     * Must be one of [radiantHeroes]/[direHeroes]; sounds still load for that id.
+     * Null = noop when the Affix is on. Must not overlap mask/blur membership.
+     */
+    @SerialName("hidden_hero_id")
+    val hiddenHeroId: Int? = null,
+    /**
      * Race countdown / later Soundquake interval (seconds).
      * Null → fall back to Affix `data.timer`, then 60.
      */

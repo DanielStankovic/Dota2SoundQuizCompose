@@ -15,4 +15,5 @@ To undo this deepen without rediscovering the old shape:
 ## Related
 
 - Glossary: `CONTEXT.md` (**Journey Round**, **Sound Playback**, **Player Progress**)
-- AffixEngine remains internal; Among Heroes / Soundquake stay stubs until a later change
+- AffixEngine remains internal; Soundquake stays a stub until a later change
+- Among Heroes: Affix enables omit-from-portraits; mystery membership is Journey `hidden_hero_id`

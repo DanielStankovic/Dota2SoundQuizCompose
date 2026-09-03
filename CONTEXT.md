@@ -101,6 +101,8 @@ Three mutually exclusive Affixes own “who is shown vs masked” in the hero ro
 | **Partial Veil** | Mix of real portraits + one or more `?` slots; level authors which hero ids are masked via `masked_hero_ids` | Still on the board for masked ids |
 | **Among Heroes** | Only real visible heroes (**no** `?`); infer the mystery hero from sounds / sound count | Mystery hero’s sounds are on the board |
 
+**Among Heroes** guardrails (level design): ≥2 heroes on the level; exactly one mystery hero authored as Journey `hidden_hero_id` (must be a member of `radiant_heroes` / `dire_heroes`). That id is **omitted** from the portrait row — never replaced with `?`. Null `hidden_hero_id` with the Affix on → noop (show everyone). The mystery id must **not** also appear in `masked_hero_ids` or `blurred_hero_ids` (no `?`/blur on a portrait that isn’t shown). While only Radiant portraits render, authors should hide a Radiant id and leave ≥1 Radiant portrait visible. Catalog Affix is rule-only; mystery membership lives on the Journey level.
+
 **Partial Veil** guardrails (level design): ≥2 heroes on the level; ≥1 real portrait; ≥1 masked; masking **all** heroes is invalid — use **The Hidden Hero** instead. Catalog Affix is rule-only; mask membership lives on the Journey level.
 
 ### Blurred Vision — portrait membership
@@ -109,7 +111,7 @@ Three mutually exclusive Affixes own “who is shown vs masked” in the hero ro
 
 - Empty `blurred_hero_ids` → blur **nobody** (Affix intensity unused until authors fill ids).
 - Listing every hero id → full-row blur is allowed (blur is readability, not identity mask).
-- **Compatible** with **Partial Veil** and **Among Heroes** — blur **real art only**; never blur a `?` slot (mask wins on overlap).
+- **Compatible** with **Partial Veil** and **Among Heroes** — blur **real art only**; never blur a `?` slot (mask wins on overlap); never list the Among Heroes `hidden_hero_id` in `blurred_hero_ids` (that portrait is absent).
 - **Still incompatible** with **The Hidden Hero** — no meaningful real art to blur when every slot is `?`.
 
 ## Journey Affix incompatibilities
@@ -124,7 +126,7 @@ When authoring Journey levels (affix + hero combinations), do **not** stack affi
 | Counter + full hidden portrait | **Unknown Count** ↔ **The Hidden Hero** | Without a visible correct-count, players cannot tell there are more correct sounds than the visible heroes imply. |
 | Round timer semantics | **Race Against Time** ↔ **Soundquake** / **Soundquake Aftershock** | Race ends the round on timeout (with optional Extra Life Gate +time). Soundquake variants reshuffle on interval. Engine only takes the first timer Affix; duration comes from Journey `timer_seconds`. |
 | Soundquake variants | **Soundquake** ↔ **Soundquake Aftershock** | Same timer/reshuffle aspect; pick keep-marks vs clear-marks. |
-| Decoy heroes | **Among Heroes** requires ≥2 heroes on the level | Needs visible heroes plus one mystery hero's sounds; meaningless on a single-hero level. |
+| Decoy heroes | **Among Heroes** requires ≥2 heroes on the level | Needs visible heroes plus one mystery hero's sounds; meaningless on a single-hero level. Mystery id = Journey `hidden_hero_id`; must not overlap `masked_hero_ids` / `blurred_hero_ids`. |
 | Partial mask | **Partial Veil** requires ≥2 heroes; ≥1 visible + ≥1 masked | See Partial Veil guardrails above. |
 
 Compatible examples (different aspects): Hidden Marks + Unknown Count; Echo Limit + Mirror Mode; Race Against Time + Blurred Vision; Among Heroes + visible sound count; **Partial Veil + Blurred Vision** (blur real slots only); **Among Heroes + Blurred Vision**.

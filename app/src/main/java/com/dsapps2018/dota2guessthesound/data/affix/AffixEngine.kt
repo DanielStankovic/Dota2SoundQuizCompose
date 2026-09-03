@@ -1,5 +1,6 @@
 package com.dsapps2018.dota2guessthesound.data.affix
 
+import com.dsapps2018.dota2guessthesound.data.affix.strategies.AmongHeroesAffixStrategy
 import com.dsapps2018.dota2guessthesound.data.affix.strategies.BlurredVisionAffixStrategy
 import com.dsapps2018.dota2guessthesound.data.affix.strategies.HiddenHeroAffixStrategy
 import com.dsapps2018.dota2guessthesound.data.affix.strategies.HiddenMarksAffixStrategy

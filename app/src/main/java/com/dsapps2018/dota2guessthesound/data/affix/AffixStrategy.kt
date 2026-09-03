@@ -54,6 +54,11 @@ data class AffixUIState(
      */
     val usePartialVeil: Boolean = false,
     /**
+     * Among Heroes: omit level-authored `hidden_hero_id` from the portrait row
+     * (no `?`); that hero’s sounds stay on the board.
+     */
+    val useAmongHeroes: Boolean = false,
+    /**
      * Blurred Vision / Blurred Vision 2: Affix is active. Which slots blur comes from
      * level-authored `blurred_hero_ids` (resolved in Journey Round); never blur `?` slots.
      */

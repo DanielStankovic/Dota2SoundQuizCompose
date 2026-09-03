@@ -47,6 +47,17 @@ class PartialVeilAffixStrategy : AffixStrategy {
 }
 
 /**
+ * Affix that omits one level-authored hero from the portrait row (no `?`).
+ * Membership is Journey `hidden_hero_id`; sounds for that hero stay on the board.
+ * Mutually exclusive with Hidden Hero and Partial Veil.
+ */
+class AmongHeroesAffixStrategy : AffixStrategy {
+    override fun modifyUI(currentState: AffixUIState): AffixUIState {
+        return currentState.copy(useAmongHeroes = true)
+    }
+}
+
+/**
  * Affix that hides the total count of correct sounds
  */
 class UnknownCountAffixStrategy : AffixStrategy {

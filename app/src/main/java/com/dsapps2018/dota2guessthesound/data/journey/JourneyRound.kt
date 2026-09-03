@@ -151,13 +151,27 @@ class JourneyRound @Inject constructor(
                 affixUIState.usePartialVeil -> levelData.maskedHeroIds.toSet()
                 else -> emptySet()
             }
+            // Among Heroes: omit authored id from portraits only; sounds still use full heroIds.
+            // Null / unknown id / Affix off → noop. Must not overlap mask/blur (level design).
+            // Soft guard: refuse only when omit would empty the currently shown Radiant row.
+            val omittedHeroId = levelData.hiddenHeroId?.takeIf { id ->
+                if (!affixUIState.useAmongHeroes || id !in heroIds) return@takeIf false
+                val wouldEmptyRadiantRow =
+                    id in levelData.radiantHeroes &&
+                        levelData.radiantHeroes.none { it != id }
+                !wouldEmptyRadiantRow
+            }
+            val radiantPortraitHeroes =
+                levelData.radiantHeroes.filter { it != omittedHeroId }
+            val direPortraitHeroes =
+                levelData.direHeroes.filter { it != omittedHeroId }
             // Blur membership is level-authored; empty + Affix on = blur nobody. Never blur `?`.
             val blurredHeroIds =
                 if (affixUIState.blurHeroImages) levelData.blurredHeroIds.toSet() else emptySet()
             val casterNameById =
                 casterDao.getActiveCasters(heroIds).associate { it.id to it.name }
             val radiantHeroImages =
-                levelData.radiantHeroes.map { heroId ->
+                radiantPortraitHeroes.map { heroId ->
                     if (heroId in maskedHeroIds) {
                         R.drawable.hero_question_mark
                     } else {
@@ -171,9 +185,9 @@ class JourneyRound @Inject constructor(
                 }
             fun shouldBlurPortrait(heroId: Int) =
                 heroId in blurredHeroIds && heroId !in maskedHeroIds
-            val radiantHeroBlurred = levelData.radiantHeroes.map(::shouldBlurPortrait)
+            val radiantHeroBlurred = radiantPortraitHeroes.map(::shouldBlurPortrait)
             val direHeroImages =
-                levelData.direHeroes.map { heroId ->
+                direPortraitHeroes.map { heroId ->
                     if (heroId in maskedHeroIds) {
                         R.drawable.hero_question_mark
                     } else {
@@ -185,7 +199,7 @@ class JourneyRound @Inject constructor(
                         )
                     }
                 }
-            val direHeroBlurred = levelData.direHeroes.map(::shouldBlurPortrait)
+            val direHeroBlurred = direPortraitHeroes.map(::shouldBlurPortrait)
 
             val selectedMarks = soundList.associate { it.soundModel.id to false }
             val game = JourneyGameModel(
@@ -409,6 +423,7 @@ class JourneyRound @Inject constructor(
                     "affixes",
                     "masked_hero_ids",
                     "blurred_hero_ids",
+                    "hidden_hero_id",
                     "timer_seconds",
                     "timer_extension_seconds",
                     "echo_limit_offset",

@@ -13,7 +13,7 @@ If you change any of the following on **staging** (or in app logic that depends 
 
 - Journey / Affix / hero (caster) **schema** (columns, defaults, constraints)
 - **Seed or level authoring** that prod must eventually receive
-- FK arrays or id-keyed fields (`affixes`, `radiant_heroes`, `dire_heroes`, `masked_hero_ids`, `blurred_hero_ids`, …)
+- FK arrays or id-keyed fields (`affixes`, `radiant_heroes`, `dire_heroes`, `masked_hero_ids`, `blurred_hero_ids`, `hidden_hero_id`, …)
 - Scalar Journey authoring (`timer_seconds`, `timer_extension_seconds`, `echo_limit_offset`, …)
 - Catalog rows whose **numeric ids** differ between environments
 

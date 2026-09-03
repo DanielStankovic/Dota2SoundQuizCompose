@@ -74,13 +74,3 @@ class SoundquakeAffixStrategy : AffixStrategy {
     // Note: Screen shake would be implemented in the UI layer when sounds are played
 }
 
-/**
- * Affix that shows heroes mixed with decoy heroes
- */
-class AmongHeroesAffixStrategy : AffixStrategy {
-    override fun modifyGameplay(currentState: AffixGameState): AffixGameState {
-        // This would require modifying the hero selection logic
-        // Implementation would be in the ViewModel where heroes are selected
-        return currentState
-    }
-}
