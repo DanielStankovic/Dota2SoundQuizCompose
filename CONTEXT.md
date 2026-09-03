@@ -32,6 +32,10 @@ _Avoid_: modifier, perk, challenge rule (when you mean the catalog Affix)
 A Dota 2 playable character whose portrait and spell sounds appear in a Journey Round (and elsewhere in the app). Use this word in player-facing copy and domain language.
 _Avoid_: champion, character (when you mean a Dota 2 Hero)
 
+**Hero Portrait Policy**:
+Resolved Radiant/Dire portrait slots for a Journey Round (mask, omit, blur by hero id, drawable). Affix enable flags plus level-authored membership; distinct from HUD chrome.
+_Avoid_: hero row resolver, portrait Affix join
+
 **Sound Playback**:
 Playing a spell `SoundModel` (local resource or remote URL), or a raw resource id, without callers knowing mapper/Uri details.
 _Avoid_: SoundPlayer (when you mean the domain capability), play helper
@@ -166,4 +170,4 @@ Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come fr
 
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0010). ADR-0002–0010 include **Revert** sections where those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0011). ADR-0002–0011 include **Revert** sections where those deepens need to be rolled back.

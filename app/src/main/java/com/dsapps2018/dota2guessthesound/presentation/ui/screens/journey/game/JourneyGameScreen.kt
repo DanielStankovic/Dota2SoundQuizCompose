@@ -222,12 +222,12 @@ fun JourneyGameData(
     soundquakeFx: SoundquakeFxRequest? = null,
 ) {
     val journeyState = ready.game
+    val radiantPortraits = journeyState.radiantHeroPortraits
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
     val imageRowPadding = 8.dp
     val imageSize =
-        ((currentScreenWidth - 2 * imageRowPadding.value) / journeyState.radiantHeroImages.size).coerceAtMost(
-            150f
-        )
+        ((currentScreenWidth - 2 * imageRowPadding.value) /
+            radiantPortraits.size.coerceAtLeast(1)).coerceAtMost(150f)
 
     val affixUIState = ready.affixUI
     val timerState = ready.timer
@@ -264,18 +264,17 @@ fun JourneyGameData(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            journeyState.radiantHeroImages.forEachIndexed { index, img ->
-                val shouldBlur = journeyState.radiantHeroBlurred.getOrElse(index) { false }
-                val imageModifier = if (shouldBlur) {
+            radiantPortraits.forEach { slot ->
+                val imageModifier = if (slot.blurRadiusDp > 0f) {
                     Modifier
                         .size(imageSize.dp)
-                        .blur(radius = affixUIState.blurIntensity.dp)
+                        .blur(radius = slot.blurRadiusDp.dp)
                 } else {
                     Modifier.size(imageSize.dp)
                 }
 
                 Image(
-                    painterResource(img),
+                    painterResource(slot.imageResId),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = imageModifier,

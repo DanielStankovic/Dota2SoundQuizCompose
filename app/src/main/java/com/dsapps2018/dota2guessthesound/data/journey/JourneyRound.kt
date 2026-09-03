@@ -151,69 +151,25 @@ class JourneyRound @Inject constructor(
             val randomSounds =
                 incorrectSounds.shuffled().take(levelData.maxSounds - correctSounds.size)
             val soundList = (correctSounds + randomSounds).shuffled()
-            // Resolve ? portraits here (by hero id) so Dire row can reuse the same rule later.
-            val maskedHeroIds = when {
-                affixUIState.useQuestionMarkHeroPortraits -> heroIds.toSet()
-                affixUIState.usePartialVeil -> levelData.maskedHeroIds.toSet()
-                else -> emptySet()
-            }
-            // Among Heroes: omit authored id from portraits only; sounds still use full heroIds.
-            // Null / unknown id / Affix off → noop. Must not overlap mask/blur (level design).
-            // Soft guard: refuse only when omit would empty the currently shown Radiant row.
-            val omittedHeroId = levelData.hiddenHeroId?.takeIf { id ->
-                if (!affixUIState.useAmongHeroes || id !in heroIds) return@takeIf false
-                val wouldEmptyRadiantRow =
-                    id in levelData.radiantHeroes &&
-                        levelData.radiantHeroes.none { it != id }
-                !wouldEmptyRadiantRow
-            }
-            val radiantPortraitHeroes =
-                levelData.radiantHeroes.filter { it != omittedHeroId }
-            val direPortraitHeroes =
-                levelData.direHeroes.filter { it != omittedHeroId }
-            // Blur membership is level-authored; empty + Affix on = blur nobody. Never blur `?`.
-            val blurredHeroIds =
-                if (affixUIState.blurHeroImages) levelData.blurredHeroIds.toSet() else emptySet()
             val casterNameById =
                 casterDao.getActiveCasters(heroIds).associate { it.id to it.name }
-            val radiantHeroImages =
-                radiantPortraitHeroes.map { heroId ->
-                    if (heroId in maskedHeroIds) {
-                        R.drawable.hero_question_mark
-                    } else {
-                        val name = casterNameById[heroId].orEmpty()
-                        resources.getIdentifier(
-                            "hero_${name.lowercase().replace("'s", "s").replace("-", "")}",
-                            "drawable",
-                            context.packageName
-                        )
-                    }
-                }
-            fun shouldBlurPortrait(heroId: Int) =
-                heroId in blurredHeroIds && heroId !in maskedHeroIds
-            val radiantHeroBlurred = radiantPortraitHeroes.map(::shouldBlurPortrait)
-            val direHeroImages =
-                direPortraitHeroes.map { heroId ->
-                    if (heroId in maskedHeroIds) {
-                        R.drawable.hero_question_mark
-                    } else {
-                        val name = casterNameById[heroId].orEmpty()
-                        resources.getIdentifier(
-                            name.replace("'s", "s").replace("-", ""),
-                            "drawable",
-                            context.packageName
-                        )
-                    }
-                }
-            val direHeroBlurred = direPortraitHeroes.map(::shouldBlurPortrait)
+            val portraits = HeroPortraitPolicy.resolve(
+                affixUI = affixUIState,
+                radiantHeroIds = levelData.radiantHeroes,
+                direHeroIds = levelData.direHeroes,
+                maskedHeroIdsFromLevel = levelData.maskedHeroIds,
+                blurredHeroIdsFromLevel = levelData.blurredHeroIds,
+                hiddenHeroId = levelData.hiddenHeroId,
+                casterNameById = casterNameById,
+                resources = resources,
+                packageName = context.packageName,
+            )
 
             val selectedMarks = soundList.associate { it.soundModel.id to false }
             val game = JourneyGameModel(
                 level = levelNum,
-                radiantHeroImages = radiantHeroImages,
-                radiantHeroBlurred = radiantHeroBlurred,
-                direHeroImages = direHeroImages,
-                direHeroBlurred = direHeroBlurred,
+                radiantHeroPortraits = portraits.radiant,
+                direHeroPortraits = portraits.dire,
                 soundList = soundList,
                 totalCorrectSounds = correctSounds.size
             )
