@@ -41,20 +41,15 @@ fun rememberSoundquakeFxState(
 
     LaunchedEffect(request?.nonce) {
         val fx = request ?: return@LaunchedEffect
-        val amplitude = if (fx.strong) 16f else 9f
-        val pulses = if (fx.strong) 5 else 3
+        // Strong (Aftershock / Cataclysm) stays only a notch above base Soundquake.
+        val amplitude = if (fx.strong) 11f else 9f
+        val pulses = if (fx.strong) 4 else 3
 
-        view.performHapticFeedback(
-            if (fx.strong) {
-                HapticFeedbackConstants.LONG_PRESS
-            } else {
-                HapticFeedbackConstants.CLOCK_TICK
-            }
-        )
+        view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
 
         launch {
-            dustAlpha.snapTo(if (fx.strong) 0.42f else 0.28f)
-            dustAlpha.animateTo(0f, tween(durationMillis = if (fx.strong) 520 else 380))
+            dustAlpha.snapTo(if (fx.strong) 0.32f else 0.28f)
+            dustAlpha.animateTo(0f, tween(durationMillis = if (fx.strong) 420 else 380))
         }
 
         launch {
