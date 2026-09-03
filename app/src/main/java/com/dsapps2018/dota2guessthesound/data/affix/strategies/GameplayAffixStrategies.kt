@@ -2,14 +2,16 @@ package com.dsapps2018.dota2guessthesound.data.affix
 
 /**
  * Affix that enables Echo Limit (finite sound plays).
- * Play budget is authored on Journey `echo_limit_offset` + `max_sounds` in JourneyRound;
- * [SoundLimitations] only signals that the mechanic is on (no Affix `data` budget).
+ * Play budget = Journey `max_sounds` + `echo_limit_offset` (default Medium +5).
  */
 class EchoLimitAffixStrategy : AffixStrategy {
-    override fun getSoundLimitations(): SoundLimitations {
-        return SoundLimitations(
-            warningMessage = "You have limited sound plays remaining!"
-        )
+    override fun resolveSoundPlayBudget(level: AffixLevelContext): Int {
+        val offset = (level.echoLimitOffset ?: DEFAULT_ECHO_LIMIT_OFFSET).coerceAtLeast(0)
+        return level.maxSounds + offset
+    }
+
+    private companion object {
+        const val DEFAULT_ECHO_LIMIT_OFFSET = 5
     }
 }
 
@@ -17,10 +19,6 @@ class EchoLimitAffixStrategy : AffixStrategy {
  * Affix that inverts the answer logic - player must select WRONG sounds
  */
 class MirrorModeAffixStrategy : AffixStrategy {
-    override fun modifyGameplay(currentState: AffixGameState): AffixGameState {
-        return currentState.copy(invertAnswerLogic = true)
-    }
-    
     override fun modifyAnswerValidation(
         selectedSounds: Set<Int>,
         correctSounds: Set<Int>,
@@ -96,4 +94,3 @@ class SoundquakeAffixStrategy(
         const val DEFAULT_SOUNDQUAKE_INTERVAL_MS = 20_000L
     }
 }
-

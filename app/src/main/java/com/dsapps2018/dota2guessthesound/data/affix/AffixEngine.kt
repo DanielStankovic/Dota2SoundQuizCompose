@@ -10,7 +10,6 @@ import com.dsapps2018.dota2guessthesound.data.affix.strategies.UnknownCountAffix
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonObject
 
 /**
  * Central engine that manages and applies all active affixes to the game state
@@ -120,21 +119,35 @@ class AffixEngine(private val activeAffixes: List<AffixModel>) {
     }
 
     /**
-     * Get any timer-related modifications
+     * Echo Limit (and similar): first strategy that resolves a play budget wins.
      */
-    fun getTimerConfiguration(): TimerConfiguration? {
+    fun resolveSoundPlayBudget(level: AffixLevelContext): Int? {
         affixStrategies.forEach { strategy ->
-            strategy.getTimerConfiguration()?.let { return it }
+            strategy.resolveSoundPlayBudget(level)?.let { return it }
         }
         return null
     }
 
     /**
-     * Get sound play limitations
+     * Race / Soundquake: Affix timer hooks + level `timer_seconds` / extension.
      */
-    fun getSoundLimitations(): SoundLimitations? {
+    fun resolveTimer(level: AffixLevelContext): ResolvedAffixTimer? {
         affixStrategies.forEach { strategy ->
-            strategy.getSoundLimitations()?.let { return it }
+            strategy.getTimerConfiguration()?.let { config ->
+                val levelSeconds = level.timerSeconds?.takeIf { it > 0 }
+                val durationMs = when {
+                    levelSeconds != null -> levelSeconds * 1000L
+                    else -> config.durationMs
+                }
+                val extensionMs =
+                    (level.timerExtensionSeconds?.takeIf { it > 0 }
+                        ?: DEFAULT_TIMER_EXTENSION_SECONDS) * 1000L
+                return ResolvedAffixTimer(
+                    durationMs = durationMs,
+                    endsRoundOnTimeout = config.endsRoundOnTimeout,
+                    extensionMs = extensionMs,
+                )
+            }
         }
         return null
     }
@@ -150,5 +163,9 @@ class AffixEngine(private val activeAffixes: List<AffixModel>) {
             is JsonPrimitive -> value.contentOrNull
             else -> value?.toString()
         }
+    }
+
+    private companion object {
+        const val DEFAULT_TIMER_EXTENSION_SECONDS = 20
     }
 }

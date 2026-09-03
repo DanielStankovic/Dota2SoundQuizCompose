@@ -1,20 +1,40 @@
 package com.dsapps2018.dota2guessthesound.data.affix
 
 /**
+ * Journey level fields Affix strategies need to resolve budgets / timers.
+ * Portrait membership stays on Hero Portrait Policy (not AffixStrategy).
+ */
+data class AffixLevelContext(
+    val maxSounds: Int,
+    val echoLimitOffset: Int?,
+    val timerSeconds: Int?,
+    val timerExtensionSeconds: Int?,
+)
+
+/**
+ * Resolved Race / Soundquake timer after Affix + level fields join.
+ */
+data class ResolvedAffixTimer(
+    val durationMs: Long,
+    val endsRoundOnTimeout: Boolean,
+    val extensionMs: Long,
+)
+
+/**
  * Base interface for all affix strategies
  */
 interface AffixStrategy {
-    
+
     /**
      * Modify UI elements based on this affix
      */
     fun modifyUI(currentState: AffixUIState): AffixUIState = currentState
-    
+
     /**
      * Modify gameplay mechanics based on this affix
      */
     fun modifyGameplay(currentState: AffixGameState): AffixGameState = currentState
-    
+
     /**
      * Modify answer validation logic.
      * [allSoundIds] is the full board (needed by Mirror Mode and similar).
@@ -25,16 +45,17 @@ interface AffixStrategy {
         allSoundIds: Set<Int>,
         currentResult: AnswerValidationResult
     ): AnswerValidationResult = currentResult
-    
+
     /**
-     * Provide timer configuration if this affix adds a timer
+     * Provide timer configuration if this affix adds a timer.
+     * Duration may be overridden by [AffixLevelContext.timerSeconds] in AffixEngine.
      */
     fun getTimerConfiguration(): TimerConfiguration? = null
-    
+
     /**
-     * Provide sound limitations if this affix limits sound plays
+     * Echo Limit and similar: resolved play budget from level fields, or null if inactive.
      */
-    fun getSoundLimitations(): SoundLimitations? = null
+    fun resolveSoundPlayBudget(level: AffixLevelContext): Int? = null
 }
 
 /**
@@ -69,10 +90,6 @@ data class AffixUIState(
 )
 
 data class AffixGameState(
-    val maxSoundPlays: Int? = null,
-    val currentSoundPlays: Int = 0,
-    val timerDurationMs: Long? = null,
-    val invertAnswerLogic: Boolean = false,
     val modifiedHeartCount: Int? = null,
     /**
      * When false, Journey Round skips the Extra Life Gate after the last heart
@@ -105,12 +122,4 @@ data class TimerConfiguration(
      * Soundquake family: false — timeout reshuffles (and may clear marks / drain a heart).
      */
     val endsRoundOnTimeout: Boolean = true,
-)
-
-/**
- * Echo Limit is active. Play budget is authored on the Journey level
- * (`max_sounds` + `echo_limit_offset`), not on Affix `data`.
- */
-data class SoundLimitations(
-    val warningMessage: String? = null
 )

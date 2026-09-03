@@ -5,6 +5,7 @@ import android.content.res.Resources
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.affix.AffixEngine
 import com.dsapps2018.dota2guessthesound.data.affix.AffixGameState
+import com.dsapps2018.dota2guessthesound.data.affix.AffixLevelContext
 import com.dsapps2018.dota2guessthesound.data.api.response.JourneyDto
 import com.dsapps2018.dota2guessthesound.data.api.response.JourneyLevelDto
 import com.dsapps2018.dota2guessthesound.data.dao.AffixDao
@@ -134,12 +135,13 @@ class JourneyRound @Inject constructor(
             soundquakeClearsMarks = affixGameState.soundquakeClearsMarks
             soundquakeDrainsHeart = affixGameState.soundquakeDrainsHeart
 
-            // Echo Limit: Affix enables; budget = board size + level offset (default Medium +5).
-            if (engine.getSoundLimitations() != null) {
-                val offset =
-                    (levelData.echoLimitOffset ?: DEFAULT_ECHO_LIMIT_OFFSET).coerceAtLeast(0)
-                maxSoundPlays = levelData.maxSounds + offset
-            }
+            val levelContext = AffixLevelContext(
+                maxSounds = levelData.maxSounds,
+                echoLimitOffset = levelData.echoLimitOffset,
+                timerSeconds = levelData.timerSeconds,
+                timerExtensionSeconds = levelData.timerExtensionSeconds,
+            )
+            maxSoundPlays = engine.resolveSoundPlayBudget(levelContext)
 
             val heroIds = levelData.radiantHeroes + levelData.direHeroes
             val journeySounds = soundDao.getJourneySounds(heroIds)
@@ -182,17 +184,10 @@ class JourneyRound @Inject constructor(
                 continueOffer = null,
             )
 
-            engine.getTimerConfiguration()?.let { timerConfig ->
-                timer.endsRoundOnTimeout = timerConfig.endsRoundOnTimeout
-                val levelSeconds = levelData.timerSeconds?.takeIf { it > 0 }
-                val durationMs = when {
-                    levelSeconds != null -> levelSeconds * 1000L
-                    else -> timerConfig.durationMs
-                }
-                timer.extensionMs =
-                    (levelData.timerExtensionSeconds?.takeIf { it > 0 }
-                        ?: JourneyRoundTimer.DEFAULT_TIMER_EXTENSION_SECONDS) * 1000L
-                timer.start(durationMs, scope)
+            engine.resolveTimer(levelContext)?.let { resolved ->
+                timer.endsRoundOnTimeout = resolved.endsRoundOnTimeout
+                timer.extensionMs = resolved.extensionMs
+                timer.start(resolved.durationMs, scope)
             }
         } catch (t: Throwable) {
             firebaseCrashlytics.recordException(t)
@@ -468,7 +463,5 @@ class JourneyRound @Inject constructor(
 
     companion object {
         private const val DEFAULT_HEARTS = 2
-        /** Medium Echo Limit tier when Journey `echo_limit_offset` is unset. */
-        private const val DEFAULT_ECHO_LIMIT_OFFSET = 5
     }
 }
