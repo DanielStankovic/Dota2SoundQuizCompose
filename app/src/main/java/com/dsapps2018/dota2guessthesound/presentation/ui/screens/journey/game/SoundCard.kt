@@ -12,11 +12,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -71,6 +71,7 @@ fun SoundCard(
                     .align(Alignment.Center)
                     .padding(bottom = this@BoxWithConstraints.maxHeight / 4)
                     .size(this@BoxWithConstraints.maxWidth / 2)
+                    .minimumInteractiveComponentSize()
                     .clip(CircleShape)
                     .clickable {
                         // Only allow clicking if there are plays remaining (for Echo Limit affix)

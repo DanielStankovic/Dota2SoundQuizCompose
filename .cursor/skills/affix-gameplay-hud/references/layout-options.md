@@ -4,7 +4,7 @@ Ranked for this app: portrait phone, listen → mark → submit, Affix density, 
 
 **Universal shell:** one Journey HUD; Affix flags compose chrome. Options below are packing strategies for that shell — not per-Affix screens.
 
-Current code: fixed **4-column** `LazyVerticalGrid` of `SoundCard`; hero row sizes from `radiantHeroImages.size` only (`JourneyGameScreen`).
+Current code: **SB-A** `LazyVerticalGrid` + `GridCells.Adaptive(minSize = 72.dp)` of `SoundCard`; hero row sizes from `radiantHeroImages.size` only (`JourneyGameScreen`). Timer lives in the Affix status strip when `showTimer`.
 
 ---
 

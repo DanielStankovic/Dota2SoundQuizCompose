@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -41,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -52,11 +56,15 @@ import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.affix.AffixUIState
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundEvent
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundState
+import com.dsapps2018.dota2guessthesound.data.journey.TimerState
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.WatchAdContinueDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.TimerDisplay
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
+
+/** SB-A: min cell width so SoundCard mark targets stay ≥ 48.dp; Adaptive drops columns on narrow widths. */
+private val SoundBoardMinCellSize: Dp = 72.dp
 
 @Composable
 fun JourneyGameScreen(
@@ -162,35 +170,27 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
 
     val affixUIState = ready.affixUI
     val timerState = ready.timer
+    val showTimer = affixUIState.showTimer && timerState != null
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 50.dp),
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .padding(top = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        if (affixUIState.showTimer && timerState != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TimerDisplay(timerState = timerState)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
+        // One Affix status band: timer chip (when active) + hearts/counters/plays
         StatusInfoRow(
             hearts = ready.hearts,
             selectedMarks = ready.selectedMarks,
             remainingPlays = ready.remainingPlays,
             totalCorrectSounds = journeyState.totalCorrectSounds,
-            affixUIState = affixUIState
+            affixUIState = affixUIState,
+            timerState = if (showTimer) timerState else null
         )
+
+        Spacer(modifier = Modifier.height(6.dp))
 
         Row(
             modifier = Modifier
@@ -217,7 +217,7 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
             }
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(8.dp))
 
         Card(
             shape = RoundedCornerShape(8.dp),
@@ -252,13 +252,13 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
             }
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         LazyVerticalGrid(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            columns = GridCells.Fixed(4),
+            columns = GridCells.Adaptive(minSize = SoundBoardMinCellSize),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
         ) {
@@ -287,29 +287,38 @@ fun StatusInfoRow(
     selectedMarks: Map<Int, Boolean>,
     remainingPlays: Int?,
     totalCorrectSounds: Int,
-    affixUIState: AffixUIState
+    affixUIState: AffixUIState,
+    timerState: TimerState? = null
 ) {
     val selectedSounds = selectedMarks.values.count { selected -> selected }
+    val playsLeft = remainingPlays
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 12.dp)
+            .height(40.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
+        if (timerState != null) {
+            TimerDisplay(timerState = timerState)
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+
         if (affixUIState.showHearts) {
             repeat(hearts) {
                 Image(
                     painterResource(R.drawable.ic_heart),
-                    contentDescription = "",
-                    modifier = Modifier.size(30.dp),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
                     contentScale = ContentScale.Crop
                 )
             }
         }
 
         Spacer(modifier = Modifier.weight(1f))
+
         val markedSoundsString =
             if (affixUIState.showMarkedSoundCounter) selectedSounds.toString() else "?"
         val totalSoundsString =
@@ -323,16 +332,16 @@ fun StatusInfoRow(
             ),
             color = Color.White,
             textAlign = TextAlign.Center,
-            fontSize = 22.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
 
-        remainingPlays?.let { remaining ->
+        if (playsLeft != null) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Plays: $remaining",
-                color = if (remaining <= 2) Color.Red else Color.Yellow,
-                fontSize = 14.sp,
+                text = "Plays: $playsLeft",
+                color = if (playsLeft <= 2) Color.Red else Color.Yellow,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Bold
             )
         }
