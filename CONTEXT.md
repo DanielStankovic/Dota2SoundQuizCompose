@@ -62,6 +62,33 @@ Do **not** raise the default to 3 — 3 hearts + Extra Life Gate is too forgivin
 
 Fragile Spirit ↔ Sudden Death remain mutually exclusive (same hearts aspect; different Gate policy).
 
+## Journey hero portraits (Radiant today, Dire later)
+
+Journey Round UI currently renders **Radiant** hero portraits only (`radiant_heroes`). **Dire** heroes (`dire_heroes`) already contribute sounds but are not shown in the hero row.
+
+**Future:** show Dire portraits in the hero row as well. Any Affix that targets individual portraits (Partial Veil masks, partial Blurred Vision) must key off **hero id**, not radiant-only index, so Dire slots plug in without a redesign.
+
+### Hidden-identity portrait modes
+
+Three mutually exclusive Affixes own “who is shown vs masked” in the hero row:
+
+| Affix | What the player sees | Sounds of masked / mystery heroes |
+|-------|----------------------|-----------------------------------|
+| **The Hidden Hero** | Every portrait slot is the `?` drawable | Still on the board (identity fully hidden) |
+| **Partial Veil** *(planned)* | Mix of real portraits + one or more `?` slots; level authors which hero ids are masked via `masked_hero_ids` | Still on the board for masked ids |
+| **Among Heroes** | Only real visible heroes (**no** `?`); infer the mystery hero from sounds / sound count | Mystery hero’s sounds are on the board |
+
+**Partial Veil** guardrails (level design): ≥2 heroes on the level; ≥1 real portrait; ≥1 masked; masking **all** heroes is invalid — use **The Hidden Hero** instead. Catalog Affix is rule-only; mask membership lives on the Journey level.
+
+### Blurred Vision — target behaviour *(planned)*
+
+**Today (code):** **Blurred Vision** / **Blurred Vision 2** blur **every** portrait in the hero row.
+
+**Target:** blur **some** portraits only (prefer level-authored hero ids; intensity still differs between the two Affixes). Pick one of Blurred Vision / Blurred Vision 2 per level.
+
+- **Compatible** with **Partial Veil** and **Among Heroes** — blur real art only; never blur a `?` slot.
+- **Still incompatible** with **The Hidden Hero** — no meaningful real art to blur when every slot is `?`.
+
 ## Journey Affix incompatibilities
 
 When authoring Journey levels (affix + hero combinations), do **not** stack affixes that fight over the same mechanic. Code today does not enforce this — last strategy wins or effects noop — so level design must respect these pairs.
@@ -69,14 +96,15 @@ When authoring Journey levels (affix + hero combinations), do **not** stack affi
 | Aspect | Mutually exclusive | Why |
 |--------|--------------------|-----|
 | Hearts / lives | **Fragile Spirit** ↔ **Sudden Death** | Both set starting hearts to 1; Sudden Death also disables Extra Life Gate. Pick one heart policy. |
-| Hero portrait | **Blurred Vision** / **Blurred Vision 2** ↔ **The Hidden Hero** | Blur needs a visible hero portrait; Hidden Hero uses the same hero-row Image slot(s) but swaps in the `?` drawable (transparent PNG) instead of the hero art. Blurred Vision vs Blurred Vision 2: pick one intensity. |
-| Hidden identity | **The Hidden Hero** ↔ **Among Heroes** | Different mystery UX: Hidden Hero keeps the hero layout and shows `?` art in the portrait slot; Among Heroes shows only real visible heroes (no `?`) and the player must infer a hidden hero from sounds / sound count. Do not stack. |
-| Counter + hidden portrait | **Unknown Count** ↔ **The Hidden Hero** | Without a visible correct-count, players cannot tell there are more correct sounds than the visible heroes imply. |
+| Hidden identity (portrait policy) | **The Hidden Hero** ↔ **Partial Veil** ↔ **Among Heroes** | Three different mystery UXs for the same hero-row slots. Pick exactly one. |
+| Full mask + blur | **Blurred Vision** / **Blurred Vision 2** ↔ **The Hidden Hero** | After partial-blur ships, blur still needs real portrait art; Hidden Hero is all `?`. Blurred Vision vs Blurred Vision 2: pick one intensity. |
+| Counter + full hidden portrait | **Unknown Count** ↔ **The Hidden Hero** | Without a visible correct-count, players cannot tell there are more correct sounds than the visible heroes imply. |
 | Round timer semantics | **Race Against Time** ↔ **Soundquake** / **Soundquake Aftershock** | Race Against Time ends the round on timeout. Soundquake variants reshuffle the board on timeout. Engine only takes the first timer config. |
 | Soundquake variants | **Soundquake** ↔ **Soundquake Aftershock** | Same timer/reshuffle aspect; pick keep-marks vs clear-marks. |
 | Decoy heroes | **Among Heroes** requires ≥2 heroes on the level | Needs visible heroes plus one mystery hero's sounds; meaningless on a single-hero level. |
+| Partial mask | **Partial Veil** requires ≥2 heroes; ≥1 visible + ≥1 masked | See Partial Veil guardrails above. |
 
-Compatible examples (different aspects): Hidden Marks + Unknown Count; Echo Limit + Mirror Mode; Race Against Time + Blurred Vision; Among Heroes + visible sound count (so players can notice “too many” correct sounds).
+Compatible examples (different aspects): Hidden Marks + Unknown Count; Echo Limit + Mirror Mode; Race Against Time + Blurred Vision; Among Heroes + visible sound count; **Partial Veil + Blurred Vision** (blur real slots only); **Among Heroes + Blurred Vision** (once partial blur ships).
 
 ### Echo Limit — level design
 
