@@ -199,8 +199,9 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            journeyState.radiantHeroImages.forEach { img ->
-                val imageModifier = if (affixUIState.blurHeroImages) {
+            journeyState.radiantHeroImages.forEachIndexed { index, img ->
+                val shouldBlur = journeyState.radiantHeroBlurred.getOrElse(index) { false }
+                val imageModifier = if (shouldBlur) {
                     Modifier
                         .size(imageSize.dp)
                         .blur(radius = affixUIState.blurIntensity.dp)

@@ -53,6 +53,10 @@ data class AffixUIState(
      * level-authored `masked_hero_ids` with the `?` drawable.
      */
     val usePartialVeil: Boolean = false,
+    /**
+     * Blurred Vision / Blurred Vision 2: Affix is active. Which slots blur comes from
+     * level-authored `blurred_hero_ids` (resolved in Journey Round); never blur `?` slots.
+     */
     val blurHeroImages: Boolean = false,
     val blurIntensity: Float = 0f,
     val showHearts: Boolean = true,

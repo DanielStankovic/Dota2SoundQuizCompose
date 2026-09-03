@@ -14,7 +14,8 @@ class HiddenMarksAffixStrategy : AffixStrategy {
 }
 
 /**
- * Affix that blurs hero images
+ * Affix that enables Blurred Vision. Intensity comes from Affix data; which heroes
+ * blur is level-authored via `blurred_hero_ids` (resolved in Journey Round).
  */
 class BlurredVisionAffixStrategy(val blur: String?) : AffixStrategy {
     override fun modifyUI(currentState: AffixUIState): AffixUIState {

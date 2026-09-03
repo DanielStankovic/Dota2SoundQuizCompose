@@ -23,4 +23,10 @@ data class JourneyDto(
      */
     @SerialName("masked_hero_ids")
     val maskedHeroIds: List<Int> = emptyList(),
+    /**
+     * Hero ids whose portraits get Blurred Vision blur when that Affix is active.
+     * Empty = blur nobody. Keyed by hero id so Dire row can reuse this later.
+     */
+    @SerialName("blurred_hero_ids")
+    val blurredHeroIds: List<Int> = emptyList(),
 )

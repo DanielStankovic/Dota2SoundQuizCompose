@@ -136,6 +136,9 @@ class JourneyRound @Inject constructor(
                 affixUIState.usePartialVeil -> levelData.maskedHeroIds.toSet()
                 else -> emptySet()
             }
+            // Blur membership is level-authored; empty + Affix on = blur nobody. Never blur `?`.
+            val blurredHeroIds =
+                if (affixUIState.blurHeroImages) levelData.blurredHeroIds.toSet() else emptySet()
             val casterNameById =
                 casterDao.getActiveCasters(heroIds).associate { it.id to it.name }
             val radiantHeroImages =
@@ -151,6 +154,9 @@ class JourneyRound @Inject constructor(
                         )
                     }
                 }
+            fun shouldBlurPortrait(heroId: Int) =
+                heroId in blurredHeroIds && heroId !in maskedHeroIds
+            val radiantHeroBlurred = levelData.radiantHeroes.map(::shouldBlurPortrait)
             val direHeroImages =
                 levelData.direHeroes.map { heroId ->
                     if (heroId in maskedHeroIds) {
@@ -164,14 +170,17 @@ class JourneyRound @Inject constructor(
                         )
                     }
                 }
+            val direHeroBlurred = levelData.direHeroes.map(::shouldBlurPortrait)
 
             val selectedMarks = soundList.associate { it.soundModel.id to false }
             val game = JourneyGameModel(
-                levelNum,
-                radiantHeroImages,
-                direHeroImages,
-                soundList,
-                correctSounds.size
+                level = levelNum,
+                radiantHeroImages = radiantHeroImages,
+                radiantHeroBlurred = radiantHeroBlurred,
+                direHeroImages = direHeroImages,
+                direHeroBlurred = direHeroBlurred,
+                soundList = soundList,
+                totalCorrectSounds = correctSounds.size
             )
 
             _roundState.value = JourneyRoundState.Ready(
@@ -309,6 +318,7 @@ class JourneyRound @Inject constructor(
                     "max_sounds",
                     "affixes",
                     "masked_hero_ids",
+                    "blurred_hero_ids",
                 )
             ) {
                 filter {
