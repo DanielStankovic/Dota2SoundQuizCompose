@@ -178,7 +178,7 @@ class JourneyRound @Inject constructor(
                 level = levelNum,
                 game = game,
                 hearts = hearts,
-                affixUI = affixUIState,
+                hud = affixUIState.toHudChrome(),
                 timer = null,
                 selectedMarks = selectedMarks,
                 remainingPlays = remainingPlaysOrNull(),

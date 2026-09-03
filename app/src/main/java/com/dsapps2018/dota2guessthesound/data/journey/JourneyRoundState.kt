@@ -1,6 +1,5 @@
 package com.dsapps2018.dota2guessthesound.data.journey
 
-import com.dsapps2018.dota2guessthesound.data.affix.AffixUIState
 import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 
@@ -17,7 +16,7 @@ sealed interface JourneyRoundState {
         val level: Int,
         val game: JourneyGameModel,
         val hearts: Int,
-        val affixUI: AffixUIState,
+        val hud: JourneyHudChrome,
         val timer: TimerState?,
         val selectedMarks: Map<Int, Boolean>,
         val remainingPlays: Int?,

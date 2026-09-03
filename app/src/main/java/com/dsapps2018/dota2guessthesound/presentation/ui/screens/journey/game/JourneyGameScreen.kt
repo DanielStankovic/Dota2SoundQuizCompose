@@ -63,8 +63,8 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
-import com.dsapps2018.dota2guessthesound.data.affix.AffixUIState
 import com.dsapps2018.dota2guessthesound.data.journey.ExtraLifeContinueOffer
+import com.dsapps2018.dota2guessthesound.data.journey.JourneyHudChrome
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundEvent
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundState
 import com.dsapps2018.dota2guessthesound.data.journey.TimerState
@@ -229,9 +229,9 @@ fun JourneyGameData(
         ((currentScreenWidth - 2 * imageRowPadding.value) /
             radiantPortraits.size.coerceAtLeast(1)).coerceAtMost(150f)
 
-    val affixUIState = ready.affixUI
+    val hud = ready.hud
     val timerState = ready.timer
-    val showTimer = affixUIState.showTimer && timerState != null
+    val showTimer = hud.showTimer && timerState != null
     val quakeFx = rememberSoundquakeFxState(soundquakeFx)
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -250,7 +250,7 @@ fun JourneyGameData(
             selectedMarks = ready.selectedMarks,
             remainingPlays = ready.remainingPlays,
             totalCorrectSounds = journeyState.totalCorrectSounds,
-            affixUIState = affixUIState,
+            hud = hud,
             timerState = if (showTimer) timerState else null,
             heartScale = quakeFx.heartScale.value,
         )
@@ -362,7 +362,7 @@ fun StatusInfoRow(
     selectedMarks: Map<Int, Boolean>,
     remainingPlays: Int?,
     totalCorrectSounds: Int,
-    affixUIState: AffixUIState,
+    hud: JourneyHudChrome,
     timerState: TimerState? = null,
     heartScale: Float = 1f,
 ) {
@@ -382,7 +382,7 @@ fun StatusInfoRow(
             Spacer(modifier = Modifier.width(8.dp))
         }
 
-        if (affixUIState.showHearts) {
+        if (hud.showHearts) {
             Row(
                 modifier = Modifier.graphicsLayer {
                     scaleX = heartScale
@@ -404,9 +404,9 @@ fun StatusInfoRow(
         Spacer(modifier = Modifier.weight(1f))
 
         val markedSoundsString =
-            if (affixUIState.showMarkedSoundCounter) selectedSounds.toString() else "?"
+            if (hud.showMarkedSoundCounter) selectedSounds.toString() else "?"
         val totalSoundsString =
-            if (affixUIState.showSoundCounter) totalCorrectSounds.toString() else "?"
+            if (hud.showSoundCounter) totalCorrectSounds.toString() else "?"
 
         Text(
             text = stringResource(
