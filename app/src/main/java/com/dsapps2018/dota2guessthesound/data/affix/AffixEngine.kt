@@ -3,6 +3,7 @@ package com.dsapps2018.dota2guessthesound.data.affix
 import com.dsapps2018.dota2guessthesound.data.affix.strategies.BlurredVisionAffixStrategy
 import com.dsapps2018.dota2guessthesound.data.affix.strategies.HiddenHeroAffixStrategy
 import com.dsapps2018.dota2guessthesound.data.affix.strategies.HiddenMarksAffixStrategy
+import com.dsapps2018.dota2guessthesound.data.affix.strategies.PartialVeilAffixStrategy
 import com.dsapps2018.dota2guessthesound.data.affix.strategies.RaceAgainstTimeAffixStrategy
 import com.dsapps2018.dota2guessthesound.data.affix.strategies.UnknownCountAffixStrategy
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
@@ -37,6 +38,7 @@ class AffixEngine(private val activeAffixes: List<AffixModel>) {
                 "echo_limit" -> EchoLimitAffixStrategy()
                 "mirror_mode" -> MirrorModeAffixStrategy()
                 "the_hidden_hero" -> HiddenHeroAffixStrategy()
+                "partial_veil" -> PartialVeilAffixStrategy()
                 "unknown_count" -> UnknownCountAffixStrategy()
                 "fragile_spirit" -> FragileSpiritAffixStrategy()
                 "sudden_death" -> SuddenDeathAffixStrategy()

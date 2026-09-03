@@ -17,4 +17,10 @@ data class JourneyDto(
     val maxSounds: Int,
     @SerialName("affixes")
     val affixes: List<Int>,
+    /**
+     * Hero ids whose portraits should show `?` when Partial Veil is active.
+     * Keyed by hero id so Dire row can reuse this later.
+     */
+    @SerialName("masked_hero_ids")
+    val maskedHeroIds: List<Int> = emptyList(),
 )

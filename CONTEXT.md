@@ -75,7 +75,7 @@ Three mutually exclusive Affixes own “who is shown vs masked” in the hero ro
 | Affix | What the player sees | Sounds of masked / mystery heroes |
 |-------|----------------------|-----------------------------------|
 | **The Hidden Hero** | Every portrait slot is the `?` drawable | Still on the board (identity fully hidden) |
-| **Partial Veil** *(planned)* | Mix of real portraits + one or more `?` slots; level authors which hero ids are masked via `masked_hero_ids` | Still on the board for masked ids |
+| **Partial Veil** | Mix of real portraits + one or more `?` slots; level authors which hero ids are masked via `masked_hero_ids` | Still on the board for masked ids |
 | **Among Heroes** | Only real visible heroes (**no** `?`); infer the mystery hero from sounds / sound count | Mystery hero’s sounds are on the board |
 
 **Partial Veil** guardrails (level design): ≥2 heroes on the level; ≥1 real portrait; ≥1 masked; masking **all** heroes is invalid — use **The Hidden Hero** instead. Catalog Affix is rule-only; mask membership lives on the Journey level.

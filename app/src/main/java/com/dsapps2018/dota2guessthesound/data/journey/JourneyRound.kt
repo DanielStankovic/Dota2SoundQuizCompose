@@ -130,21 +130,39 @@ class JourneyRound @Inject constructor(
             val randomSounds =
                 incorrectSounds.shuffled().take(levelData.maxSounds - correctSounds.size)
             val soundList = (correctSounds + randomSounds).shuffled()
+            // Resolve ? portraits here (by hero id) so Dire row can reuse the same rule later.
+            val maskedHeroIds = when {
+                affixUIState.useQuestionMarkHeroPortraits -> heroIds.toSet()
+                affixUIState.usePartialVeil -> levelData.maskedHeroIds.toSet()
+                else -> emptySet()
+            }
+            val casterNameById =
+                casterDao.getActiveCasters(heroIds).associate { it.id to it.name }
             val radiantHeroImages =
-                casterDao.getCasterNames(levelData.radiantHeroes).map { name ->
-                    resources.getIdentifier(
-                        "hero_${name.lowercase().replace("'s", "s").replace("-", "")}",
-                        "drawable",
-                        context.packageName
-                    )
+                levelData.radiantHeroes.map { heroId ->
+                    if (heroId in maskedHeroIds) {
+                        R.drawable.hero_question_mark
+                    } else {
+                        val name = casterNameById[heroId].orEmpty()
+                        resources.getIdentifier(
+                            "hero_${name.lowercase().replace("'s", "s").replace("-", "")}",
+                            "drawable",
+                            context.packageName
+                        )
+                    }
                 }
             val direHeroImages =
-                casterDao.getCasterNames(levelData.direHeroes).map { name ->
-                    resources.getIdentifier(
-                        name.replace("'s", "s").replace("-", ""),
-                        "drawable",
-                        context.packageName
-                    )
+                levelData.direHeroes.map { heroId ->
+                    if (heroId in maskedHeroIds) {
+                        R.drawable.hero_question_mark
+                    } else {
+                        val name = casterNameById[heroId].orEmpty()
+                        resources.getIdentifier(
+                            name.replace("'s", "s").replace("-", ""),
+                            "drawable",
+                            context.packageName
+                        )
+                    }
                 }
 
             val selectedMarks = soundList.associate { it.soundModel.id to false }
@@ -289,7 +307,8 @@ class JourneyRound @Inject constructor(
                     "radiant_heroes",
                     "dire_heroes",
                     "max_sounds",
-                    "affixes"
+                    "affixes",
+                    "masked_hero_ids",
                 )
             ) {
                 filter {

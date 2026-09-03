@@ -200,11 +200,6 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
             horizontalArrangement = Arrangement.Center
         ) {
             journeyState.radiantHeroImages.forEach { img ->
-                val portraitRes = if (affixUIState.useQuestionMarkHeroPortraits) {
-                    R.drawable.hero_question_mark
-                } else {
-                    img
-                }
                 val imageModifier = if (affixUIState.blurHeroImages) {
                     Modifier
                         .size(imageSize.dp)
@@ -214,7 +209,7 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
                 }
 
                 Image(
-                    painterResource(portraitRes),
+                    painterResource(img),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = imageModifier,

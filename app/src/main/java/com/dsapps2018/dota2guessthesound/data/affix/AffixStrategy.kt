@@ -48,6 +48,11 @@ data class AffixUIState(
      * in each portrait slot instead of the real hero art.
      */
     val useQuestionMarkHeroPortraits: Boolean = false,
+    /**
+     * Partial Veil: keep the hero-row layout; Journey Round masks only
+     * level-authored `masked_hero_ids` with the `?` drawable.
+     */
+    val usePartialVeil: Boolean = false,
     val blurHeroImages: Boolean = false,
     val blurIntensity: Float = 0f,
     val showHearts: Boolean = true,

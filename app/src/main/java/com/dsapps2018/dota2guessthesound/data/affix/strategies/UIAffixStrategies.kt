@@ -36,6 +36,16 @@ class HiddenHeroAffixStrategy : AffixStrategy {
 }
 
 /**
+ * Affix that keeps the hero-row layout and masks only selected hero ids with `?`.
+ * Mutually exclusive with Hidden Hero and Among Heroes. Mask membership is on the Journey level.
+ */
+class PartialVeilAffixStrategy : AffixStrategy {
+    override fun modifyUI(currentState: AffixUIState): AffixUIState {
+        return currentState.copy(usePartialVeil = true)
+    }
+}
+
+/**
  * Affix that hides the total count of correct sounds
  */
 class UnknownCountAffixStrategy : AffixStrategy {
