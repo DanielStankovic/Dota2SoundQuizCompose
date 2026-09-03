@@ -62,7 +62,3 @@ Mentally (or in Preview) check at least: Race Against Time + Partial Veil + Frag
 ## Out of scope
 
 Rewriting Affix game rules, inventing new Affixes, or installing psychology/FTUE audit packs. Layout and chrome only.
-
-## Deeper research
-
-Primary-source citations and ranked alternatives: [`docs/research/journey-hud-layout-patterns.md`](../../../docs/research/journey-hud-layout-patterns.md). Read when choosing among layout options or justifying a HUD change.

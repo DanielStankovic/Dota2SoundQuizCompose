@@ -1,6 +1,6 @@
 # Layout options — sound board & hero strip
 
-Ranked for this app: portrait phone, listen → mark → submit, Affix density, Radiant today / Radiant+Dire later (`CONTEXT.md`). Cite Android adaptive feeds ([canonical layouts](https://developer.android.com/develop/adaptive-apps/guides/canonical-layouts)), Material targets ([M3 structure](https://m3.material.io/foundations/designing/structure)), and HUD progressive disclosure (`game-ui-ux` references). Full citations: [`docs/research/journey-hud-layout-patterns.md`](../../../../docs/research/journey-hud-layout-patterns.md).
+Ranked for this app: portrait phone, listen → mark → submit, Affix density, Radiant today / Radiant+Dire later (`CONTEXT.md`). Cite Android adaptive feeds ([canonical layouts](https://developer.android.com/develop/adaptive-apps/guides/canonical-layouts)), Material targets ([M3 structure](https://m3.material.io/foundations/designing/structure)), and HUD progressive disclosure (`game-ui-ux` references).
 
 **Universal shell:** one Journey HUD; Affix flags compose chrome. Options below are packing strategies for that shell — not per-Affix screens.
 
