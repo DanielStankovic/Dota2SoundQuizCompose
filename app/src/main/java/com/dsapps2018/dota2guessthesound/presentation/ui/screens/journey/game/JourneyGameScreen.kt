@@ -150,13 +150,13 @@ fun JourneyGameScreen(
                             }
                         },
                         onWatchAdClicked = {
-                            viewModel.setShowWatchAdContinueDialog(false)
-                            viewModel.onFullscreenAdStarted()
-                            showRewardedAd(context, onRewarded = {
-                                viewModel.grantExtraLifeGate()
-                            }, onAdDismissed = {
-                                viewModel.onFullscreenAdFinished()
-                            })
+                            viewModel.continueFromExtraLifeGate { onRewarded, onAdDismissed ->
+                                showRewardedAd(
+                                    context,
+                                    onRewarded = onRewarded,
+                                    onAdDismissed = onAdDismissed,
+                                )
+                            }
                         },
                         title = stringResource(
                             if (isTimeOffer) R.string.times_up_lbl else R.string.game_over_lbl

@@ -46,11 +46,9 @@ class JourneyGameViewModel @Inject constructor(
         if (!showDialog) journeyRound.dismissContinueDialog()
     }
 
-    fun grantExtraLifeGate() = journeyRound.grantExtraLifeGate()
-
-    fun onFullscreenAdStarted() = journeyRound.onGameplaySurfaceObscured()
-
-    fun onFullscreenAdFinished() = journeyRound.onGameplaySurfaceClear()
+    fun continueFromExtraLifeGate(
+        runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,
+    ) = journeyRound.continueFromExtraLifeGate(runRewardedAd)
 
     fun onHostPaused() = journeyRound.onHostPaused()
 

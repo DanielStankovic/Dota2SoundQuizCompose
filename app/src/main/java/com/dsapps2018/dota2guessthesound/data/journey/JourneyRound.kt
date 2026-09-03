@@ -250,10 +250,26 @@ class JourneyRound @Inject constructor(
     }
 
     /**
+     * Extra Life Gate rewarded continue: hide dialog, pause timer under the ad, apply grant on
+     * reward, then clear the surface (resume / pending +time) when the ad closes.
+     * Ad SDK stays outside this module — [runRewardedAd] is the presentation adapter.
+     */
+    fun continueFromExtraLifeGate(
+        runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,
+    ) {
+        dismissContinueDialog()
+        onGameplaySurfaceObscured()
+        runRewardedAd(
+            onRewarded = { grantExtraLifeGate() },
+            onAdDismissed = { onGameplaySurfaceClear() },
+        )
+    }
+
+    /**
      * Applies Extra Life Gate reward only. Does **not** start/resume the timer — that waits until
      * [onGameplaySurfaceClear] (ad closed / surface visible again).
      */
-    fun grantExtraLifeGate() {
+    private fun grantExtraLifeGate() {
         extraLifeGateUsed = true
         val offer = pendingContinueOffer
         pendingContinueOffer = null
