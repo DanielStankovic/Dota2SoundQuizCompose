@@ -12,6 +12,10 @@ _Avoid_: User data (as the domain name), score row, game stats
 Whether the player is signed in to the cloud account used for sync and leaderboard identity.
 _Avoid_: User (when you mean signed-in state), profile (when you mean auth)
 
+**Auth Session**:
+Sign-in / sign-out orchestration: Google ID token Auth, Player Progress create-or-sync, leaderboard attach, and local reset on sign-out. Distinct from Auth as mere signed-in state and from Player Progress itself.
+_Avoid_: AuthViewModel (as the domain name), login pipeline
+
 **Invoker entry**:
 Paying coins to start an Invoker mode run (`InvokerEntry`: affordability, spend, matching ad grant). A coin spend, not a mode result and not the Invoker Round itself.
 _Avoid_: Invoker cost (as the domain name for the action), unlock
@@ -178,4 +182,4 @@ Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come fr
 
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0013). ADR-0002–0013 include **Revert** sections where those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0014). ADR-0002–0014 include **Revert** sections where those deepens need to be rolled back.
