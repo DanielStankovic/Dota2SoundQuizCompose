@@ -43,7 +43,22 @@ class AffixEngine(private val activeAffixes: List<AffixModel>) {
                 "unknown_count" -> UnknownCountAffixStrategy()
                 "fragile_spirit" -> FragileSpiritAffixStrategy()
                 "sudden_death" -> SuddenDeathAffixStrategy()
-                "soundquake" -> SoundquakeAffixStrategy()
+                "soundquake" -> SoundquakeAffixStrategy(
+                    clearMarksOnQuake = false,
+                    drainHeartOnQuake = false,
+                )
+                "soundquake_aftershock" -> SoundquakeAffixStrategy(
+                    clearMarksOnQuake = true,
+                    drainHeartOnQuake = false,
+                )
+                "soundquake_fracture" -> SoundquakeAffixStrategy(
+                    clearMarksOnQuake = false,
+                    drainHeartOnQuake = true,
+                )
+                "soundquake_cataclysm" -> SoundquakeAffixStrategy(
+                    clearMarksOnQuake = true,
+                    drainHeartOnQuake = true,
+                )
                 "among_heroes" -> AmongHeroesAffixStrategy()
                 else -> null // Unknown affix, skip
             }

@@ -75,15 +75,15 @@ Fragile Spirit ↔ Sudden Death remain mutually exclusive (same hearts aspect; d
 
 If the Gate is still unused when the Race timer hits 0, offer the ad → add `timer_extension_seconds` and continue. If the Gate was already spent on a heart recover (or Sudden Death disables it), timeout is Game Over.
 
-Journey round timers (Race today; Soundquake later) run only while the gameplay surface is clear — paused for Extra Life Gate dialog, fullscreen ads, and app background; they resume when the player is back on the uncovered game screen.
+Journey round timers (Race and Soundquake family) run only while the gameplay surface is clear — paused for Extra Life Gate dialog, fullscreen ads, and app background; they resume when the player is back on the uncovered game screen.
 
 Time buyback is **Race-only**. Soundquake does not offer +time.
 
-### Soundquake — timer source *(behavior later)*
+### Soundquake — timer source
 
-When Soundquake ships: Journey `timer_seconds` is the quake **interval** (Affix chooses reshuffle / marks / optional `remove_heart`). Race ↔ Soundquake stay mutually exclusive, so one level timer column is enough.
+Journey `timer_seconds` is the quake **interval**. Four catalog Affixes share the reshuffle loop and differ on marks / hearts (see variants below). Race ↔ Soundquake family stay mutually exclusive, so one level timer column is enough.
 
-**Target for `remove_heart` variants:** a quake that drains the last heart uses the same Extra Life Gate (+1 heart). Granting the heart continues the round so the next quake interval can run — not a time extension.
+A quake that drains the last heart (Fracture / Cataclysm) uses the same Extra Life Gate (+1 heart). Granting the heart continues the round so the next quake interval can run — not a time extension.
 
 ## Journey hero portraits (Radiant today, Dire later)
 
@@ -124,8 +124,8 @@ When authoring Journey levels (affix + hero combinations), do **not** stack affi
 | Hidden identity (portrait policy) | **The Hidden Hero** ↔ **Partial Veil** ↔ **Among Heroes** | Three different mystery UXs for the same hero-row slots. Pick exactly one. |
 | Full mask + blur | **Blurred Vision** / **Blurred Vision 2** ↔ **The Hidden Hero** | Blur needs real portrait art; Hidden Hero is all `?`. Blurred Vision vs Blurred Vision 2: pick one intensity. |
 | Counter + mystery without portrait cue | **Unknown Count** ↔ **The Hidden Hero** / **Among Heroes** | Without a visible correct-count, players cannot tell there are more correct sounds than the visible heroes imply. Among Heroes is stricter: there is also no `?` slot, so the counter is the main hint that a mystery hero exists. |
-| Round timer semantics | **Race Against Time** ↔ **Soundquake** / **Soundquake Aftershock** | Race ends the round on timeout (with optional Extra Life Gate +time). Soundquake variants reshuffle on interval. Engine only takes the first timer Affix; duration comes from Journey `timer_seconds`. |
-| Soundquake variants | **Soundquake** ↔ **Soundquake Aftershock** | Same timer/reshuffle aspect; pick keep-marks vs clear-marks. |
+| Round timer semantics | **Race Against Time** ↔ **Soundquake** / **Soundquake Aftershock** / **Soundquake Fracture** / **Soundquake Cataclysm** | Race ends the round on timeout (with optional Extra Life Gate +time). Soundquake family reshuffles on interval. Engine only takes the first timer Affix; duration comes from Journey `timer_seconds`. |
+| Soundquake variants | **Soundquake** ↔ **Soundquake Aftershock** ↔ **Soundquake Fracture** ↔ **Soundquake Cataclysm** | Same timer/reshuffle aspect; pick exactly one marks + heart policy. |
 | Decoy heroes | **Among Heroes** requires ≥2 heroes on the level | Needs visible heroes plus one mystery hero's sounds; meaningless on a single-hero level. Mystery id = Journey `hidden_hero_id`; must not overlap `masked_hero_ids` / `blurred_hero_ids`. |
 | Partial mask | **Partial Veil** requires ≥2 heroes; ≥1 visible + ≥1 masked | See Partial Veil guardrails above. |
 
@@ -150,16 +150,16 @@ When designing a level with Echo Limit:
    - Easy: `+10` → `boardSize + 10`
 3. Never set plays below the number of correct sounds the player must identify (and prefer never below `boardSize` without an explicit product call).
 
-### Soundquake — variants (catalog + data)
+### Soundquake — variants (catalog)
 
-Two Affixes share the Soundquake timer/reshuffle loop; differ on mark handling. Interval seconds come from Journey **`timer_seconds`**. Affix `data` still carries:
+Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come from Journey **`timer_seconds`**. Affix `data` is empty (`{}`) — marks and heart policy are encoded by which Affix is chosen (no `remove_heart` flag).
 
-- `remove_heart` (boolean) — if true, each quake also costs one heart
-
-| Affix | Marks on quake | Icon |
-|-------|----------------|------|
-| **Soundquake** | Keep player marks; only positions shuffle | Existing `affix_soundquake` (+ optional heart-loss badge when `remove_heart`) |
-| **Soundquake Aftershock** | Clear all marks, then shuffle | New distinct icon (+ same optional heart-loss badge) |
+| Affix | Marks on quake | Heart on quake | Icon |
+|-------|----------------|----------------|------|
+| **Soundquake** | Keep player marks; only positions shuffle | No | `affix_soundquake` |
+| **Soundquake Aftershock** | Clear all marks, then shuffle | No | `affix_soundquake_aftershock` |
+| **Soundquake Fracture** | Keep player marks | Yes (−1 heart; Extra Life Gate on last heart) | `affix_soundquake_fracture` (shared cracked-heart glyph with Cataclysm) |
+| **Soundquake Cataclysm** | Clear all marks, then shuffle | Yes (−1 heart; Extra Life Gate on last heart) | `affix_soundquake_cataclysm` (same cracked-heart glyph as Fracture) |
 
 ## Decisions
 

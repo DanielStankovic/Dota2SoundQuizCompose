@@ -64,13 +64,34 @@ class SuddenDeathAffixStrategy : AffixStrategy {
 }
 
 /**
- * Affix that causes screen shake or other effects when sounds are played
+ * Soundquake family: interval timer reshuffles the board instead of ending the round.
+ * [clearMarksOnQuake] / [drainHeartOnQuake] distinguish Aftershock / Fracture / Cataclysm.
+ * Interval seconds come from Journey `timer_seconds` (legacy Affix `data.timer` fallback only).
  */
-class SoundquakeAffixStrategy : AffixStrategy {
+class SoundquakeAffixStrategy(
+    private val clearMarksOnQuake: Boolean = false,
+    private val drainHeartOnQuake: Boolean = false,
+) : AffixStrategy {
     override fun modifyUI(currentState: AffixUIState): AffixUIState {
-        return currentState
+        return currentState.copy(showTimer = true)
     }
-    
-    // Note: Screen shake would be implemented in the UI layer when sounds are played
+
+    override fun modifyGameplay(currentState: AffixGameState): AffixGameState {
+        return currentState.copy(
+            soundquakeClearsMarks = clearMarksOnQuake,
+            soundquakeDrainsHeart = drainHeartOnQuake,
+        )
+    }
+
+    override fun getTimerConfiguration(): TimerConfiguration {
+        return TimerConfiguration(
+            durationMs = DEFAULT_SOUNDQUAKE_INTERVAL_MS,
+            endsRoundOnTimeout = false,
+        )
+    }
+
+    private companion object {
+        const val DEFAULT_SOUNDQUAKE_INTERVAL_MS = 45_000L
+    }
 }
 

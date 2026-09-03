@@ -74,6 +74,8 @@ class JourneyRound @Inject constructor(
     private var timerRemainingWhenPaused: Long = 0L
     private var isTimerPaused: Boolean = false
     private var endsRoundOnTimeout: Boolean = false
+    private var soundquakeClearsMarks: Boolean = false
+    private var soundquakeDrainsHeart: Boolean = false
     private var timerExtensionMs: Long = DEFAULT_TIMER_EXTENSION_SECONDS * 1000L
     /** Armed by time buyback; started only when gameplay surface is clear (ad dismissed). */
     private var pendingTimerStartMs: Long? = null
@@ -112,6 +114,8 @@ class JourneyRound @Inject constructor(
         maxSoundPlays = null
         extraLifeGateAllowed = true
         endsRoundOnTimeout = false
+        soundquakeClearsMarks = false
+        soundquakeDrainsHeart = false
         timerExtensionMs = DEFAULT_TIMER_EXTENSION_SECONDS * 1000L
         pendingTimerStartMs = null
         timerBlockedByOverlay = false
@@ -131,6 +135,8 @@ class JourneyRound @Inject constructor(
             val affixGameState = engine.applyGameplayModifications(AffixGameState())
             val hearts = affixGameState.modifiedHeartCount ?: DEFAULT_HEARTS
             extraLifeGateAllowed = affixGameState.extraLifeGateAllowed
+            soundquakeClearsMarks = affixGameState.soundquakeClearsMarks
+            soundquakeDrainsHeart = affixGameState.soundquakeDrainsHeart
 
             // Echo Limit: Affix enables; budget = board size + level offset (default Medium +5).
             if (engine.getSoundLimitations() != null) {
@@ -285,28 +291,7 @@ class JourneyRound @Inject constructor(
             if (validationResult.isCorrect) {
                 _events.emit(JourneyRoundEvent.Correct)
             } else {
-                val newHearts = ready.hearts - 1
-                if (newHearts <= 0) {
-                    // Sudden Death: Extra Life Gate disabled — first fail ends the round.
-                    // Fragile Spirit / default: offer Gate once if unused.
-                    if (!extraLifeGateAllowed) {
-                        _events.emit(JourneyRoundEvent.GameOver)
-                    } else if (!extraLifeGateUsed) {
-                        pauseTimer()
-                        pendingContinueOffer = ExtraLifeContinueOffer.Heart
-                        updateReady {
-                            it.copy(
-                                hearts = newHearts,
-                                showContinueDialog = true,
-                                continueOffer = ExtraLifeContinueOffer.Heart,
-                            )
-                        }
-                    } else {
-                        _events.emit(JourneyRoundEvent.GameOver)
-                    }
-                } else {
-                    updateReady { it.copy(hearts = newHearts) }
-                }
+                applyHeartLoss(restartSoundquakeTimerAfterGate = false)
             }
         }
     }
@@ -488,11 +473,80 @@ class JourneyRound @Inject constructor(
                 if (endsRoundOnTimeout) {
                     offerTimeExtensionOrGameOver()
                 } else {
-                    // Soundquake (later): reshuffle path — not implemented yet.
-                    _events.emit(JourneyRoundEvent.GameOver)
+                    handleSoundquakeTimeout()
                 }
             }
         }
+    }
+
+
+    /**
+     * Soundquake interval elapsed: reshuffle board, optionally clear marks / drain a heart,
+     * then restart the interval unless Extra Life Gate or Game Over intervenes.
+     */
+    private suspend fun handleSoundquakeTimeout() {
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        val reshuffled = ready.game.soundList.shuffled()
+        val marks = if (soundquakeClearsMarks) {
+            reshuffled.associate { it.soundModel.id to false }
+        } else {
+            // Marks are keyed by sound id — keep selections across position shuffle.
+            ready.selectedMarks
+        }
+        updateReady {
+            it.copy(
+                game = it.game.copy(soundList = reshuffled),
+                selectedMarks = marks,
+                timer = it.timer?.copy(remainingMs = 0L, isPaused = true),
+            )
+        }
+
+        if (soundquakeDrainsHeart) {
+            val survived = applyHeartLoss(restartSoundquakeTimerAfterGate = true)
+            if (!survived) return
+        }
+
+        val scope = roundScope ?: return
+        initializeTimer(timerDurationMs, scope)
+    }
+
+    /**
+     * Drain one heart. Returns false when the round ended or Extra Life Gate was offered
+     * (caller must not continue). Returns true when play continues with hearts remaining.
+     *
+     * @param restartSoundquakeTimerAfterGate when Gate is offered from a Soundquake quake,
+     * arm a full interval restart after the rewarded ad (not a Race +time buyback).
+     */
+    private suspend fun applyHeartLoss(restartSoundquakeTimerAfterGate: Boolean): Boolean {
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return false
+        val newHearts = ready.hearts - 1
+        if (newHearts <= 0) {
+            // Sudden Death: Extra Life Gate disabled — first fail ends the round.
+            // Fragile Spirit / default: offer Gate once if unused.
+            if (!extraLifeGateAllowed) {
+                _events.emit(JourneyRoundEvent.GameOver)
+                return false
+            }
+            if (!extraLifeGateUsed) {
+                pauseTimer()
+                pendingContinueOffer = ExtraLifeContinueOffer.Heart
+                if (restartSoundquakeTimerAfterGate) {
+                    pendingTimerStartMs = timerDurationMs
+                }
+                updateReady {
+                    it.copy(
+                        hearts = newHearts,
+                        showContinueDialog = true,
+                        continueOffer = ExtraLifeContinueOffer.Heart,
+                    )
+                }
+                return false
+            }
+            _events.emit(JourneyRoundEvent.GameOver)
+            return false
+        }
+        updateReady { it.copy(hearts = newHearts) }
+        return true
     }
 
     private suspend fun offerTimeExtensionOrGameOver() {

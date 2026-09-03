@@ -79,6 +79,16 @@ data class AffixGameState(
      * (Sudden Death). Fragile Spirit leaves this true.
      */
     val extraLifeGateAllowed: Boolean = true,
+    /**
+     * Soundquake family: clear all marks when the quake interval fires
+     * (Aftershock / Cataclysm). Soundquake / Fracture leave marks in place.
+     */
+    val soundquakeClearsMarks: Boolean = false,
+    /**
+     * Soundquake family: each quake also costs one heart
+     * (Fracture / Cataclysm). Uses the same Extra Life Gate as a wrong submit.
+     */
+    val soundquakeDrainsHeart: Boolean = false,
 )
 
 data class AnswerValidationResult(
@@ -92,7 +102,7 @@ data class TimerConfiguration(
     val showWarningAt: Long = durationMs / 4, // Show warning at 25% remaining
     /**
      * Race Against Time: true — timeout ends the round (Extra Life Gate may offer +time).
-     * Soundquake (later): false — timeout reshuffles instead.
+     * Soundquake family: false — timeout reshuffles (and may clear marks / drain a heart).
      */
     val endsRoundOnTimeout: Boolean = true,
 )
