@@ -28,6 +28,10 @@ _Avoid_: Journey session, Journey game (as the domain name for the module)
 A named rule from the remote `affixes` catalog that modifies a Journey Round (UI flags, hearts, timer, play limits, validation, board composition). A Journey level references affixes by id. AffixEngine applies strategies for known keys; unknown keys are skipped.
 _Avoid_: modifier, perk, challenge rule (when you mean the catalog Affix)
 
+**Hero**:
+A Dota 2 playable character whose portrait and spell sounds appear in a Journey Round (and elsewhere in the app). Use this word in player-facing copy and domain language.
+_Avoid_: champion, character (when you mean a Dota 2 Hero)
+
 **Sound Playback**:
 Playing a spell `SoundModel` (local resource or remote URL), or a raw resource id, without callers knowing mapper/Uri details.
 _Avoid_: SoundPlayer (when you mean the domain capability), play helper
