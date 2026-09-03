@@ -32,6 +32,16 @@ sealed interface JourneyRoundState {
 sealed interface JourneyRoundEvent {
     data object Correct : JourneyRoundEvent
     data object GameOver : JourneyRoundEvent
+
+    /**
+     * Soundquake interval fired — UI plays Board Quake FX.
+     * [strong] = Aftershock / Cataclysm (clear-marks variants).
+     * [drainedHeart] = Fracture / Cataclysm (heart cost this quake).
+     */
+    data class Soundquake(
+        val strong: Boolean,
+        val drainedHeart: Boolean,
+    ) : JourneyRoundEvent
 }
 
 /** Journey Extra Life Gate recover type for the continue dialog. */

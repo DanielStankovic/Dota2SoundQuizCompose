@@ -29,13 +29,14 @@ import com.dsapps2018.dota2guessthesound.R
 
 @Composable
 fun SoundCard(
-    selectedState: Boolean, 
-    onCardClicked: () -> Unit, 
+    selectedState: Boolean,
+    onCardClicked: () -> Unit,
     onSoundIconClicked: () -> Unit,
-    remainingPlays: Int? = null
+    remainingPlays: Int? = null,
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(2f / 2.75f)
             .clickable { onCardClicked() }
             .then(

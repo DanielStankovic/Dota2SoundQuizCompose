@@ -59,7 +59,7 @@ class JourneyRound @Inject constructor(
         MutableStateFlow<JourneyRoundState>(JourneyRoundState.Idle)
     val roundState: StateFlow<JourneyRoundState> = _roundState.asStateFlow()
 
-    private val _events = MutableSharedFlow<JourneyRoundEvent>()
+    private val _events = MutableSharedFlow<JourneyRoundEvent>(extraBufferCapacity = 8)
     val events: SharedFlow<JourneyRoundEvent> = _events.asSharedFlow()
 
     private var affixEngine: AffixEngine? = null
@@ -500,6 +500,14 @@ class JourneyRound @Inject constructor(
                 timer = it.timer?.copy(remainingMs = 0L, isPaused = true),
             )
         }
+
+        // Fire FX after board update so LazyGrid animateItem + shake run together.
+        _events.emit(
+            JourneyRoundEvent.Soundquake(
+                strong = soundquakeClearsMarks,
+                drainedHeart = soundquakeDrainsHeart,
+            )
+        )
 
         if (soundquakeDrainsHeart) {
             val survived = applyHeartLoss(restartSoundquakeTimerAfterGate = true)

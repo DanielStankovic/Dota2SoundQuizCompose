@@ -81,7 +81,10 @@ Time buyback is **Race-only**. Soundquake does not offer +time.
 
 ### Soundquake — timer source
 
-Journey `timer_seconds` is the quake **interval**. Four catalog Affixes share the reshuffle loop and differ on marks / hearts (see variants below). Race ↔ Soundquake family stay mutually exclusive, so one level timer column is enough.
+Journey `timer_seconds` is the quake **interval** (same column as Race; Affix only picks reshuffle / marks / heart policy). Four catalog Affixes share the reshuffle loop. Race ↔ Soundquake family stay mutually exclusive, so one level timer column is enough.
+
+- Author `timer_seconds` on the Journey level (recommended).
+- If unset / non-positive: default **20** seconds (Soundquake Affix fallback; Affix `data.timer` is unused for this family).
 
 A quake that drains the last heart (Fracture / Cataclysm) uses the same Extra Life Gate (+1 heart). Granting the heart continues the round so the next quake interval can run — not a time extension.
 
@@ -152,7 +155,7 @@ When designing a level with Echo Limit:
 
 ### Soundquake — variants (catalog)
 
-Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come from Journey **`timer_seconds`**. Affix `data` is empty (`{}`) — marks and heart policy are encoded by which Affix is chosen (no `remove_heart` flag).
+Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come from Journey **`timer_seconds`** (default **20** if unset). Affix `data` is empty (`{}`) — marks and heart policy are encoded by which Affix is chosen (no `remove_heart` flag).
 
 | Affix | Marks on quake | Heart on quake | Icon |
 |-------|----------------|----------------|------|

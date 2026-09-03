@@ -3,6 +3,9 @@ package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.ui.draw.blur
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,9 +36,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -65,7 +71,10 @@ import com.dsapps2018.dota2guessthesound.data.journey.TimerState
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.WatchAdContinueDialog
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.SoundquakeFxRequest
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.TimerDisplay
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.rememberSoundquakeFxState
+import kotlin.random.Random
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 
 /** SB-A: min cell width so SoundCard mark targets stay ≥ 48.dp; Adaptive drops columns on narrow widths. */
@@ -86,6 +95,7 @@ fun JourneyGameScreen(
         (roundState as? JourneyRoundState.Ready)?.showContinueDialog == true
     val continueOffer =
         (roundState as? JourneyRoundState.Ready)?.continueOffer
+    var soundquakeFx by remember { mutableStateOf<SoundquakeFxRequest?>(null) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -109,6 +119,14 @@ fun JourneyGameScreen(
 
                 is JourneyRoundEvent.GameOver -> {
                     onNavigateToResultScreen(levelNum, false)
+                }
+
+                is JourneyRoundEvent.Soundquake -> {
+                    soundquakeFx = SoundquakeFxRequest(
+                        nonce = Random.nextLong(),
+                        strong = gameEvent.strong,
+                        drainedHeart = gameEvent.drainedHeart,
+                    )
                 }
             }
         }
@@ -171,13 +189,16 @@ fun JourneyGameScreen(
                     ),
 
                 ) {
-                JourneyGameContent(viewModel)
+                JourneyGameContent(viewModel, soundquakeFx)
             }
         })
 }
 
 @Composable
-fun JourneyGameContent(viewModel: JourneyGameViewModel) {
+fun JourneyGameContent(
+    viewModel: JourneyGameViewModel,
+    soundquakeFx: SoundquakeFxRequest? = null,
+) {
     val state by viewModel.roundState.collectAsStateWithLifecycle()
     when (val journeyState = state) {
         JourneyRoundState.Idle, JourneyRoundState.Loading -> {
@@ -189,13 +210,17 @@ fun JourneyGameContent(viewModel: JourneyGameViewModel) {
         }
 
         is JourneyRoundState.Ready -> {
-            JourneyGameData(journeyState, viewModel)
+            JourneyGameData(journeyState, viewModel, soundquakeFx)
         }
     }
 }
 
 @Composable
-fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewModel) {
+fun JourneyGameData(
+    ready: JourneyRoundState.Ready,
+    viewModel: JourneyGameViewModel,
+    soundquakeFx: SoundquakeFxRequest? = null,
+) {
     val journeyState = ready.game
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
     val imageRowPadding = 8.dp
@@ -207,12 +232,15 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
     val affixUIState = ready.affixUI
     val timerState = ready.timer
     val showTimer = affixUIState.showTimer && timerState != null
+    val quakeFx = rememberSoundquakeFxState(soundquakeFx)
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(top = 8.dp),
+            .padding(top = 8.dp)
+            .offset(x = quakeFx.shakeX.value.dp, y = quakeFx.shakeY.value.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -223,7 +251,8 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
             remainingPlays = ready.remainingPlays,
             totalCorrectSounds = journeyState.totalCorrectSounds,
             affixUIState = affixUIState,
-            timerState = if (showTimer) timerState else null
+            timerState = if (showTimer) timerState else null,
+            heartScale = quakeFx.heartScale.value,
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -308,12 +337,22 @@ fun JourneyGameData(ready: JourneyRoundState.Ready, viewModel: JourneyGameViewMo
                     onSoundIconClicked = {
                         viewModel.playSound(sound.soundModel)
                     },
-                    remainingPlays = ready.remainingPlays
+                    remainingPlays = ready.remainingPlays,
+                    modifier = Modifier.animateItem(),
                 )
             }
             item {
                 Spacer(modifier = Modifier.height(2.dp))
             }
+        }
+    }
+
+        if (quakeFx.dustAlpha.value > 0.01f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = quakeFx.dustAlpha.value))
+            )
         }
     }
 }
@@ -325,7 +364,8 @@ fun StatusInfoRow(
     remainingPlays: Int?,
     totalCorrectSounds: Int,
     affixUIState: AffixUIState,
-    timerState: TimerState? = null
+    timerState: TimerState? = null,
+    heartScale: Float = 1f,
 ) {
     val selectedSounds = selectedMarks.values.count { selected -> selected }
     val playsLeft = remainingPlays
@@ -344,13 +384,21 @@ fun StatusInfoRow(
         }
 
         if (affixUIState.showHearts) {
-            repeat(hearts) {
-                Image(
-                    painterResource(R.drawable.ic_heart),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    contentScale = ContentScale.Crop
-                )
+            Row(
+                modifier = Modifier.graphicsLayer {
+                    scaleX = heartScale
+                    scaleY = heartScale
+                },
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                repeat(hearts) {
+                    Image(
+                        painterResource(R.drawable.ic_heart),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
 

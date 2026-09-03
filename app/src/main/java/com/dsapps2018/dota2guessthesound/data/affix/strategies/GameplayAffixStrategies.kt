@@ -66,7 +66,8 @@ class SuddenDeathAffixStrategy : AffixStrategy {
 /**
  * Soundquake family: interval timer reshuffles the board instead of ending the round.
  * [clearMarksOnQuake] / [drainHeartOnQuake] distinguish Aftershock / Fracture / Cataclysm.
- * Interval seconds come from Journey `timer_seconds` (legacy Affix `data.timer` fallback only).
+ * Interval seconds come from Journey `timer_seconds`; [DEFAULT_SOUNDQUAKE_INTERVAL_MS]
+ * applies only when that level field is unset/non-positive.
  */
 class SoundquakeAffixStrategy(
     private val clearMarksOnQuake: Boolean = false,
@@ -91,7 +92,8 @@ class SoundquakeAffixStrategy(
     }
 
     private companion object {
-        const val DEFAULT_SOUNDQUAKE_INTERVAL_MS = 45_000L
+        /** Used only when Journey `timer_seconds` is unset/non-positive. */
+        const val DEFAULT_SOUNDQUAKE_INTERVAL_MS = 20_000L
     }
 }
 
