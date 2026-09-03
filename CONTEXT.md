@@ -131,14 +131,22 @@ Compatible examples (different aspects): Hidden Marks + Unknown Count; Echo Limi
 
 ### Echo Limit — level design
 
-`data.limit` is per-level. When designing a level with Echo Limit:
+Echo Limit Affix **enables** the play budget; the budget itself is authored on the Journey level as `echo_limit_offset` (not Affix `data`):
 
-1. Compute `boardSize` = sounds shown on that level (`max_sounds` / board composition).
-2. Propose a limit tier, then **ask the product owner to confirm** before writing the level:
-   - Hard: `boardSize` (must hear each tile at most once on average)
-   - Medium: `boardSize + 5`
-   - Easy: `boardSize + 10`
-3. Never set limit below the number of correct sounds the player must identify (and prefer never below `boardSize` without an explicit product call).
+`effectivePlays = max_sounds + echo_limit_offset`
+
+- Missing / unset offset → **+5** (Medium default)
+- Authors may set **`0`** for Hard (plays = board size)
+- Offset is never negative (floor = board size)
+
+When designing a level with Echo Limit:
+
+1. Compute `boardSize` = sounds shown on that level (`max_sounds`).
+2. Propose an offset tier, then **ask the product owner to confirm** before writing the level:
+   - Hard: `echo_limit_offset = 0` → `boardSize`
+   - Medium: `+5` (default) → `boardSize + 5`
+   - Easy: `+10` → `boardSize + 10`
+3. Never set plays below the number of correct sounds the player must identify (and prefer never below `boardSize` without an explicit product call).
 
 ### Soundquake — variants (catalog + data)
 

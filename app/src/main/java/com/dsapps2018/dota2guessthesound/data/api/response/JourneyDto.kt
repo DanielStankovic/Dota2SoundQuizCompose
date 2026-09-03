@@ -40,4 +40,10 @@ data class JourneyDto(
      */
     @SerialName("timer_extension_seconds")
     val timerExtensionSeconds: Int? = null,
+    /**
+     * Echo Limit: extra plays beyond [maxSounds]. Effective = maxSounds + offset.
+     * Null/missing → Medium default (+5). `0` = Hard. Used only when Echo Limit Affix is on.
+     */
+    @SerialName("echo_limit_offset")
+    val echoLimitOffset: Int? = null,
 )

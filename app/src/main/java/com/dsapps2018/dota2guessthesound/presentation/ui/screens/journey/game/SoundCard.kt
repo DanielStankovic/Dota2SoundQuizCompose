@@ -91,12 +91,12 @@ fun SoundCard(
                 contentDescription = null
             )
             
-            // Show remaining plays count for Echo Limit affix
+            // Echo Limit remaining plays — bottom center avoids selected-card corner checkmarks
             remainingPlays?.let { remaining ->
                 Box(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(4.dp)
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 4.dp)
                 ) {
                     Text(
                         text = remaining.toString(),

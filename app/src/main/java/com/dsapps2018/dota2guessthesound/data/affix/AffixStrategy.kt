@@ -92,7 +92,10 @@ data class TimerConfiguration(
     val endsRoundOnTimeout: Boolean = true,
 )
 
+/**
+ * Echo Limit is active. Play budget is authored on the Journey level
+ * (`max_sounds` + `echo_limit_offset`), not on Affix `data`.
+ */
 data class SoundLimitations(
-    val maxPlays: Int,
     val warningMessage: String? = null
 )

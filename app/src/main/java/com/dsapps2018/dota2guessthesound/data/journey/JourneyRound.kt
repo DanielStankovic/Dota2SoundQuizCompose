@@ -132,8 +132,11 @@ class JourneyRound @Inject constructor(
             val hearts = affixGameState.modifiedHeartCount ?: DEFAULT_HEARTS
             extraLifeGateAllowed = affixGameState.extraLifeGateAllowed
 
-            engine.getSoundLimitations()?.let { limitations ->
-                maxSoundPlays = limitations.maxPlays
+            // Echo Limit: Affix enables; budget = board size + level offset (default Medium +5).
+            if (engine.getSoundLimitations() != null) {
+                val offset =
+                    (levelData.echoLimitOffset ?: DEFAULT_ECHO_LIMIT_OFFSET).coerceAtLeast(0)
+                maxSoundPlays = levelData.maxSounds + offset
             }
 
             val heroIds = levelData.radiantHeroes + levelData.direHeroes
@@ -408,6 +411,7 @@ class JourneyRound @Inject constructor(
                     "blurred_hero_ids",
                     "timer_seconds",
                     "timer_extension_seconds",
+                    "echo_limit_offset",
                 )
             ) {
                 filter {
@@ -523,5 +527,7 @@ class JourneyRound @Inject constructor(
         private const val TAG = "JourneyRound"
         private const val DEFAULT_HEARTS = 2
         private const val DEFAULT_TIMER_EXTENSION_SECONDS = 20
+        /** Medium Echo Limit tier when Journey `echo_limit_offset` is unset. */
+        private const val DEFAULT_ECHO_LIMIT_OFFSET = 5
     }
 }

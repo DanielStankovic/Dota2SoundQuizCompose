@@ -1,12 +1,13 @@
 package com.dsapps2018.dota2guessthesound.data.affix
 
 /**
- * Affix that limits the number of times sounds can be played
+ * Affix that enables Echo Limit (finite sound plays).
+ * Play budget is authored on Journey `echo_limit_offset` + `max_sounds` in JourneyRound;
+ * [SoundLimitations] only signals that the mechanic is on (no Affix `data` budget).
  */
 class EchoLimitAffixStrategy : AffixStrategy {
     override fun getSoundLimitations(): SoundLimitations {
         return SoundLimitations(
-            maxPlays = 10,
             warningMessage = "You have limited sound plays remaining!"
         )
     }
