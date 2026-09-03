@@ -55,18 +55,14 @@ fun showRewardedAd(context: Context, onRewarded: () -> Unit, onAdDismissed: () -
             }
 
             override fun onAdDismissedFullScreenContent() {
-                if (!isAdLoading) {
-                    _rewardedAd.value = null
-                    loadRewardedAd(context)
-                    onAdDismissed()
-                }
+                _rewardedAd.value = null
+                loadRewardedAd(context)
+                // Always notify dismiss — callers resume timers only when the surface is clear.
+                onAdDismissed()
             }
         }
 
-
         _rewardedAd.value?.show(activity) {
-            _rewardedAd.value = null
-            loadRewardedAd(context)
             onRewarded()
         }
     }

@@ -30,6 +30,7 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
@@ -83,6 +87,19 @@ fun JourneyGameScreen(
     val continueOffer =
         (roundState as? JourneyRoundState.Ready)?.continueOffer
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> viewModel.onHostPaused()
+                Lifecycle.Event.ON_RESUME -> viewModel.onHostResumed()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.gameEvent.collect { gameEvent ->
             when (gameEvent) {
@@ -116,11 +133,11 @@ fun JourneyGameScreen(
                         },
                         onWatchAdClicked = {
                             viewModel.setShowWatchAdContinueDialog(false)
-
+                            viewModel.onFullscreenAdStarted()
                             showRewardedAd(context, onRewarded = {
                                 viewModel.grantExtraLifeGate()
                             }, onAdDismissed = {
-                                viewModel.resumeTimerAfterAd()
+                                viewModel.onFullscreenAdFinished()
                             })
                         },
                         title = stringResource(

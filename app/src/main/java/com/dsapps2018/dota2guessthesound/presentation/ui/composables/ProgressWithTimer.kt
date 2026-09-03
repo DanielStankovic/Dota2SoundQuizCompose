@@ -32,7 +32,7 @@ fun ProgressWithTimer(
                 strokeWidth = 5.dp
             )
             Text(
-                "${soundTimer}s",
+                "$soundTimer",
                 fontSize = 24.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center

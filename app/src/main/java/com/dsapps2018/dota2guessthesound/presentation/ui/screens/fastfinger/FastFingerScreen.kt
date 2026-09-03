@@ -163,7 +163,7 @@ fun FastFingerScreen(
                             .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("${timeLeft}s", fontSize = 30.sp, color = Color.White)
+                        Text("$timeLeft", fontSize = 30.sp, color = Color.White)
                         Text(
                             context.getString(
                                 R.string.score_fast_finger, score.first, score.second

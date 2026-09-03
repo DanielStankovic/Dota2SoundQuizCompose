@@ -75,6 +75,10 @@ class JourneyRound @Inject constructor(
     private var isTimerPaused: Boolean = false
     private var endsRoundOnTimeout: Boolean = false
     private var timerExtensionMs: Long = DEFAULT_TIMER_EXTENSION_SECONDS * 1000L
+    /** Armed by time buyback; started only when gameplay surface is clear (ad dismissed). */
+    private var pendingTimerStartMs: Long? = null
+    /** True while a fullscreen ad (or similar) covers the game; blocks lifecycle resume. */
+    private var timerBlockedByOverlay: Boolean = false
     private var roundScope: CoroutineScope? = null
 
     suspend fun loadLevels() {
@@ -109,6 +113,8 @@ class JourneyRound @Inject constructor(
         extraLifeGateAllowed = true
         endsRoundOnTimeout = false
         timerExtensionMs = DEFAULT_TIMER_EXTENSION_SECONDS * 1000L
+        pendingTimerStartMs = null
+        timerBlockedByOverlay = false
         _roundState.value = JourneyRoundState.Loading
 
         try {
@@ -294,16 +300,18 @@ class JourneyRound @Inject constructor(
         updateReady { it.copy(showContinueDialog = false) }
     }
 
-    /** Consumes Extra Life Gate: +1 heart or Race time extension, depending on [pendingContinueOffer]. */
+    /**
+     * Applies Extra Life Gate reward only. Does **not** start/resume the timer — that waits until
+     * [onGameplaySurfaceClear] (ad closed / surface visible again).
+     */
     fun grantExtraLifeGate() {
         extraLifeGateUsed = true
         val offer = pendingContinueOffer
         pendingContinueOffer = null
         when (offer) {
             ExtraLifeContinueOffer.TimeExtension -> {
+                pendingTimerStartMs = timerExtensionMs
                 updateReady { it.copy(showContinueDialog = false, continueOffer = null) }
-                val scope = roundScope ?: return
-                initializeTimer(timerExtensionMs, scope)
             }
             ExtraLifeContinueOffer.Heart, null -> {
                 updateReady {
@@ -317,14 +325,49 @@ class JourneyRound @Inject constructor(
         }
     }
 
-    fun resumeAfterAd() {
-        // Heart recover: resume paused Race timer. Time buyback already called initializeTimer.
+    /** Fullscreen ad / overlay covering the board — pause any running timer. */
+    fun onGameplaySurfaceObscured() {
+        timerBlockedByOverlay = true
+        pauseTimer()
+    }
+
+    /**
+     * Game screen is interactive again (ad dismissed, app resumed with no dialog).
+     * Starts a pending time buyback or resumes a paused countdown.
+     */
+    fun onGameplaySurfaceClear() {
+        timerBlockedByOverlay = false
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (ready.showContinueDialog) return
+
+        pendingTimerStartMs?.let { ms ->
+            pendingTimerStartMs = null
+            val scope = roundScope ?: return
+            initializeTimer(ms, scope)
+            return
+        }
+        resumeTimer()
+    }
+
+    /** App background / ON_PAUSE — pause without treating as overlay (resume may still be blocked). */
+    fun onHostPaused() {
+        pauseTimer()
+    }
+
+    /** App foreground / ON_RESUME — resume only if nothing covers the board. */
+    fun onHostResumed() {
+        if (timerBlockedByOverlay) return
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (ready.showContinueDialog) return
+        // Do not start pending time buyback here — that waits for ad dismiss via onGameplaySurfaceClear.
         resumeTimer()
     }
 
     fun clear() {
         soundPlayback.stop()
         clearTimer()
+        pendingTimerStartMs = null
+        timerBlockedByOverlay = false
         roundScope = null
     }
 
@@ -473,6 +516,7 @@ class JourneyRound @Inject constructor(
         isTimerPaused = false
         timerRemainingWhenPaused = 0L
         timerDurationMs = 0L
+        pendingTimerStartMs = null
     }
 
     companion object {

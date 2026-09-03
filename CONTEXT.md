@@ -75,6 +75,8 @@ Fragile Spirit ↔ Sudden Death remain mutually exclusive (same hearts aspect; d
 
 If the Gate is still unused when the Race timer hits 0, offer the ad → add `timer_extension_seconds` and continue. If the Gate was already spent on a heart recover (or Sudden Death disables it), timeout is Game Over.
 
+Journey round timers (Race today; Soundquake later) run only while the gameplay surface is clear — paused for Extra Life Gate dialog, fullscreen ads, and app background; they resume when the player is back on the uncovered game screen.
+
 Time buyback is **Race-only**. Soundquake does not offer +time.
 
 ### Soundquake — timer source *(behavior later)*

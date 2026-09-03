@@ -66,7 +66,7 @@
     <string name="score_fast_finger">Score: %1$d/%2$d</string>
 
     //Play Again Fast Finger Screen
-    <string name="time_picked">"Time: %1$d seconds"</string>
+    <string name="time_picked">"Time: %1$d"</string>
     <string name="invoker_explanation">Welcome to the Invoker Mode. The rules are simple.  Listen and Invoke the sounds that you hear in the correct order.  As the time goes on, you will have to Invoke faster. Survive as long as you can! Good luck!</string>
 
     //Invoker Explanation Screen

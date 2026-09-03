@@ -23,7 +23,7 @@ fun TimerDisplay(timerState: TimerState) {
         modifier = Modifier.size(40.dp),
         contentAlignment = Alignment.Center
     ) {
-        val text = if (timerState.isPaused) "||" else "${seconds}s"
+        val text = if (timerState.isPaused) "||" else "$seconds"
 
         // Adjust text size based on text length and state
         val fontSize = when {

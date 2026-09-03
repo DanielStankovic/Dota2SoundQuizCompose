@@ -48,7 +48,13 @@ class JourneyGameViewModel @Inject constructor(
 
     fun grantExtraLifeGate() = journeyRound.grantExtraLifeGate()
 
-    fun resumeTimerAfterAd() = journeyRound.resumeAfterAd()
+    fun onFullscreenAdStarted() = journeyRound.onGameplaySurfaceObscured()
+
+    fun onFullscreenAdFinished() = journeyRound.onGameplaySurfaceClear()
+
+    fun onHostPaused() = journeyRound.onHostPaused()
+
+    fun onHostResumed() = journeyRound.onHostResumed()
 
     override fun onCleared() {
         super.onCleared()

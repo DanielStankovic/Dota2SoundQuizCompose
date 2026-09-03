@@ -103,7 +103,7 @@ fun PickTimeScreen(
                                     )
                                 )
                                 Text(
-                                    text = "${text}s",
+                                    text = "$text",
                                     fontSize = 22.sp,
                                     color = Color.White,
                                     style = MaterialTheme.typography.bodyLarge

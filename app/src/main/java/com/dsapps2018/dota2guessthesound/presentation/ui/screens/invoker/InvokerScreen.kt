@@ -123,7 +123,7 @@ fun InvokerScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        "${time}s",
+                        "$time",
                         fontSize = 30.sp,
                         color = Color.White,
                         textAlign = TextAlign.Center
