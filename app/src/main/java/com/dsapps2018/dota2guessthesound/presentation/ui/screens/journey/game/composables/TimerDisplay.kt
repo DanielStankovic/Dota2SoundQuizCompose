@@ -25,12 +25,12 @@ fun TimerDisplay(timerState: TimerState) {
     ) {
         val text = if (timerState.isPaused) "||" else "$seconds"
 
-        // Adjust text size based on text length and state
+        // Longer values shrink to fit the fixed 40.dp chip.
         val fontSize = when {
-            timerState.isPaused -> 20.sp // Pause symbol
-            text.length == 2 -> 24.sp
-            text.length == 3 -> 18.sp
-            else -> 14.sp
+            timerState.isPaused -> 20.sp
+            text.length >= 3 -> 14.sp
+            text.length == 2 -> 18.sp
+            else -> 22.sp
         }
 
         CircularProgressIndicator(
