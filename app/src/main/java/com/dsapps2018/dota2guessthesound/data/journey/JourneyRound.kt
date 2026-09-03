@@ -260,8 +260,8 @@ class JourneyRound @Inject constructor(
         dismissContinueDialog()
         onGameplaySurfaceObscured()
         runRewardedAd(
-            onRewarded = { grantExtraLifeGate() },
-            onAdDismissed = { onGameplaySurfaceClear() },
+            { grantExtraLifeGate() },
+            { onGameplaySurfaceClear() },
         )
     }
 
