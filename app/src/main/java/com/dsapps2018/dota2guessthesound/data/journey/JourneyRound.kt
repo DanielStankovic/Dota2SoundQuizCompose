@@ -66,12 +66,15 @@ class JourneyRound @Inject constructor(
     private var soundPlayCount = 0
     private var maxSoundPlays: Int? = null
     private var extraLifeGateAllowed = true
-    private var additionalLifeUsed = false
+    private var extraLifeGateUsed = false
+    private var pendingContinueOffer: ExtraLifeContinueOffer? = null
 
     private var timerJob: Job? = null
     private var timerDurationMs: Long = 0L
     private var timerRemainingWhenPaused: Long = 0L
     private var isTimerPaused: Boolean = false
+    private var endsRoundOnTimeout: Boolean = false
+    private var timerExtensionMs: Long = DEFAULT_TIMER_EXTENSION_SECONDS * 1000L
     private var roundScope: CoroutineScope? = null
 
     suspend fun loadLevels() {
@@ -99,10 +102,13 @@ class JourneyRound @Inject constructor(
     suspend fun startRound(levelNum: Int, scope: CoroutineScope) {
         roundScope = scope
         clearTimer()
-        additionalLifeUsed = false
+        extraLifeGateUsed = false
+        pendingContinueOffer = null
         soundPlayCount = 0
         maxSoundPlays = null
         extraLifeGateAllowed = true
+        endsRoundOnTimeout = false
+        timerExtensionMs = DEFAULT_TIMER_EXTENSION_SECONDS * 1000L
         _roundState.value = JourneyRoundState.Loading
 
         try {
@@ -192,10 +198,20 @@ class JourneyRound @Inject constructor(
                 selectedMarks = selectedMarks,
                 remainingPlays = remainingPlaysOrNull(),
                 showContinueDialog = false,
+                continueOffer = null,
             )
 
             engine.getTimerConfiguration()?.let { timerConfig ->
-                initializeTimer(timerConfig.durationMs, scope)
+                endsRoundOnTimeout = timerConfig.endsRoundOnTimeout
+                val levelSeconds = levelData.timerSeconds?.takeIf { it > 0 }
+                val durationMs = when {
+                    levelSeconds != null -> levelSeconds * 1000L
+                    else -> timerConfig.durationMs
+                }
+                timerExtensionMs =
+                    (levelData.timerExtensionSeconds?.takeIf { it > 0 }
+                        ?: DEFAULT_TIMER_EXTENSION_SECONDS) * 1000L
+                initializeTimer(durationMs, scope)
             }
         } catch (t: Throwable) {
             firebaseCrashlytics.recordException(t)
@@ -252,9 +268,16 @@ class JourneyRound @Inject constructor(
                     // Fragile Spirit / default: offer Gate once if unused.
                     if (!extraLifeGateAllowed) {
                         _events.emit(JourneyRoundEvent.GameOver)
-                    } else if (!additionalLifeUsed) {
+                    } else if (!extraLifeGateUsed) {
                         pauseTimer()
-                        updateReady { it.copy(hearts = newHearts, showContinueDialog = true) }
+                        pendingContinueOffer = ExtraLifeContinueOffer.Heart
+                        updateReady {
+                            it.copy(
+                                hearts = newHearts,
+                                showContinueDialog = true,
+                                continueOffer = ExtraLifeContinueOffer.Heart,
+                            )
+                        }
                     } else {
                         _events.emit(JourneyRoundEvent.GameOver)
                     }
@@ -266,15 +289,36 @@ class JourneyRound @Inject constructor(
     }
 
     fun dismissContinueDialog() {
+        // Hide only — keep pendingContinueOffer so grantExtraLifeGate still knows Heart vs Time
+        // after the UI dismisses ahead of the rewarded ad callback.
         updateReady { it.copy(showContinueDialog = false) }
     }
 
-    fun grantExtraLife() {
-        additionalLifeUsed = true
-        updateReady { it.copy(hearts = it.hearts + 1, showContinueDialog = false) }
+    /** Consumes Extra Life Gate: +1 heart or Race time extension, depending on [pendingContinueOffer]. */
+    fun grantExtraLifeGate() {
+        extraLifeGateUsed = true
+        val offer = pendingContinueOffer
+        pendingContinueOffer = null
+        when (offer) {
+            ExtraLifeContinueOffer.TimeExtension -> {
+                updateReady { it.copy(showContinueDialog = false, continueOffer = null) }
+                val scope = roundScope ?: return
+                initializeTimer(timerExtensionMs, scope)
+            }
+            ExtraLifeContinueOffer.Heart, null -> {
+                updateReady {
+                    it.copy(
+                        hearts = it.hearts + 1,
+                        showContinueDialog = false,
+                        continueOffer = null,
+                    )
+                }
+            }
+        }
     }
 
     fun resumeAfterAd() {
+        // Heart recover: resume paused Race timer. Time buyback already called initializeTimer.
         resumeTimer()
     }
 
@@ -319,6 +363,8 @@ class JourneyRound @Inject constructor(
                     "affixes",
                     "masked_hero_ids",
                     "blurred_hero_ids",
+                    "timer_seconds",
+                    "timer_extension_seconds",
                 )
             ) {
                 filter {
@@ -377,8 +423,28 @@ class JourneyRound @Inject constructor(
             }
 
             if (!isTimerPaused) {
-                _events.emit(JourneyRoundEvent.GameOver)
+                if (endsRoundOnTimeout) {
+                    offerTimeExtensionOrGameOver()
+                } else {
+                    // Soundquake (later): reshuffle path — not implemented yet.
+                    _events.emit(JourneyRoundEvent.GameOver)
+                }
             }
+        }
+    }
+
+    private suspend fun offerTimeExtensionOrGameOver() {
+        if (!extraLifeGateAllowed || extraLifeGateUsed) {
+            _events.emit(JourneyRoundEvent.GameOver)
+            return
+        }
+        pendingContinueOffer = ExtraLifeContinueOffer.TimeExtension
+        updateReady {
+            it.copy(
+                showContinueDialog = true,
+                continueOffer = ExtraLifeContinueOffer.TimeExtension,
+                timer = it.timer?.copy(remainingMs = 0L, isPaused = true),
+            )
         }
     }
 
@@ -412,5 +478,6 @@ class JourneyRound @Inject constructor(
     companion object {
         private const val TAG = "JourneyRound"
         private const val DEFAULT_HEARTS = 2
+        private const val DEFAULT_TIMER_EXTENSION_SECONDS = 20
     }
 }

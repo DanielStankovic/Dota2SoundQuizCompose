@@ -46,7 +46,7 @@ class JourneyGameViewModel @Inject constructor(
         if (!showDialog) journeyRound.dismissContinueDialog()
     }
 
-    fun grantExtraLife() = journeyRound.grantExtraLife()
+    fun grantExtraLifeGate() = journeyRound.grantExtraLifeGate()
 
     fun resumeTimerAfterAd() = journeyRound.resumeAfterAd()
 

@@ -29,4 +29,15 @@ data class JourneyDto(
      */
     @SerialName("blurred_hero_ids")
     val blurredHeroIds: List<Int> = emptyList(),
+    /**
+     * Race countdown / later Soundquake interval (seconds).
+     * Null → fall back to Affix `data.timer`, then 60.
+     */
+    @SerialName("timer_seconds")
+    val timerSeconds: Int? = null,
+    /**
+     * Race Extra Life Gate time buyback (seconds). Default 20 when unset/non-positive.
+     */
+    @SerialName("timer_extension_seconds")
+    val timerExtensionSeconds: Int? = null,
 )

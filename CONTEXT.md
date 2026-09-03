@@ -45,8 +45,8 @@ A Quiz or Fast Finger run over a shuffled sound pool with four name options per 
 _Avoid_: Quiz round (when you mean the shared module), sound deck
 
 **Extra Life Gate**:
-Whether the player has already used the one-shot rewarded continue in a classic Quiz run.
-_Avoid_: additional life flag (as the domain name), continue dialog (the UI)
+The one-shot rewarded-ad continue in a Quiz or Journey Round. On Journey, one recover per round: **+1 heart** after a life fail, or **+`timer_extension_seconds`** after a Race Against Time timeout — not both. Sudden Death disables the Gate.
+_Avoid_: continue dialog (the UI), additional life flag (as the domain name)
 
 **Mode Result**:
 Submitting the outcome of a finished mode run: write Player Progress (highs, plays, journey level, result coins) and, when applicable, enqueue an offline leaderboard score. Distinct from Invoker entry (coin spend to start) and from Sync Session.
@@ -65,6 +65,23 @@ Do **not** raise the default to 3 — 3 hearts + Extra Life Gate is too forgivin
 | **Sudden Death** | 1 | **Disabled** — first fail ends the round |
 
 Fragile Spirit ↔ Sudden Death remain mutually exclusive (same hearts aspect; different Gate policy).
+
+### Race Against Time — level timer + Gate
+
+**Race Against Time** Affix turns on the round timer HUD and **ends the round on timeout**. Duration and ad buyback live on the Journey level (not Affix `data`):
+
+- `timer_seconds` — starting countdown (level-authored; Affix `data.timer` is legacy fallback only)
+- `timer_extension_seconds` — Extra Life Gate recover on timeout (default **20** if unset)
+
+If the Gate is still unused when the Race timer hits 0, offer the ad → add `timer_extension_seconds` and continue. If the Gate was already spent on a heart recover (or Sudden Death disables it), timeout is Game Over.
+
+Time buyback is **Race-only**. Soundquake does not offer +time.
+
+### Soundquake — timer source *(behavior later)*
+
+When Soundquake ships: Journey `timer_seconds` is the quake **interval** (Affix chooses reshuffle / marks / optional `remove_heart`). Race ↔ Soundquake stay mutually exclusive, so one level timer column is enough.
+
+**Target for `remove_heart` variants:** a quake that drains the last heart uses the same Extra Life Gate (+1 heart). Granting the heart continues the round so the next quake interval can run — not a time extension.
 
 ## Journey hero portraits (Radiant today, Dire later)
 
@@ -103,7 +120,7 @@ When authoring Journey levels (affix + hero combinations), do **not** stack affi
 | Hidden identity (portrait policy) | **The Hidden Hero** ↔ **Partial Veil** ↔ **Among Heroes** | Three different mystery UXs for the same hero-row slots. Pick exactly one. |
 | Full mask + blur | **Blurred Vision** / **Blurred Vision 2** ↔ **The Hidden Hero** | Blur needs real portrait art; Hidden Hero is all `?`. Blurred Vision vs Blurred Vision 2: pick one intensity. |
 | Counter + full hidden portrait | **Unknown Count** ↔ **The Hidden Hero** | Without a visible correct-count, players cannot tell there are more correct sounds than the visible heroes imply. |
-| Round timer semantics | **Race Against Time** ↔ **Soundquake** / **Soundquake Aftershock** | Race Against Time ends the round on timeout. Soundquake variants reshuffle the board on timeout. Engine only takes the first timer config. |
+| Round timer semantics | **Race Against Time** ↔ **Soundquake** / **Soundquake Aftershock** | Race ends the round on timeout (with optional Extra Life Gate +time). Soundquake variants reshuffle on interval. Engine only takes the first timer Affix; duration comes from Journey `timer_seconds`. |
 | Soundquake variants | **Soundquake** ↔ **Soundquake Aftershock** | Same timer/reshuffle aspect; pick keep-marks vs clear-marks. |
 | Decoy heroes | **Among Heroes** requires ≥2 heroes on the level | Needs visible heroes plus one mystery hero's sounds; meaningless on a single-hero level. |
 | Partial mask | **Partial Veil** requires ≥2 heroes; ≥1 visible + ≥1 masked | See Partial Veil guardrails above. |
@@ -123,9 +140,8 @@ Compatible examples (different aspects): Hidden Marks + Unknown Count; Echo Limi
 
 ### Soundquake — variants (catalog + data)
 
-Two Affixes share the Soundquake timer/reshuffle loop; differ on mark handling. Both read:
+Two Affixes share the Soundquake timer/reshuffle loop; differ on mark handling. Interval seconds come from Journey **`timer_seconds`**. Affix `data` still carries:
 
-- `timer` (seconds) — interval between quakes
 - `remove_heart` (boolean) — if true, each quake also costs one heart
 
 | Affix | Marks on quake | Icon |

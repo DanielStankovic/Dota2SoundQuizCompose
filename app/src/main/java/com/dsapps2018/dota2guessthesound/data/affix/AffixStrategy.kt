@@ -84,7 +84,12 @@ data class AnswerValidationResult(
 
 data class TimerConfiguration(
     val durationMs: Long,
-    val showWarningAt: Long = durationMs / 4 // Show warning at 25% remaining
+    val showWarningAt: Long = durationMs / 4, // Show warning at 25% remaining
+    /**
+     * Race Against Time: true — timeout ends the round (Extra Life Gate may offer +time).
+     * Soundquake (later): false — timeout reshuffles instead.
+     */
+    val endsRoundOnTimeout: Boolean = true,
 )
 
 data class SoundLimitations(

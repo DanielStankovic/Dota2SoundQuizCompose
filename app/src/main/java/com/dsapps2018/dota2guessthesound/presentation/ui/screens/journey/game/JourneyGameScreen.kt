@@ -54,6 +54,7 @@ import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.affix.AffixUIState
+import com.dsapps2018.dota2guessthesound.data.journey.ExtraLifeContinueOffer
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundEvent
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundState
 import com.dsapps2018.dota2guessthesound.data.journey.TimerState
@@ -79,6 +80,8 @@ fun JourneyGameScreen(
     val levelNum = viewModel.levelNum
     val showWatchAdContinueDialog =
         (roundState as? JourneyRoundState.Ready)?.showContinueDialog == true
+    val continueOffer =
+        (roundState as? JourneyRoundState.Ready)?.continueOffer
 
     LaunchedEffect(Unit) {
         viewModel.gameEvent.collect { gameEvent ->
@@ -99,22 +102,38 @@ fun JourneyGameScreen(
         content = { padding ->
             if (showWatchAdContinueDialog) {
                 if (isRewardedReady) {
-                    WatchAdContinueDialog(onDismiss = {
-                        viewModel.setShowWatchAdContinueDialog(false)
-                    }, onSkipClicked = {
-                        viewModel.setShowWatchAdContinueDialog(false)
-                        showInterstitial(context) {
-                            onNavigateToResultScreen(levelNum, false)
-                        }
-                    }, onWatchAdClicked = {
-                        viewModel.setShowWatchAdContinueDialog(false)
+                    val isTimeOffer =
+                        continueOffer == ExtraLifeContinueOffer.TimeExtension
+                    WatchAdContinueDialog(
+                        onDismiss = {
+                            viewModel.setShowWatchAdContinueDialog(false)
+                        },
+                        onSkipClicked = {
+                            viewModel.setShowWatchAdContinueDialog(false)
+                            showInterstitial(context) {
+                                onNavigateToResultScreen(levelNum, false)
+                            }
+                        },
+                        onWatchAdClicked = {
+                            viewModel.setShowWatchAdContinueDialog(false)
 
-                        showRewardedAd(context, onRewarded = {
-                            viewModel.grantExtraLife()
-                        }, onAdDismissed = {
-                            viewModel.resumeTimerAfterAd()
-                        })
-                    })
+                            showRewardedAd(context, onRewarded = {
+                                viewModel.grantExtraLifeGate()
+                            }, onAdDismissed = {
+                                viewModel.resumeTimerAfterAd()
+                            })
+                        },
+                        title = stringResource(
+                            if (isTimeOffer) R.string.times_up_lbl else R.string.game_over_lbl
+                        ),
+                        message = stringResource(
+                            if (isTimeOffer) {
+                                R.string.watch_ad_for_more_time_msg
+                            } else {
+                                R.string.watch_add_to_continue_msg
+                            }
+                        ),
+                    )
                 } else {
                     viewModel.setShowWatchAdContinueDialog(false)
                     showInterstitial(context) {

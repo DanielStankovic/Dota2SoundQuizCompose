@@ -22,6 +22,8 @@ sealed interface JourneyRoundState {
         val selectedMarks: Map<Int, Boolean>,
         val remainingPlays: Int?,
         val showContinueDialog: Boolean,
+        /** Why Extra Life Gate was offered; kept after dialog hide until grant resolves. */
+        val continueOffer: ExtraLifeContinueOffer? = null,
     ) : JourneyRoundState
 
     data class Error(val message: String) : JourneyRoundState
@@ -30,6 +32,12 @@ sealed interface JourneyRoundState {
 sealed interface JourneyRoundEvent {
     data object Correct : JourneyRoundEvent
     data object GameOver : JourneyRoundEvent
+}
+
+/** Journey Extra Life Gate recover type for the continue dialog. */
+enum class ExtraLifeContinueOffer {
+    Heart,
+    TimeExtension,
 }
 
 data class TimerState(

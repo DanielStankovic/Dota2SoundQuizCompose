@@ -58,16 +58,18 @@ class UnknownCountAffixStrategy : AffixStrategy {
 }
 
 /**
- * Affix that adds a visible timer to the game
+ * Affix that enables Race Against Time HUD / end-on-timeout.
+ * Duration prefers Journey `timer_seconds`; [timer] is legacy Affix `data.timer` fallback.
  */
 class RaceAgainstTimeAffixStrategy(val timer: String?) : AffixStrategy {
     override fun modifyUI(currentState: AffixUIState): AffixUIState {
         return currentState.copy(showTimer = true)
     }
-    
+
     override fun getTimerConfiguration(): TimerConfiguration {
         return TimerConfiguration(
-            durationMs = (timer?.toInt() ?: 60) * 1000L, // 60 seconds
+            durationMs = (timer?.toInt() ?: 60) * 1000L,
+            endsRoundOnTimeout = true,
         )
     }
 }

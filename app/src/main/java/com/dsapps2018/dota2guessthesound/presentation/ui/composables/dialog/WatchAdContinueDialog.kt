@@ -40,7 +40,9 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogOnBackgroun
 fun WatchAdContinueDialog(
     onDismiss: () -> Unit,
     onSkipClicked: () -> Unit,
-    onWatchAdClicked: () -> Unit
+    onWatchAdClicked: () -> Unit,
+    title: String = stringResource(R.string.game_over_lbl),
+    message: String = stringResource(R.string.watch_add_to_continue_msg),
 ) {
 
     BasicAlertDialog(
@@ -61,7 +63,7 @@ fun WatchAdContinueDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    stringResource(R.string.game_over_lbl),
+                    title,
                     modifier = Modifier.padding(12.dp),
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -72,7 +74,7 @@ fun WatchAdContinueDialog(
             Spacer(modifier = Modifier.size(12.dp))
 
             Text(
-                stringResource(R.string.watch_add_to_continue_msg),
+                message,
                 modifier = Modifier.padding(12.dp),
                 fontWeight = FontWeight.Medium,
                 color = Color.White,

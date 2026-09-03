@@ -19,3 +19,7 @@ Touch-first Journey gameplay layout / Affix chrome / sound board / hero strip: s
 ### Verification
 
 Default: **lint only** — do not build or run the app unless the user explicitly asks. **Never** add or expand automated unit or instrumented tests. See `docs/agents/verification.md`.
+
+### Staging → prod sync
+
+Journey/Affix schema or seed that must reach prod later: update the living Asana sync ticket (remap ids; no staging FK copy). See `docs/agents/staging-prod-sync.md`.

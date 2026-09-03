@@ -25,6 +25,8 @@
     <string name="you_score_lbl">Your score is</string>
     <string name="game_over_lbl">Game Over</string>
     <string name="watch_add_to_continue_msg">Don\'t give up—watch longer video ad to get a second chance and keep playing!</string>
+    <string name="times_up_lbl">Time\'s Up</string>
+    <string name="watch_ad_for_more_time_msg">Out of time—watch a video ad for more seconds and keep playing!</string>
 
 
 

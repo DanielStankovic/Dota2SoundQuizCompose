@@ -46,3 +46,7 @@ Examples:
 Optional first line of notes for parsers: `Type: feature` | `Type: improvement` | `Type: bug`.
 
 When creating a git branch for a ticket, follow `.cursor/skills/git-branch-naming/SKILL.md`.
+
+## Staging → prod (Journey / Affixes)
+
+Schema or seed changes that eventually need prod: update the existing sync ticket — do not open a duplicate. Pointer + ID remap rule: `docs/agents/staging-prod-sync.md`.
