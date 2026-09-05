@@ -1,6 +1,10 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.graphics.graphicsLayer
@@ -27,8 +31,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.draw.blur
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -41,8 +43,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -69,14 +71,17 @@ import com.dsapps2018.dota2guessthesound.data.journey.JourneyHudChrome
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundEvent
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundState
 import com.dsapps2018.dota2guessthesound.data.journey.TimerState
+import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.WatchAdContinueDialog
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.AffixTrayHandle
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.AffixTrayPanel
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.SoundquakeFxRequest
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.TimerDisplay
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.rememberSoundquakeFxState
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.composables.AffixInfoBottomSheet
 import kotlin.random.Random
-import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 
 /** SB-A: min cell width so SoundCard mark targets stay ≥ 48.dp; Adaptive drops columns on narrow widths. */
@@ -236,6 +241,13 @@ fun JourneyGameData(
     val timerState = ready.timer
     val showTimer = hud.showTimer && timerState != null
     val quakeFx = rememberSoundquakeFxState(soundquakeFx)
+    val affixes = ready.affixes
+    var trayOpen by remember { mutableStateOf(ready.awaitingBegin) }
+    var selectedAffix by remember { mutableStateOf<AffixModel?>(null) }
+
+    LaunchedEffect(ready.awaitingBegin) {
+        if (ready.awaitingBegin) trayOpen = true
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
     Column(
@@ -287,36 +299,22 @@ fun JourneyGameData(
 
         Spacer(Modifier.height(8.dp))
 
-        Card(
-            shape = RoundedCornerShape(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = JourneyButtonBackground
-            ),
-            border = BorderStroke(1.dp, Color.Cyan.copy(alpha = 0.7f)),
-            modifier = Modifier
-                .size(80.dp, 40.dp)
-                .clickable {
-                    viewModel.submitAnswer()
-                }
-                .shadow(
-                    elevation = 30.dp,
-                    ambientColor = Color.Blue,
-                    spotColor = Color.Cyan,
-                    shape = RoundedCornerShape(8.dp)
-                ),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            Spacer(Modifier.weight(1f))
+            SubmitAnswerButton(onClick = viewModel::submitAnswer)
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.CenterEnd,
             ) {
-                Text(
-                    text = "Submit",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
+                if (affixes.isNotEmpty() && !trayOpen) {
+                    AffixTrayHandle(
+                        expanded = false,
+                        onClick = { trayOpen = true },
+                    )
+                }
             }
         }
 
@@ -356,6 +354,57 @@ fun JourneyGameData(
                     .background(Color.Black.copy(alpha = quakeFx.dustAlpha.value))
             )
         }
+
+        AnimatedVisibility(
+            visible = trayOpen && affixes.isNotEmpty(),
+            enter = fadeIn() + slideInHorizontally { it },
+            exit = fadeOut() + slideOutHorizontally { it },
+        ) {
+            AffixTrayPanel(
+                affixes = affixes,
+                awaitingBegin = ready.awaitingBegin,
+                onAffixClick = { selectedAffix = it },
+                onBegin = {
+                    viewModel.beginRound()
+                    trayOpen = false
+                },
+                onDismiss = { trayOpen = false },
+            )
+        }
+
+        selectedAffix?.let { affix ->
+            AffixInfoBottomSheet(
+                affixName = affix.affix,
+                affixDescription = affix.description,
+                onDismiss = { selectedAffix = null },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SubmitAnswerButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .size(80.dp, 40.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .paint(
+                painterResource(R.drawable.affix_tray_begin),
+                contentScale = ContentScale.FillBounds,
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.journey_submit),
+            color = JourneyTimeAccent,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

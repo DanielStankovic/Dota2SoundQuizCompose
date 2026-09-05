@@ -76,7 +76,7 @@ object JokeDestination
 object JourneyLevelDestination
 
 @Serializable
-data class JourneyGameDestination(val levelNum: Int)
+data class JourneyGameDestination(val levelNum: Int, val briefing: Boolean = false)
 
 @Serializable
 data class LevelClearTimeDestination(val level: Int)

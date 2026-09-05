@@ -30,7 +30,11 @@ class JourneyGameViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            journeyRound.startRound(destination.levelNum, viewModelScope)
+            journeyRound.startRound(
+                destination.levelNum,
+                viewModelScope,
+                holdUntilBegin = destination.briefing,
+            )
         }
     }
 
@@ -41,6 +45,8 @@ class JourneyGameViewModel @Inject constructor(
     }
 
     fun submitAnswer() = journeyRound.submit()
+
+    fun beginRound() = journeyRound.beginRound()
 
     fun setShowWatchAdContinueDialog(showDialog: Boolean) {
         if (!showDialog) journeyRound.dismissContinueDialog()

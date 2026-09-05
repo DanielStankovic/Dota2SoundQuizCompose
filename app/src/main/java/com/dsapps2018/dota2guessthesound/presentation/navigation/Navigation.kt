@@ -200,7 +200,12 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 isLevelCompleted = journeyLevelResultDestination.isLevelCompleted,
                 clearTimeMs = journeyLevelResultDestination.clearTimeMs,
                 onPlayClicked = { levelNum ->
-                    navController.navigate(JourneyGameDestination(levelNum)){
+                    navController.navigate(
+                        JourneyGameDestination(
+                            levelNum = levelNum,
+                            briefing = journeyLevelResultDestination.isLevelCompleted,
+                        )
+                    ) {
                         popUpTo<JourneyLevelDestination> {
                             inclusive = false
                             saveState = false

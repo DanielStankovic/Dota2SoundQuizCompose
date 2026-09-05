@@ -1,5 +1,6 @@
 package com.dsapps2018.dota2guessthesound.data.journey
 
+import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 
@@ -23,6 +24,9 @@ sealed interface JourneyRoundState {
         val showContinueDialog: Boolean,
         /** Why Extra Life Gate was offered; kept after dialog hide until grant resolves. */
         val continueOffer: ExtraLifeContinueOffer? = null,
+        val affixes: List<AffixModel> = emptyList(),
+        /** True during Journey Round briefing — clocks have not started. */
+        val awaitingBegin: Boolean = false,
     ) : JourneyRoundState
 
     data class Error(val message: String) : JourneyRoundState

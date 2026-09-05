@@ -84,6 +84,7 @@ class JourneyRound @Inject constructor(
         },
     )
     private val clearClock = LevelClearClock()
+    private var pendingTimerStartMs: Long? = null
 
     suspend fun loadLevels() {
         _levelsState.value = JourneyLevelsState.Loading
@@ -107,10 +108,15 @@ class JourneyRound @Inject constructor(
         }
     }
 
-    suspend fun startRound(levelNum: Int, scope: CoroutineScope) {
+    suspend fun startRound(
+        levelNum: Int,
+        scope: CoroutineScope,
+        holdUntilBegin: Boolean = false,
+    ) {
         roundScope = scope
         timer.resetPolicy()
         clearClock.clear()
+        pendingTimerStartMs = null
         extraLifeGateUsed = false
         pendingContinueOffer = null
         soundPlayCount = 0
@@ -174,6 +180,7 @@ class JourneyRound @Inject constructor(
                 totalCorrectSounds = correctSounds.size
             )
 
+            val awaitingBegin = holdUntilBegin && currentAffixes.isNotEmpty()
             _roundState.value = JourneyRoundState.Ready(
                 level = levelNum,
                 game = game,
@@ -184,13 +191,20 @@ class JourneyRound @Inject constructor(
                 remainingPlays = remainingPlaysOrNull(),
                 showContinueDialog = false,
                 continueOffer = null,
+                affixes = currentAffixes,
+                awaitingBegin = awaitingBegin,
             )
-            clearClock.start()
 
-            engine.resolveTimer(levelContext)?.let { resolved ->
-                timer.endsRoundOnTimeout = resolved.endsRoundOnTimeout
-                timer.extensionMs = resolved.extensionMs
-                timer.start(resolved.durationMs, scope)
+            val resolved = engine.resolveTimer(levelContext)
+            resolved?.let {
+                timer.endsRoundOnTimeout = it.endsRoundOnTimeout
+                timer.extensionMs = it.extensionMs
+            }
+            if (awaitingBegin) {
+                pendingTimerStartMs = resolved?.durationMs
+            } else {
+                clearClock.start()
+                resolved?.let { timer.start(it.durationMs, scope) }
             }
         } catch (t: Throwable) {
             firebaseCrashlytics.recordException(t)
@@ -200,14 +214,28 @@ class JourneyRound @Inject constructor(
         }
     }
 
+    fun beginRound() {
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (!ready.awaitingBegin) return
+        updateReady { it.copy(awaitingBegin = false) }
+        clearClock.start()
+        val durationMs = pendingTimerStartMs
+        pendingTimerStartMs = null
+        if (durationMs != null) {
+            roundScope?.let { timer.start(durationMs, it) }
+        }
+    }
+
     fun toggleMark(soundId: Int) {
         updateReady { ready ->
+            if (ready.awaitingBegin) return@updateReady ready
             val current = ready.selectedMarks[soundId] ?: return@updateReady ready
             ready.copy(selectedMarks = ready.selectedMarks + (soundId to !current))
         }
     }
 
     fun playSound(sound: SoundModel) {
+        if ((_roundState.value as? JourneyRoundState.Ready)?.awaitingBegin == true) return
         maxSoundPlays?.let { maxPlays ->
             if (soundPlayCount >= maxPlays) return
         }
@@ -220,6 +248,7 @@ class JourneyRound @Inject constructor(
 
     fun submit() {
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (ready.awaitingBegin) return
         val engine = affixEngine ?: return
         val scope = roundScope ?: return
 
@@ -309,6 +338,7 @@ class JourneyRound @Inject constructor(
      */
     fun onGameplaySurfaceClear() {
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (ready.awaitingBegin) return
         timer.onSurfaceClear(roundScope, ready.showContinueDialog)
         resumeClearClockIfPlayable()
     }
@@ -324,6 +354,7 @@ class JourneyRound @Inject constructor(
     /** App foreground / ON_RESUME — resume only if nothing covers the board. */
     fun onHostResumed() {
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (ready.awaitingBegin) return
         timer.onHostResumed(roundScope, ready.showContinueDialog)
         resumeClearClockIfPlayable()
     }
@@ -333,6 +364,7 @@ class JourneyRound @Inject constructor(
         timer.clear()
         timer.blockedByOverlay = false
         clearClock.clear()
+        pendingTimerStartMs = null
         roundScope = null
     }
 
@@ -341,7 +373,7 @@ class JourneyRound @Inject constructor(
 
     private fun resumeClearClockIfPlayable() {
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
-        if (ready.showContinueDialog || timer.blockedByOverlay) return
+        if (ready.awaitingBegin || ready.showContinueDialog || timer.blockedByOverlay) return
         clearClock.resume()
     }
 

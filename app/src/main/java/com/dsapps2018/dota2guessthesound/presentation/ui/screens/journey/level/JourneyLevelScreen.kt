@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -226,9 +225,7 @@ fun LevelData(
         derivedStateOf { pagerState.currentPage != currentLevel }
     }
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
+        modifier = Modifier.fillMaxSize()
     ) {
         HorizontalPager(
             state = pagerState, contentPadding = PaddingValues(50.dp)
@@ -237,14 +234,57 @@ fun LevelData(
                 it,
                 levels[it],
                 currentLevel,
-                personalBests[levels[it].level],
                 pagerState,
                 onItemClicked = onLevelClicked,
-                onBoardClicked = onBoardClicked,
                 onAffixIconClicked = { affix ->
                     levelViewModel.setCurrentAffix(affix)
                 })
         }
+
+        val viewedLevel = levels[pagerState.currentPage]
+        val viewedCleared = viewedLevel.level <= currentLevel
+        val viewedBestMs = personalBests[viewedLevel.level]
+        val cornerPad = (bannerHeight + 10).dp
+        AnimatedVisibility(
+            visible = viewedCleared,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = cornerPad, start = 10.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_level_clear_time),
+                    contentDescription = stringResource(R.string.level_clear_time_board_btn),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable { onBoardClicked(viewedLevel.level) },
+                )
+                if (viewedBestMs != null) {
+                    Text(
+                        text = stringResource(
+                            R.string.level_clear_time_best,
+                            formatLevelClearTime(viewedBestMs),
+                        ),
+                        color = JourneyTimeAccent,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        style = TextStyle(
+                            shadow = Shadow(
+                                color = Color.Black.copy(alpha = 0.9f),
+                                offset = Offset(0f, 2f),
+                                blurRadius = 8f,
+                            )
+                        ),
+                    )
+                }
+            }
+        }
+
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn() + slideInHorizontally { it / 2 },
@@ -287,10 +327,8 @@ fun LevelCardContent(
     index: Int,
     levelModel: JourneyLevelModel,
     userCompletedLevel: Int,
-    personalBestMs: Long?,
     pagerState: PagerState,
     onItemClicked: (Int) -> Unit,
-    onBoardClicked: (Int) -> Unit,
     onAffixIconClicked: (AffixModel) -> Unit
 ) {
     val pageOffset = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
@@ -415,44 +453,6 @@ fun LevelCardContent(
                         .clickable {
                             onAffixIconClicked(affix)
                         })
-            }
-        }
-
-        val cleared = levelModel.level <= userCompletedLevel
-        if (cleared) {
-            Spacer(Modifier.height(10.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .alpha(1f - pageOffset.absoluteValue),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            ) {
-                if (personalBestMs != null) {
-                    Text(
-                        text = stringResource(
-                            R.string.level_clear_time_best,
-                            formatLevelClearTime(personalBestMs),
-                        ),
-                        color = JourneyTimeAccent,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        style = TextStyle(
-                            shadow = Shadow(
-                                color = Color.Black.copy(alpha = 0.9f),
-                                offset = Offset(0f, 2f),
-                                blurRadius = 8f,
-                            )
-                        ),
-                    )
-                }
-                Image(
-                    painter = painterResource(R.drawable.ic_level_clear_time),
-                    contentDescription = stringResource(R.string.level_clear_time_board_btn),
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clickable { onBoardClicked(levelModel.level) },
-                )
             }
         }
     }

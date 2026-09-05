@@ -132,6 +132,10 @@
     <string name="level_fetch_error">Error getting Level data from the server.\n\nTry again…</string>
     <string name="level_no_data">No data added for the current Level.\n\nPlease, check again later…</string>
     <string name="sounds_selected_total">Sounds: %1$s / %2$s</string>
+    <string name="affix_tray_title">Affixes</string>
+    <string name="affix_tray_cd">Affixes</string>
+    <string name="journey_round_begin">Begin</string>
+    <string name="journey_submit">Submit</string>
 
     <string name="level_clear_time_title">Level %1$d times</string>
     <string name="level_clear_time_subtitle">Fastest clear — Extra Life Gate allowed</string>

@@ -29,12 +29,20 @@ One Invoker mode run: pool load, orb queue, spell recipes, hearts, dual timers, 
 _Avoid_: Invoker session, Invoker game (as the domain name for the module)
 
 **Journey Round**:
-One playable Journey level attempt: loading the level, affix rules, marks, sound plays, submit, hearts, timer, and the extra-life continue gate. Distinct from the Journey level list UI and from Player Progress journey level.
+One playable Journey level attempt: loading the level, optional Journey Round briefing, affix rules, marks, sound plays, submit, hearts, timer, and the extra-life continue gate. Distinct from the Journey level list UI and from Player Progress journey level.
 _Avoid_: Journey session, Journey game (as the domain name for the module)
 
 **Affix**:
 A named rule from the remote `affixes` catalog that modifies a Journey Round (UI flags, hearts, timer, play limits, validation, board composition). A Journey level references affixes by id. AffixEngine applies strategies for known keys; unknown keys are skipped.
 _Avoid_: modifier, perk, challenge rule (when you mean the catalog Affix)
+
+**Affix tray**:
+On-demand list of the Affixes on the current Journey Round, opened from the play surface. Distinct from Journey HUD Chrome and from Affix icons on the Journey level list.
+_Avoid_: affix drawer, side menu, modifier panel
+
+**Journey Round briefing**:
+The hold at the start of a Journey Round after Continue Journey when that level has Affixes: the Affix tray is open and clocks have not started. Distinct from Extra Life Gate pause and from mid-round Affix tray lookup.
+_Avoid_: tutorial overlay, countdown gate, pause menu (when you mean this hold)
 
 **Hero**:
 A Dota 2 playable character whose portrait and spell sounds appear in a Journey Round (and elsewhere in the app). Use this word in player-facing copy and domain language.
@@ -112,7 +120,7 @@ Fragile Spirit ↔ Sudden Death remain mutually exclusive (same hearts aspect; d
 
 If the Gate is still unused when the Race timer hits 0, offer the ad → add `timer_extension_seconds` and continue. If the Gate was already spent on a heart recover (or Sudden Death disables it), timeout is Game Over.
 
-Journey round timers (Race and Soundquake family) run only while the gameplay surface is clear — paused for Extra Life Gate dialog, fullscreen ads, and app background; they resume when the player is back on the uncovered game screen.
+Journey round timers (Race and Soundquake family) run only while the gameplay surface is clear — paused for Extra Life Gate dialog, fullscreen ads, and app background; they resume when the player is back on the uncovered game screen. The Affix tray and Affix description sheet do not pause clocks.
 
 Time buyback is **Race-only**. Soundquake does not offer +time.
 
