@@ -300,7 +300,16 @@ fun JourneyGameData(
         Spacer(Modifier.height(8.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(
+                    if (affixes.isNotEmpty()) {
+                        // AffixTrayHandle is 56.dp tall; keep this row from collapsing when the tab hides.
+                        Modifier.height(56.dp)
+                    } else {
+                        Modifier
+                    }
+                ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(Modifier.weight(1f))

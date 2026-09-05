@@ -82,9 +82,7 @@ fun SoundCard(
             modifier = Modifier.fillMaxSize()
         ) {
             Image(
-                painterResource(
-                    if (selectedState) R.drawable.card_bg_game_selected else R.drawable.card_bg_game
-                ),
+                painterResource(R.drawable.card_bg_game),
                 modifier = Modifier.matchParentSize(),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
@@ -114,7 +112,6 @@ fun SoundCard(
                 contentDescription = null
             )
 
-            // Echo Limit remaining plays — bottom center avoids selected-card corner checkmarks
             remainingPlays?.let { remaining ->
                 Box(
                     modifier = Modifier
