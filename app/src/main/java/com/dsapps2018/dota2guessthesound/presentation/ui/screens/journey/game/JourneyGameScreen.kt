@@ -455,8 +455,8 @@ fun StatusInfoRow(
                     Image(
                         painterResource(R.drawable.ic_heart),
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        contentScale = ContentScale.Crop
+                        modifier = Modifier.size(32.dp),
+                        contentScale = ContentScale.Fit
                     )
                 }
             }

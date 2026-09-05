@@ -134,7 +134,7 @@ fun InvokerScreen(
                             painterResource(R.drawable.ic_heart),
                             contentDescription = "",
                             modifier = Modifier.size(50.dp),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Fit
                         )
                     }
                 }
