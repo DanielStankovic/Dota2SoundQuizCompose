@@ -2,11 +2,10 @@ package com.dsapps2018.dota2guessthesound.data.journey
 
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
-import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 
 sealed interface JourneyLevelsState {
     data object Loading : JourneyLevelsState
-    data class Success(val levels: List<JourneyLevelModel>) : JourneyLevelsState
+    data class Success(val levels: List<JourneyLevelListRow>) : JourneyLevelsState
     data class Error(val message: String) : JourneyLevelsState
 }
 

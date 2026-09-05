@@ -24,13 +24,18 @@ class JourneyLevelViewModel @Inject constructor(
     levelClearTime: LevelClearTime,
 ) : ViewModel() {
 
-    val journeyLevelState: StateFlow<JourneyLevelsState> = journeyRound.levelsState
-
     val journeyLevel: StateFlow<Int> = playerProgressRepository.journeyLevel().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = 0
     )
+
+    val journeyLevelState: StateFlow<JourneyLevelsState> =
+        journeyRound.presentedLevels(playerProgressRepository.journeyLevel()).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = JourneyLevelsState.Loading,
+        )
 
     val personalBests: StateFlow<Map<Int, Long>> = levelClearTime.observePersonalBests().stateIn(
         scope = viewModelScope,

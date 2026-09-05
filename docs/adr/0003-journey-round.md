@@ -1,6 +1,6 @@
 # Deepen Journey Round into one data-layer module
 
-A **Journey Round** (one playable level attempt: load through submit / continue / game-over) lives in one concrete Data-layer module: `JourneyRound`. Level list loading and affix→presentation mapping share that module. `AffixEngine` + strategies stay an **internal** seam (harden hooks as affixes grow; Mirror Mode validation gets the full sound-id set). Shallow `JourneyRepository` / `JourneyLevelRepository` are removed. Playback of a `SoundModel` goes through concrete `SoundPlayback` (Journey is the first caller; other modes retarget later). Player Progress advancement on win stays outside this module. Domain Use Cases and ports are deferred.
+A **Journey Round** (one playable level attempt: load through submit / continue / game-over) lives in one concrete Data-layer module: `JourneyRound`. Level list loading and affix→presentation mapping share that module (unlock at `journey level + 1`, Affix fog as revealed vs mystery slots — catalog identity never leaves the module on fogged cards). `AffixEngine` + strategies stay an **internal** seam (harden hooks as affixes grow; Mirror Mode validation gets the full sound-id set). Shallow `JourneyRepository` / `JourneyLevelRepository` are removed. Playback of a `SoundModel` goes through concrete `SoundPlayback` (Journey is the first caller; other modes retarget later). Player Progress advancement on win stays outside this module. Domain Use Cases and ports are deferred.
 
 ## Revert
 

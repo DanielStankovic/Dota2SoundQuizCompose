@@ -29,7 +29,7 @@ One Invoker mode run: pool load, orb queue, spell recipes, hearts, dual timers, 
 _Avoid_: Invoker session, Invoker game (as the domain name for the module)
 
 **Journey Round**:
-One playable Journey level attempt: loading the level, optional Journey Round briefing, affix rules, marks, sound plays, submit, hearts, timer, and the extra-life continue gate. Distinct from the Journey level list UI and from Player Progress journey level.
+One playable Journey level attempt: loading the level, optional Journey Round briefing, affix rules, marks, sound plays, submit, hearts, timer, and the extra-life continue gate. Also owns Journey level list load and Affix fog / unlock presentation. Distinct from the Journey level list UI and from Player Progress journey level.
 _Avoid_: Journey session, Journey game (as the domain name for the module)
 
 **Affix**:

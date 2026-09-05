@@ -24,12 +24,14 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,9 +51,23 @@ class JourneyRound @Inject constructor(
     private val firebaseCrashlytics: FirebaseCrashlytics,
 ) {
 
-    private val _levelsState =
-        MutableStateFlow<JourneyLevelsState>(JourneyLevelsState.Loading)
-    val levelsState: StateFlow<JourneyLevelsState> = _levelsState.asStateFlow()
+    private val _levelCatalog =
+        MutableStateFlow<LevelCatalog>(LevelCatalog.Loading)
+
+    /**
+     * Journey level list with unlock + Affix fog applied. Catalog Affix identity
+     * never leaves this module on fogged cards.
+     */
+    fun presentedLevels(journeyLevel: Flow<Int>): Flow<JourneyLevelsState> =
+        combine(_levelCatalog, journeyLevel) { catalog, cleared ->
+            when (catalog) {
+                LevelCatalog.Loading -> JourneyLevelsState.Loading
+                is LevelCatalog.Failed -> JourneyLevelsState.Error(catalog.message)
+                is LevelCatalog.Loaded -> JourneyLevelsState.Success(
+                    catalog.levels.map { presentListRow(it, cleared) }
+                )
+            }
+        }
 
     private val _roundState =
         MutableStateFlow<JourneyRoundState>(JourneyRoundState.Idle)
@@ -87,7 +103,7 @@ class JourneyRound @Inject constructor(
     private var pendingTimerStartMs: Long? = null
 
     suspend fun loadLevels() {
-        _levelsState.value = JourneyLevelsState.Loading
+        _levelCatalog.value = LevelCatalog.Loading
         try {
             val affixList = affixDao.getAllAffixes()
             val levels = fetchLevelsData().map { level ->
@@ -99,10 +115,10 @@ class JourneyRound @Inject constructor(
                     }
                 )
             }
-            _levelsState.value = JourneyLevelsState.Success(levels)
+            _levelCatalog.value = LevelCatalog.Loaded(levels)
         } catch (t: Throwable) {
             firebaseCrashlytics.recordException(t)
-            _levelsState.value = JourneyLevelsState.Error(
+            _levelCatalog.value = LevelCatalog.Failed(
                 context.getString(R.string.level_fetch_error)
             )
         }
@@ -527,7 +543,37 @@ class JourneyRound @Inject constructor(
         }
     }
 
+    private fun presentListRow(
+        catalog: JourneyLevelModel,
+        journeyLevel: Int,
+    ): JourneyLevelListRow {
+        val access = when {
+            catalog.level <= journeyLevel -> JourneyLevelAccess.Cleared
+            catalog.level == journeyLevel + 1 -> JourneyLevelAccess.Playable
+            else -> JourneyLevelAccess.Locked
+        }
+        val revealsIdentity = catalog.level <= journeyLevel + 1 + LOOKAHEAD_LOCKED_LEVELS
+        val affixSlots = if (revealsIdentity) {
+            catalog.affixes.map { AffixListSlot.Revealed(it) }
+        } else {
+            List(catalog.affixes.size) { AffixListSlot.Mystery }
+        }
+        return JourneyLevelListRow(
+            id = catalog.id,
+            level = catalog.level,
+            access = access,
+            affixSlots = affixSlots,
+        )
+    }
+
+    private sealed interface LevelCatalog {
+        data object Loading : LevelCatalog
+        data class Loaded(val levels: List<JourneyLevelModel>) : LevelCatalog
+        data class Failed(val message: String) : LevelCatalog
+    }
+
     companion object {
         private const val DEFAULT_HEARTS = 2
+        private const val LOOKAHEAD_LOCKED_LEVELS = 3
     }
 }

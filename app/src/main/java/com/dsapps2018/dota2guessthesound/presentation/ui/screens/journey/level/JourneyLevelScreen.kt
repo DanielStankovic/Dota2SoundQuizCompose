@@ -69,9 +69,11 @@ import androidx.compose.ui.util.lerp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.journey.AffixListSlot
+import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelAccess
+import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelListRow
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelsState
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
-import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
@@ -207,7 +209,7 @@ fun JourneyLevelTitle(
 
 @Composable
 fun LevelData(
-    levels: List<JourneyLevelModel>,
+    levels: List<JourneyLevelListRow>,
     totalItems: Int,
     levelViewModel: JourneyLevelViewModel,
     bannerHeight: Int,
@@ -227,7 +229,7 @@ fun LevelData(
     }
     LaunchedEffect(pagerState.currentPage, currentLevel) {
         val viewed = levels.getOrNull(pagerState.currentPage) ?: return@LaunchedEffect
-        if (!AffixFog.revealsIdentity(viewed.level, currentLevel)) {
+        if (viewed.affixSlots.none { it is AffixListSlot.Revealed }) {
             levelViewModel.setCurrentAffix(null)
         }
     }
@@ -240,7 +242,6 @@ fun LevelData(
             LevelCardContent(
                 it,
                 levels[it],
-                currentLevel,
                 pagerState,
                 onItemClicked = onLevelClicked,
                 onAffixIconClicked = { affix ->
@@ -249,7 +250,7 @@ fun LevelData(
         }
 
         val viewedLevel = levels[pagerState.currentPage]
-        val viewedCleared = viewedLevel.level <= currentLevel
+        val viewedCleared = viewedLevel.access == JourneyLevelAccess.Cleared
         val viewedBestMs = personalBests[viewedLevel.level]
         val cornerPad = (bannerHeight + 10).dp
         AnimatedVisibility(
@@ -329,8 +330,7 @@ fun LevelData(
 @Composable
 fun LevelCardContent(
     index: Int,
-    levelModel: JourneyLevelModel,
-    userCompletedLevel: Int,
+    levelModel: JourneyLevelListRow,
     pagerState: PagerState,
     onItemClicked: (Int) -> Unit,
     onAffixIconClicked: (AffixModel) -> Unit
@@ -392,7 +392,7 @@ fun LevelCardContent(
                     alpha = lerp(0.7f, 1f, fraction)
                 }
                 .then(
-                    if (levelModel.level == userCompletedLevel + 1) {
+                    if (levelModel.access == JourneyLevelAccess.Playable) {
                         Modifier.shadow(
                             elevation = 30.dp,
                             ambientColor = PlayLevel,
@@ -404,11 +404,9 @@ fun LevelCardContent(
                     }
                 )
                 .clickable {
-                    if (levelModel.level <= userCompletedLevel + 1) {
-                        // Level is unlocked, perform normal click
+                    if (levelModel.access != JourneyLevelAccess.Locked) {
                         onItemClicked(levelModel.level)
                     } else {
-                        // Level is locked, perform shake animation
                         scope.launch {
                             performShake()
                         }
@@ -418,10 +416,10 @@ fun LevelCardContent(
         ) {
             Image(
                 painterResource(
-                    when {
-                        levelModel.level <= userCompletedLevel -> R.drawable.level_replay_bg
-                        levelModel.level == userCompletedLevel + 1 -> R.drawable.level_play_bg
-                        else -> R.drawable.level_locked_bg
+                    when (levelModel.access) {
+                        JourneyLevelAccess.Cleared -> R.drawable.level_replay_bg
+                        JourneyLevelAccess.Playable -> R.drawable.level_play_bg
+                        JourneyLevelAccess.Locked -> R.drawable.level_locked_bg
                     }
                 ),
                 modifier = Modifier.fillMaxSize(),
@@ -432,28 +430,21 @@ fun LevelCardContent(
         }
         Spacer(Modifier.height(8.dp))
 
-        val revealsAffixIdentity = AffixFog.revealsIdentity(
-            level = levelModel.level,
-            journeyLevel = userCompletedLevel,
-        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
-            if (revealsAffixIdentity) {
-                levelModel.affixes.forEach { affix ->
-                    LevelAffixToken(
-                        painter = painterResource(affix.iconResourceId),
+            levelModel.affixSlots.forEach { slot ->
+                when (slot) {
+                    is AffixListSlot.Revealed -> LevelAffixToken(
+                        painter = painterResource(slot.affix.iconResourceId),
                         contentDescription = null,
                         pagerState = pagerState,
                         index = index,
-                        onClick = { onAffixIconClicked(affix) },
+                        onClick = { onAffixIconClicked(slot.affix) },
                     )
-                }
-            } else {
-                repeat(levelModel.affixes.size) {
-                    LevelAffixToken(
+                    AffixListSlot.Mystery -> LevelAffixToken(
                         painter = painterResource(R.drawable.affix_fog),
                         contentDescription = stringResource(R.string.affix_fog_cd),
                         pagerState = pagerState,
