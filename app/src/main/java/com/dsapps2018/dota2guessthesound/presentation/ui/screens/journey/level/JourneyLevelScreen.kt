@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -223,6 +224,12 @@ fun LevelData(
     }
     val isVisible by remember {
         derivedStateOf { pagerState.currentPage != currentLevel }
+    }
+    LaunchedEffect(pagerState.currentPage, currentLevel) {
+        val viewed = levels.getOrNull(pagerState.currentPage) ?: return@LaunchedEffect
+        if (!AffixFog.revealsIdentity(viewed.level, currentLevel)) {
+            levelViewModel.setCurrentAffix(null)
+        }
     }
     Box(
         modifier = Modifier.fillMaxSize()
@@ -428,7 +435,7 @@ fun LevelCardContent(
         }
         Spacer(Modifier.height(8.dp))
 
-        val revealAffixes = AffixFog.revealsIdentity(
+        val revealsAffixIdentity = AffixFog.revealsIdentity(
             level = levelModel.level,
             journeyLevel = userCompletedLevel,
         )
@@ -437,7 +444,7 @@ fun LevelCardContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
-            if (revealAffixes) {
+            if (revealsAffixIdentity) {
                 levelModel.affixes.forEach { affix ->
                     LevelAffixToken(
                         painter = painterResource(affix.iconResourceId),
@@ -469,12 +476,13 @@ private fun LevelAffixToken(
     contentDescription: String?,
     pagerState: PagerState,
     index: Int,
+    modifier: Modifier = Modifier,
     onClick: (() -> Unit)?,
 ) {
     Image(
         painter = painter,
         contentDescription = contentDescription,
-        modifier = Modifier
+        modifier = modifier
             .size(40.dp)
             .clip(CircleShape)
             .graphicsLayer {
