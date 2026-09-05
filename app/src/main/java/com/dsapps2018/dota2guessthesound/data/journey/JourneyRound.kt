@@ -316,6 +316,17 @@ class JourneyRound @Inject constructor(
     }
 
     /**
+     * Extra Life Gate declined: clear the pending offer and end the round.
+     * Presentation may show an interstitial first; GameOver is the only fail path.
+     */
+    fun declineExtraLifeGate() {
+        if (pendingContinueOffer == null) return
+        pendingContinueOffer = null
+        updateReady { it.copy(showContinueDialog = false, continueOffer = null) }
+        _events.tryEmit(JourneyRoundEvent.GameOver)
+    }
+
+    /**
      * Applies Extra Life Gate reward only. Does **not** start/resume the timer — that waits until
      * [onGameplaySurfaceClear] (ad closed / surface visible again).
      */

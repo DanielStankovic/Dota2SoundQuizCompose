@@ -156,7 +156,7 @@ fun JourneyGameScreen(
                     onSkipClicked = {
                         viewModel.setShowWatchAdContinueDialog(false)
                         showInterstitial(context) {
-                            onNavigateToResultScreen(levelNum, false, 0L)
+                            viewModel.declineExtraLifeGate()
                         }
                     },
                     onWatchAdClicked = {

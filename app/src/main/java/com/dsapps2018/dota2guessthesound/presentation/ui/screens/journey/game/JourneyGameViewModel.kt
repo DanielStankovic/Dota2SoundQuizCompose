@@ -56,6 +56,8 @@ class JourneyGameViewModel @Inject constructor(
         runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,
     ) = journeyRound.continueFromExtraLifeGate(runRewardedAd)
 
+    fun declineExtraLifeGate() = journeyRound.declineExtraLifeGate()
+
     fun onHostPaused() = journeyRound.onHostPaused()
 
     fun onHostResumed() = journeyRound.onHostResumed()
