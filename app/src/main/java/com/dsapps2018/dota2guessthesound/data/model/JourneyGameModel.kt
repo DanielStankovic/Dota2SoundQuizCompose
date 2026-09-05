@@ -7,5 +7,5 @@ data class JourneyGameModel(
     val radiantHeroPortraits: List<HeroPortraitSlot>,
     val direHeroPortraits: List<HeroPortraitSlot> = emptyList(),
     val soundList: List<JourneySoundModel>,
-    val totalCorrectSounds: Int
+    val requiredSoundCount: Int
 )

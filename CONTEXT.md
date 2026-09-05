@@ -154,9 +154,11 @@ Three mutually exclusive Affixes own “who is shown vs masked” in the hero ro
 | **Partial Veil** | Mix of real portraits + one or more `?` slots; level authors which hero ids are masked via `masked_hero_ids` | Still on the board for masked ids |
 | **Among Heroes** | Only real visible heroes (**no** `?`); infer the mystery hero from sounds / sound count | Mystery hero’s sounds are on the board |
 
-**Among Heroes** guardrails (level design): ≥2 heroes on the level; exactly one mystery hero authored as Journey `hidden_hero_id` (must be a member of `radiant_heroes` / `dire_heroes`). That id is **omitted** from the portrait row — never replaced with `?`. Null `hidden_hero_id` with the Affix on → noop (show everyone). The mystery id must **not** also appear in `masked_hero_ids` or `blurred_hero_ids` (no `?`/blur on a portrait that isn’t shown). Do **not** stack with **Unknown Count** — the sound counter is the main hint that a mystery hero exists. While only Radiant portraits render, authors should hide a Radiant id and leave ≥1 Radiant portrait visible. Catalog Affix is rule-only; mystery membership lives on the Journey level.
+**The Hidden Hero** with **Mirror Mode** is allowed but **expert-only** (see Mirror Mode).
 
-**Partial Veil** guardrails (level design): ≥2 heroes on the level; ≥1 real portrait; ≥1 masked; masking **all** heroes is invalid — use **The Hidden Hero** instead. Catalog Affix is rule-only; mask membership lives on the Journey level.
+**Among Heroes** guardrails (level design): ≥2 heroes on the level; exactly one mystery hero authored as Journey `hidden_hero_id` (must be a member of `radiant_heroes` / `dire_heroes`). That id is **omitted** from the portrait row — never replaced with `?`. Null `hidden_hero_id` with the Affix on → noop (show everyone). The mystery id must **not** also appear in `masked_hero_ids` or `blurred_hero_ids` (no `?`/blur on a portrait that isn’t shown). Do **not** stack with **Unknown Count** or **Mirror Mode** — the sound counter’s correct-sound total is the main hint that a mystery hero exists (Unknown Count hides it; Mirror Mode retargets it to decoys). While only Radiant portraits render, authors should hide a Radiant id and leave ≥1 Radiant portrait visible. Catalog Affix is rule-only; mystery membership lives on the Journey level.
+
+**Partial Veil** guardrails (level design): ≥2 heroes on the level; ≥1 real portrait; ≥1 masked; masking **all** heroes is invalid — use **The Hidden Hero** instead. Catalog Affix is rule-only; mask membership lives on the Journey level. Stacking with **Mirror Mode** is allowed but **expert-only** (see Mirror Mode).
 
 ### Blurred Vision — portrait membership
 
@@ -177,12 +179,15 @@ When authoring Journey levels (affix + hero combinations), do **not** stack affi
 | Hidden identity (portrait policy) | **The Hidden Hero** ↔ **Partial Veil** ↔ **Among Heroes** | Three different mystery UXs for the same hero-row slots. Pick exactly one. |
 | Full mask + blur | **Blurred Vision** / **Blurred Vision 2** ↔ **The Hidden Hero** | Blur needs real portrait art; Hidden Hero is all `?`. Blurred Vision vs Blurred Vision 2: pick one intensity. |
 | Counter + mystery without portrait cue | **Unknown Count** ↔ **The Hidden Hero** / **Among Heroes** | Without a visible correct-count, players cannot tell there are more correct sounds than the visible heroes imply. Among Heroes is stricter: there is also no `?` slot, so the counter is the main hint that a mystery hero exists. |
+| Submit quota + mystery hint | **Mirror Mode** ↔ **Among Heroes** | Mirror Mode’s HUD denominator is decoys (required marks). Among Heroes uses the visible correct-count as the hint a mystery hero exists. |
 | Round timer semantics | **Race Against Time** ↔ **Soundquake** / **Soundquake Aftershock** / **Soundquake Fracture** / **Soundquake Cataclysm** | Race ends the round on timeout (with optional Extra Life Gate +time). Soundquake family reshuffles on interval. Engine only takes the first timer Affix; duration comes from Journey `timer_seconds`. |
 | Soundquake variants | **Soundquake** ↔ **Soundquake Aftershock** ↔ **Soundquake Fracture** ↔ **Soundquake Cataclysm** | Same timer/reshuffle aspect; pick exactly one marks + heart policy. |
 | Decoy heroes | **Among Heroes** requires ≥2 heroes on the level | Needs visible heroes plus one mystery hero's sounds; meaningless on a single-hero level. Mystery id = Journey `hidden_hero_id`; must not overlap `masked_hero_ids` / `blurred_hero_ids`. |
 | Partial mask | **Partial Veil** requires ≥2 heroes; ≥1 visible + ≥1 masked | See Partial Veil guardrails above. |
 
 Compatible examples (different aspects): Hidden Marks + Unknown Count; Echo Limit + Mirror Mode; Race Against Time + Blurred Vision; Among Heroes + visible sound count; **Partial Veil + Blurred Vision** (blur real slots only); **Among Heroes + Blurred Vision**.
+
+Expert-only (legal, late band — same listen→classify loop, second load): **Mirror Mode** + **The Hidden Hero**; **Mirror Mode** + **Partial Veil**. See Mirror Mode.
 
 ### Echo Limit — level design
 
@@ -201,7 +206,22 @@ When designing a level with Echo Limit:
    - Hard: `echo_limit_offset = 0` → `boardSize`
    - Medium: `+5` (default) → `boardSize + 5`
    - Easy: `+10` → `boardSize + 10`
-3. Never set plays below the number of correct sounds the player must identify (and prefer never below `boardSize` without an explicit product call).
+3. Never set plays below the number of marks the player must identify — correct sounds normally, decoys under **Mirror Mode** (and prefer never below `boardSize` without an explicit product call).
+
+### Mirror Mode — level design
+
+**Mirror Mode** inverts a legal submit: mark every decoy on the board, leave every correct sound unmarked.
+
+The Journey HUD sound counter denominator is **required marks** = decoys on the board (`max_sounds` − correct sounds), not the hero-sound count. Authors must leave room for decoys (`max_sounds` > correct-sound count); a board of only correct sounds is unwinnable.
+
+Do **not** stack with **Among Heroes**. **Unknown Count** still hides the denominator; **Hidden Marks** still hides the marked count.
+
+**Expert-only stacks** (allowed, late band only — do not treat like Echo Limit + Mirror Mode):
+
+| Stack | Why it is legal | Why it is expert |
+|-------|-----------------|------------------|
+| **Mirror Mode** + **The Hidden Hero** | `?` slots stay the identity cue; HUD quota is decoys | Player must identify the whole hidden roster, then mark only leftovers |
+| **Mirror Mode** + **Partial Veil** | `?` slots still prove a masked hero exists | Three buckets: visible-hero sounds, `?`-hero sounds, true decoys. Mirror marks **only decoys**; `?` hero sounds stay unmarked. “Wrong” is not “isn’t a visible portrait.” |
 
 ### Soundquake — variants (catalog)
 

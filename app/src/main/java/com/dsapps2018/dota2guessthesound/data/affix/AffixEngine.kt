@@ -129,6 +129,17 @@ class AffixEngine(private val activeAffixes: List<AffixModel>) {
     }
 
     /**
+     * HUD sound-counter denominator. Default is [correctSoundCount];
+     * first strategy that returns a count wins (Mirror Mode: decoys on the board).
+     */
+    fun resolveRequiredMarkCount(correctSoundCount: Int, boardSize: Int): Int {
+        affixStrategies.forEach { strategy ->
+            strategy.resolveRequiredMarkCount(correctSoundCount, boardSize)?.let { return it }
+        }
+        return correctSoundCount
+    }
+
+    /**
      * Race / Soundquake: Affix timer hooks + level `timer_seconds` / extension.
      */
     fun resolveTimer(level: AffixLevelContext): ResolvedAffixTimer? {

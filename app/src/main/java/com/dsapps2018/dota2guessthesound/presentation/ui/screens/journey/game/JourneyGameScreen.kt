@@ -264,7 +264,7 @@ fun JourneyGameData(
             hearts = ready.hearts,
             selectedMarks = ready.selectedMarks,
             remainingPlays = ready.remainingPlays,
-            totalCorrectSounds = journeyState.totalCorrectSounds,
+            requiredSoundCount = journeyState.requiredSoundCount,
             hud = hud,
             timerState = if (showTimer) timerState else null,
             heartScale = quakeFx.heartScale.value,
@@ -422,7 +422,7 @@ fun StatusInfoRow(
     hearts: Int,
     selectedMarks: Map<Int, Boolean>,
     remainingPlays: Int?,
-    totalCorrectSounds: Int,
+    requiredSoundCount: Int,
     hud: JourneyHudChrome,
     timerState: TimerState? = null,
     heartScale: Float = 1f,
@@ -467,7 +467,7 @@ fun StatusInfoRow(
         val markedSoundsString =
             if (hud.showMarkedSoundCounter) selectedSounds.toString() else "?"
         val totalSoundsString =
-            if (hud.showSoundCounter) totalCorrectSounds.toString() else "?"
+            if (hud.showSoundCounter) requiredSoundCount.toString() else "?"
 
         Text(
             text = stringResource(

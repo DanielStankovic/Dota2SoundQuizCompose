@@ -195,7 +195,10 @@ class JourneyRound @Inject constructor(
                 radiantHeroPortraits = portraits.radiant,
                 direHeroPortraits = portraits.dire,
                 soundList = soundList,
-                totalCorrectSounds = correctSounds.size
+                requiredSoundCount = engine.resolveRequiredMarkCount(
+                    correctSoundCount = correctSounds.size,
+                    boardSize = soundList.size,
+                )
             )
 
             val awaitingBegin = holdUntilBegin && currentAffixes.isNotEmpty()

@@ -16,7 +16,8 @@ class EchoLimitAffixStrategy : AffixStrategy {
 }
 
 /**
- * Affix that inverts the answer logic - player must select WRONG sounds
+ * Affix that inverts the answer logic - player must select WRONG sounds.
+ * HUD quota is decoys on the board, not hero-sound count.
  */
 class MirrorModeAffixStrategy : AffixStrategy {
     override fun modifyAnswerValidation(
@@ -35,6 +36,10 @@ class MirrorModeAffixStrategy : AffixStrategy {
             originalLogic = false,
             customMessage = "Mirror Mode: Select the WRONG sounds!"
         )
+    }
+
+    override fun resolveRequiredMarkCount(correctSoundCount: Int, boardSize: Int): Int {
+        return (boardSize - correctSoundCount).coerceAtLeast(0)
     }
 }
 

@@ -56,6 +56,12 @@ interface AffixStrategy {
      * Echo Limit and similar: resolved play budget from level fields, or null if inactive.
      */
     fun resolveSoundPlayBudget(level: AffixLevelContext): Int? = null
+
+    /**
+     * HUD sound-counter denominator (required marks for a legal submit).
+     * Null leaves the default [correctSoundCount]. Mirror Mode returns decoys on the board.
+     */
+    fun resolveRequiredMarkCount(correctSoundCount: Int, boardSize: Int): Int? = null
 }
 
 /**
