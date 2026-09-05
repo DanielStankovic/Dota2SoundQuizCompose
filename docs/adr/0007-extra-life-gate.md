@@ -2,7 +2,7 @@
 
 Classic Quiz’s one-shot rewarded continue is modeled as `ExtraLifeGate` (`canOfferContinue` / `markUsed`). Journey Round already owns a timer-coupled continue gate (ADR-0003); that path is not forced through `ExtraLifeGate` because pause/resume and sudden-death coupling belong with the round.
 
-Journey Screen calls `JourneyRound.continueFromExtraLifeGate` — one interface that orders dismiss → obscure → reward grant → surface clear. Decline goes through `JourneyRound.declineExtraLifeGate` (clears the pending offer and emits GameOver); the Screen may show an interstitial first as a presentation adapter. The ad SDK stays a presentation adapter callback.
+Journey Screen calls `JourneyRound.continueFromExtraLifeGate` — one interface that orders dismiss → obscure → reward grant → surface clear. Decline goes through `JourneyRound.declineExtraLifeGate` (clears the pending offer and emits GameOver). The Screen shows an interstitial on every GameOver — Extra Life Gate skip, Sudden Death, and other fails — then navigates; there is no rewarded ad when the Gate is disabled. The ad SDK stays a presentation adapter callback.
 
 ## Revert
 

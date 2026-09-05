@@ -131,7 +131,9 @@ fun JourneyGameScreen(
                 }
 
                 is JourneyRoundEvent.GameOver -> {
-                    onNavigateToResultScreen(levelNum, false, 0L)
+                    showInterstitial(context) {
+                        onNavigateToResultScreen(levelNum, false, 0L)
+                    }
                 }
 
                 is JourneyRoundEvent.Soundquake -> {
@@ -155,9 +157,7 @@ fun JourneyGameScreen(
                     onDismiss = { },
                     onSkipClicked = {
                         viewModel.setShowWatchAdContinueDialog(false)
-                        showInterstitial(context) {
-                            viewModel.declineExtraLifeGate()
-                        }
+                        viewModel.declineExtraLifeGate()
                     },
                     onWatchAdClicked = {
                         if (isRewardedReady) {

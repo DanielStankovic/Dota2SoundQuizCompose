@@ -319,12 +319,13 @@ class JourneyRound @Inject constructor(
 
     /**
      * Extra Life Gate declined: clear the pending offer and end the round.
-     * Presentation may show an interstitial first; GameOver is the only fail path.
+     * Screen shows an interstitial on GameOver, then navigates.
      */
     fun declineExtraLifeGate() {
         if (pendingContinueOffer == null) return
         pendingContinueOffer = null
         updateReady { it.copy(showContinueDialog = false, continueOffer = null) }
+        stopClocks()
         _events.tryEmit(JourneyRoundEvent.GameOver)
     }
 
@@ -390,11 +391,20 @@ class JourneyRound @Inject constructor(
 
     fun clear() {
         soundPlayback.stop()
+        stopClocks()
+        roundScope = null
+    }
+
+    private fun stopClocks() {
         timer.clear()
         timer.blockedByOverlay = false
         clearClock.clear()
         pendingTimerStartMs = null
-        roundScope = null
+    }
+
+    private suspend fun emitGameOver() {
+        stopClocks()
+        _events.emit(JourneyRoundEvent.GameOver)
     }
 
     private fun remainingPlaysOrNull(): Int? =
@@ -482,7 +492,7 @@ class JourneyRound @Inject constructor(
             // Sudden Death: Extra Life Gate disabled — first fail ends the round.
             // Fragile Spirit / default: offer Gate once if unused.
             if (!extraLifeGateAllowed) {
-                _events.emit(JourneyRoundEvent.GameOver)
+                emitGameOver()
                 return false
             }
             if (!extraLifeGateUsed) {
@@ -502,7 +512,7 @@ class JourneyRound @Inject constructor(
                 }
                 return false
             }
-            _events.emit(JourneyRoundEvent.GameOver)
+            emitGameOver()
             return false
         }
         updateReady { it.copy(hearts = newHearts) }
@@ -511,7 +521,7 @@ class JourneyRound @Inject constructor(
 
     private suspend fun offerTimeExtensionOrGameOver() {
         if (!extraLifeGateAllowed || extraLifeGateUsed) {
-            _events.emit(JourneyRoundEvent.GameOver)
+            emitGameOver()
             return
         }
         pendingContinueOffer = ExtraLifeContinueOffer.TimeExtension
