@@ -37,8 +37,12 @@ A named rule from the remote `affixes` catalog that modifies a Journey Round (UI
 _Avoid_: modifier, perk, challenge rule (when you mean the catalog Affix)
 
 **Affix tray**:
-On-demand list of the Affixes on the current Journey Round, opened from the play surface. Distinct from Journey HUD Chrome and from Affix icons on the Journey level list.
+On-demand list of the Affixes on the current Journey Round, opened from the play surface. Distinct from Journey HUD Chrome, Affix fog, and Affix icons on the Journey level list.
 _Avoid_: affix drawer, side menu, modifier panel
+
+**Affix fog**:
+Journey level list rule that hides Affix identity beyond a look-ahead from journey level. Cleared levels, the next playable level (`journey level + 1`), and the next 3 locked levels show Affix icons; farther cards show one mystery token per Affix and no Affix info sheet. Distinct from Affix tray, Journey Round briefing, and Partial Veil.
+_Avoid_: spoiler, lock, veil (when you mean this list rule)
 
 **Journey Round briefing**:
 The hold at the start of a Journey Round after Continue Journey when that level has Affixes: the Affix tray is open and clocks have not started. Distinct from Extra Life Gate pause and from mid-round Affix tray lookup.
@@ -92,6 +96,7 @@ Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side 
 - First clear of a level grants **20** coins via Mode Result; replay grants **0**.
 - Fail → free retry. No post-fail assist beyond the **Extra Life Gate**. If an Affix disables the Gate, the level stays as authored for all players.
 - Affix / Hero difficulty: introduce **one** new cognitive load per band (more Heroes, or a new Affix family, or a stack — not all at once).
+- **Affix fog** on the Journey level list: Affix identity is visible through the next 3 locked levels after the playable one; farther cards show mystery tokens only (count, not names). The Journey Round still reveals Affixes at play time.
 - Do **not** add a second currency or XP system for Journey progress.
 - Invoker entry cost remains **200** coins unless economy is revisited after Journey first-clear coins ship.
 - Near-term competition: per-level **Level Clear Time** boards (Auth) — top 10, plus the current player's standing appended last when outside the top 10. Weekly Affix gauntlet and reward arcade leaderboards are out of scope for this spine decision (see ADR-0015).

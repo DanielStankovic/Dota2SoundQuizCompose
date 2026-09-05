@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -427,28 +428,66 @@ fun LevelCardContent(
         }
         Spacer(Modifier.height(8.dp))
 
+        val revealAffixes = AffixFog.revealsIdentity(
+            level = levelModel.level,
+            journeyLevel = userCompletedLevel,
+        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
-            levelModel.affixes.forEach { affix ->
-                Image(
-                    painter = painterResource(affix.iconResourceId),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .graphicsLayer {
-                            alpha = 1f - pagerState.offsetForPage(index).absoluteValue
-                        }
-                        .clickable {
-                            onAffixIconClicked(affix)
-                        })
+            if (revealAffixes) {
+                levelModel.affixes.forEach { affix ->
+                    LevelAffixToken(
+                        painter = painterResource(affix.iconResourceId),
+                        contentDescription = null,
+                        pagerState = pagerState,
+                        index = index,
+                        onClick = { onAffixIconClicked(affix) },
+                    )
+                }
+            } else {
+                repeat(levelModel.affixes.size) {
+                    LevelAffixToken(
+                        painter = painterResource(R.drawable.affix_fog),
+                        contentDescription = stringResource(R.string.affix_fog_cd),
+                        pagerState = pagerState,
+                        index = index,
+                        onClick = null,
+                    )
+                }
             }
         }
     }
 
+}
+
+@Composable
+private fun LevelAffixToken(
+    painter: Painter,
+    contentDescription: String?,
+    pagerState: PagerState,
+    index: Int,
+    onClick: (() -> Unit)?,
+) {
+    Image(
+        painter = painter,
+        contentDescription = contentDescription,
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .graphicsLayer {
+                alpha = 1f - pagerState.offsetForPage(index).absoluteValue
+            }
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            ),
+    )
 }
 
 private fun PagerState.offsetForPage(page: Int): Float =

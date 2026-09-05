@@ -134,6 +134,7 @@
     <string name="sounds_selected_total">Sounds: %1$s / %2$s</string>
     <string name="affix_tray_title">Affixes</string>
     <string name="affix_tray_cd">Affixes</string>
+    <string name="affix_fog_cd">Unknown affix</string>
     <string name="journey_round_begin">Begin</string>
     <string name="journey_submit">Submit</string>
 
