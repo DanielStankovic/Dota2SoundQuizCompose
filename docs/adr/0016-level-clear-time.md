@@ -4,7 +4,7 @@ Per-level best finish duration (local unsent best, upsert-if-faster RPC, cheap t
 
 **Supabase (staging names):** table `level_clear_time` PK `(user_id, level)`; columns `clear_time_ms`, `achieved_at` (tie-break: faster, then earlier); index `(level, clear_time_ms ASC, achieved_at ASC)`. RPCs: `upsert_level_clear_time`, `get_top_10_level_clear_times` (`ORDER BY … LIMIT 10`), `get_user_level_clear_time` (PK + count of strictly better rows — not full-board `RANK() OVER`). Authenticated SELECT of a level’s board; writes only via the upsert RPC (`auth.uid()`). No FK to `journey.level`. Display names join `auth.users` metadata like arcade standings.
 
-**Client submit:** one local best per level; mark unsent; RPC; flush on Sync Session / next win / Auth Session attach. UI: dedicated Journey board screen (not arcade chrome), Mode Result this-run / new-PB / +20, level-select personal best, CoinInfoDialog first-clear line.
+**Client submit:** one local best per level; mark unsent; RPC; flush on Sync Session / next win / Auth Session attach. Hydrate Room personal bests from the signed-in player's server rows after that flush (Auth attach and Sync Session) so the level list matches remote after reinstall. `fetchBoard` returns domain standings (wire DTOs stay inside the module) and merges the current player's row into Room. UI: dedicated Journey board screen (not arcade chrome), Mode Result this-run / new-PB / +20, level-select personal best, CoinInfoDialog first-clear line.
 
 ## Revert
 

@@ -17,6 +17,7 @@ object Constants {
     const val TABLE_GAME_DATA = "game_data"
     const val TABLE_REWARDS = "rewards"
     const val TABLE_JOURNEY = "journey"
+    const val TABLE_LEVEL_CLEAR_TIME = "level_clear_time"
     const val TABLE_FAQ = "faq"
     const val TABLE_AFFIXES = "affixes"
 

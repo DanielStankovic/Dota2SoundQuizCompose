@@ -163,6 +163,7 @@ class SyncSession @Inject constructor(
             sendNextStep()
             leaderboardRepository.sendUnsentDetails()
             levelClearTime.sendUnsent()
+            levelClearTime.hydratePersonalBests()
 
             sendNextStep()
             playerProgressRepository.sync()

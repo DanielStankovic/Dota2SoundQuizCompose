@@ -56,6 +56,7 @@ class AuthSession @Inject constructor(
             }
             leaderboardRepository.updateUserIdAndSendData(id)
             levelClearTime.sendUnsent()
+            levelClearTime.hydratePersonalBests()
         }
     }
 

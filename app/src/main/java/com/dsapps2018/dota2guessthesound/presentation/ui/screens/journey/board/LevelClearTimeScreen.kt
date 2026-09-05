@@ -49,7 +49,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.data.api.response.LevelClearTimeStandingDto
+import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTimeStanding
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
@@ -153,7 +153,7 @@ private fun LevelClearTimeBoardContent(
 }
 
 @Composable
-private fun LevelClearTimeRow(row: LevelClearTimeStandingDto) {
+private fun LevelClearTimeRow(row: LevelClearTimeStanding) {
     val highlight = row.isCurrentUser
     Row(
         modifier = Modifier

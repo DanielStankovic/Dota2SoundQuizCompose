@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.dsapps2018.dota2guessthesound.R
-import com.dsapps2018.dota2guessthesound.data.api.response.LevelClearTimeStandingDto
 import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
+import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTimeStanding
 import com.dsapps2018.dota2guessthesound.presentation.navigation.LevelClearTimeDestination
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,7 +57,7 @@ class LevelClearTimeViewModel @Inject constructor(
     sealed interface LevelClearTimeBoardState {
         data object Loading : LevelClearTimeBoardState
         data object Empty : LevelClearTimeBoardState
-        data class Success(val rows: List<LevelClearTimeStandingDto>) : LevelClearTimeBoardState
+        data class Success(val rows: List<LevelClearTimeStanding>) : LevelClearTimeBoardState
         data class Error(val message: String) : LevelClearTimeBoardState
     }
 }
