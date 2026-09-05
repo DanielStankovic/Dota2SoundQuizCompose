@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
@@ -63,8 +62,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
@@ -331,7 +330,6 @@ fun LevelCardContent(
     onItemClicked: (Int) -> Unit,
     onAffixIconClicked: (AffixModel) -> Unit
 ) {
-    val pageOffset = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
     val scope = rememberCoroutineScope()
 
     // Animation state for shake effect
@@ -382,19 +380,11 @@ fun LevelCardContent(
                 .padding(2.dp)
                 .offset(x = shakeOffset.value.dp)
                 .graphicsLayer {
-                    lerp(
-                        start = 0.85f.dp,
-                        stop = 1f.dp,
-                        fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f)
-                    ).also { scale ->
-                        scaleX = scale.value
-                        scaleY = scale.value
-                    }
-                    alpha = lerp(
-                        start = 0.7.dp,
-                        stop = 1f.dp,
-                        fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f)
-                    ).value
+                    val fraction = 1f - pagerState.offsetForPage(index).absoluteValue.coerceIn(0f, 1f)
+                    val scale = lerp(0.85f, 1f, fraction)
+                    scaleX = scale
+                    scaleY = scale
+                    alpha = lerp(0.7f, 1f, fraction)
                 }
                 .then(
                     if (levelModel.level == userCompletedLevel + 1) {
@@ -449,7 +439,9 @@ fun LevelCardContent(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .alpha(1f - pageOffset.absoluteValue)
+                        .graphicsLayer {
+                            alpha = 1f - pagerState.offsetForPage(index).absoluteValue
+                        }
                         .clickable {
                             onAffixIconClicked(affix)
                         })
@@ -458,3 +450,7 @@ fun LevelCardContent(
     }
 
 }
+
+private fun PagerState.offsetForPage(page: Int): Float =
+    (currentPage - page) + currentPageOffsetFraction
+
