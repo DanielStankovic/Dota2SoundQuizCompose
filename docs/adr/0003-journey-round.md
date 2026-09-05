@@ -15,6 +15,7 @@ To undo this deepen without rediscovering the old shape:
 ## Related
 
 - Glossary: `CONTEXT.md` (**Journey Round**, **Sound Playback**, **Player Progress**)
-- AffixEngine remains internal; harden hooks via AffixLevelContext (Echo Limit budget, timer duration); Soundquake / Race resolve through AffixEngine.resolveTimer
+- AffixEngine remains internal; harden hooks via AffixLevelContext (Echo Limit budget, timer duration); Soundquake / Race resolve through AffixEngine.resolveTimer; Soundquake interval behaviour is an internal seam inside Journey Round
+- Level-list presentation includes Affix fog and unlock (`journey level + 1`); Screen paints `JourneyLevelListRow`
 - Among Heroes: Affix enables omit-from-portraits; mystery membership is Journey `hidden_hero_id`
 - Hero Portrait Policy: [ADR-0011](0011-hero-portrait-policy.md)

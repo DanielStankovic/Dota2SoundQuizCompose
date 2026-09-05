@@ -83,10 +83,13 @@ class JourneyRound @Inject constructor(
     private var extraLifeGateUsed = false
     private var pendingContinueOffer: ExtraLifeContinueOffer? = null
 
-    private var soundquakeClearsMarks: Boolean = false
-    private var soundquakeDrainsHeart: Boolean = false
     private var roundScope: CoroutineScope? = null
 
+    private val soundquake = SoundquakeInterval(
+        updateReady = { transform -> updateReady(transform) },
+        emit = { _events.emit(it) },
+        applyHeartLoss = { restart -> applyHeartLoss(restart) },
+    )
     private val timer = JourneyRoundTimer(
         onTick = { tick -> updateReady { it.copy(timer = tick) } },
         onMarkPaused = {
@@ -96,7 +99,7 @@ class JourneyRound @Inject constructor(
         },
         onTimeout = { endsRound ->
             if (endsRound) offerTimeExtensionOrGameOver()
-            else handleSoundquakeTimeout()
+            else onSoundquakeTimeout()
         },
     )
     private val clearClock = LevelClearClock()
@@ -138,8 +141,7 @@ class JourneyRound @Inject constructor(
         soundPlayCount = 0
         maxSoundPlays = null
         extraLifeGateAllowed = true
-        soundquakeClearsMarks = false
-        soundquakeDrainsHeart = false
+        soundquake.reset()
         _roundState.value = JourneyRoundState.Loading
 
         try {
@@ -156,8 +158,8 @@ class JourneyRound @Inject constructor(
             val affixGameState = engine.applyGameplayModifications(AffixGameState())
             val hearts = affixGameState.modifiedHeartCount ?: DEFAULT_HEARTS
             extraLifeGateAllowed = affixGameState.extraLifeGateAllowed
-            soundquakeClearsMarks = affixGameState.soundquakeClearsMarks
-            soundquakeDrainsHeart = affixGameState.soundquakeDrainsHeart
+            soundquake.clearsMarks = affixGameState.soundquakeClearsMarks
+            soundquake.drainsHeart = affixGameState.soundquakeDrainsHeart
 
             val levelContext = AffixLevelContext(
                 maxSounds = levelData.maxSounds,
@@ -459,42 +461,11 @@ class JourneyRound @Inject constructor(
                 order("level", Order.ASCENDING)
             }.decodeList()
 
-    /**
-     * Soundquake interval elapsed: reshuffle board, optionally clear marks / drain a heart,
-     * then restart the interval unless Extra Life Gate or Game Over intervenes.
-     */
-    private suspend fun handleSoundquakeTimeout() {
+    private suspend fun onSoundquakeTimeout() {
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
-        val reshuffled = ready.game.soundList.shuffled()
-        val marks = if (soundquakeClearsMarks) {
-            reshuffled.associate { it.soundModel.id to false }
-        } else {
-            // Marks are keyed by sound id — keep selections across position shuffle.
-            ready.selectedMarks
+        soundquake.onIntervalElapsed(ready, roundScope) { scope ->
+            timer.start(timer.durationMs, scope)
         }
-        updateReady {
-            it.copy(
-                game = it.game.copy(soundList = reshuffled),
-                selectedMarks = marks,
-                timer = it.timer?.copy(remainingMs = 0L, isPaused = true),
-            )
-        }
-
-        // Fire FX after board update so LazyGrid animateItem + shake run together.
-        _events.emit(
-            JourneyRoundEvent.Soundquake(
-                strong = soundquakeClearsMarks,
-                drainedHeart = soundquakeDrainsHeart,
-            )
-        )
-
-        if (soundquakeDrainsHeart) {
-            val survived = applyHeartLoss(restartSoundquakeTimerAfterGate = true)
-            if (!survived) return
-        }
-
-        val scope = roundScope ?: return
-        timer.start(timer.durationMs, scope)
     }
 
     /**
