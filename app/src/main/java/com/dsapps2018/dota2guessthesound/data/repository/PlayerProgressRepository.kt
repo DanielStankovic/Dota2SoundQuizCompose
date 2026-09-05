@@ -5,6 +5,7 @@ import com.dsapps2018.dota2guessthesound.data.api.response.getInitialServerUserD
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
+import com.dsapps2018.dota2guessthesound.data.model.JourneyProgressWrite
 import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.getCurrentDate
@@ -109,11 +110,19 @@ class PlayerProgressRepository @Inject constructor(
         userDataDao.update(local)
     }
 
-    suspend fun advanceJourney(level: Int) {
+    /**
+     * Journey win: never regress [UserDataEntity.journeyLevel]; first clear grants
+     * [Constants.JOURNEY_FIRST_CLEAR_COINS] (Mode Result batch — not [adjustCoins]).
+     */
+    suspend fun recordJourneyWin(level: Int): JourneyProgressWrite {
         val local = getLocalUserData()
-        local.journeyLevel = level
+        val firstClear = level > local.journeyLevel
+        val coinsGranted = if (firstClear) Constants.JOURNEY_FIRST_CLEAR_COINS else 0
+        local.journeyLevel = maxOf(local.journeyLevel, level)
+        local.coinValue += coinsGranted
         local.modifiedAt = getCurrentDate()
         userDataDao.update(local)
+        return JourneyProgressWrite(firstClear = firstClear, coinsGranted = coinsGranted)
     }
 
     fun calculateFastFingerScore(guessed: Int, total: Int): Double {

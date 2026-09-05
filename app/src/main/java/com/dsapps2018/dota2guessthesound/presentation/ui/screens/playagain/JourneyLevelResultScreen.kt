@@ -37,13 +37,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.board.formatLevelClearTime
+import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 import kotlin.random.Random
 
 @Composable
@@ -52,10 +56,12 @@ fun JourneyLevelResultScreen(
     scoreViewModel: ScoreViewModel = hiltViewModel(),
     level: Int,
     isLevelCompleted: Boolean,
-    onPlayClicked: (Int) -> Unit
+    clearTimeMs: Long,
+    onPlayClicked: (Int) -> Unit,
+    onBoardClicked: (Int) -> Unit,
 ) {
     val backgroundColor = if (isLevelCompleted) Color(0xFF101820) else Color(0xFF1A0000)
-    val titleColor = if (isLevelCompleted) Color(0xFFFFD700) else Color(0xFFFF4C4C)
+    val titleColor = if (isLevelCompleted) JourneyTimeAccent else Color(0xFFFF4C4C)
     val buttonColor = if (isLevelCompleted) Color(0xFF4CAF50) else Color(0xFFD32F2F)
     val titleText = if (isLevelCompleted) "Level $level Completed!" else "Level $level Failed!"
     val buttonText = if (isLevelCompleted) "Continue Journey" else "Try Again"
@@ -71,9 +77,11 @@ fun JourneyLevelResultScreen(
         label = ""
     )
 
-    LaunchedEffect(isLevelCompleted, level) {
+    val journeyWin by scoreViewModel.journeyWinResult.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isLevelCompleted, level, clearTimeMs) {
         if (isLevelCompleted) {
-            scoreViewModel.submitJourneyLevel(level)
+            scoreViewModel.submitJourneyLevel(level, clearTimeMs)
         }
     }
     Scaffold(
@@ -116,6 +124,39 @@ fun JourneyLevelResultScreen(
                             .padding(16.dp)
                     )
 
+                    if (isLevelCompleted && clearTimeMs > 0L) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = formatLevelClearTime(clearTimeMs),
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = JourneyTimeAccent,
+                            textAlign = TextAlign.Center,
+                        )
+                        journeyWin?.let { result ->
+                            if (result.isNewPersonalBest) {
+                                Text(
+                                    text = stringResource(R.string.level_clear_time_new_best),
+                                    fontSize = 14.sp,
+                                    color = JourneyTimeAccent,
+                                    modifier = Modifier.padding(top = 4.dp),
+                                )
+                            }
+                            if (result.progress.coinsGranted > 0) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.journey_first_clear_coins,
+                                        result.progress.coinsGranted,
+                                    ),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White,
+                                    modifier = Modifier.padding(top = 8.dp),
+                                )
+                            }
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(24.dp))
 
                     MenuButton(
@@ -127,6 +168,20 @@ fun JourneyLevelResultScreen(
                         contentScale = ContentScale.Fit
                     ) {
                         onPlayClicked(if (isLevelCompleted) level + 1 else level)
+                    }
+                    if (isLevelCompleted) {
+                        Spacer(Modifier.height(12.dp))
+                        MenuButton(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .width(200.dp),
+                            paddingValues = PaddingValues(),
+                            text = stringResource(R.string.level_clear_time_board_btn),
+                            textColor = Color.White,
+                            contentScale = ContentScale.Fit,
+                        ) {
+                            onBoardClicked(level)
+                        }
                     }
 //                    Button(
 //                        onClick = onContinueClicked,

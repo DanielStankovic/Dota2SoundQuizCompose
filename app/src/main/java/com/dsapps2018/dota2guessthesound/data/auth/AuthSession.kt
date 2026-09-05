@@ -1,5 +1,6 @@
 package com.dsapps2018.dota2guessthesound.data.auth
 
+import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants
@@ -24,6 +25,7 @@ class AuthSession @Inject constructor(
     private val postgrest: Postgrest,
     private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
+    private val levelClearTime: LevelClearTime,
 ) {
     val sessionStatus = auth.sessionStatus
 
@@ -53,6 +55,7 @@ class AuthSession @Inject constructor(
                 playerProgressRepository.sync()
             }
             leaderboardRepository.updateUserIdAndSendData(id)
+            levelClearTime.sendUnsent()
         }
     }
 
@@ -61,6 +64,7 @@ class AuthSession @Inject constructor(
         playerProgressRepository.sync()
         auth.signOut()
         playerProgressRepository.resetLocalUserData()
+        levelClearTime.clearLocal()
     }
 
     suspend fun syncProgress() {

@@ -14,6 +14,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.joke.JokeScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.board.LevelClearTimeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.JourneyGameScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.JourneyLevelScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.LeaderboardScreen
@@ -197,6 +198,7 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             JourneyLevelResultScreen(
                 level = journeyLevelResultDestination.level,
                 isLevelCompleted = journeyLevelResultDestination.isLevelCompleted,
+                clearTimeMs = journeyLevelResultDestination.clearTimeMs,
                 onPlayClicked = { levelNum ->
                     navController.navigate(JourneyGameDestination(levelNum)){
                         popUpTo<JourneyLevelDestination> {
@@ -205,7 +207,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                         }
                         restoreState = false
                     }
-                }
+                },
+                onBoardClicked = { level ->
+                    navController.navigate(LevelClearTimeDestination(level))
+                },
             )
         }
 
@@ -279,13 +284,18 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             JourneyLevelScreen(
                 onLevelClicked = { levelNum ->
                     navController.navigate(JourneyGameDestination(levelNum))
-                }
+                },
+                onBoardClicked = { levelNum ->
+                    navController.navigate(LevelClearTimeDestination(levelNum))
+                },
             )
         }
 
         composable<JourneyGameDestination> {
-            JourneyGameScreen(onNavigateToResultScreen = {level, isLevelCompleted ->
-                navController.navigate(JourneyLevelResultDestination(level, isLevelCompleted)){
+            JourneyGameScreen(onNavigateToResultScreen = { level, isLevelCompleted, clearTimeMs ->
+                navController.navigate(
+                    JourneyLevelResultDestination(level, isLevelCompleted, clearTimeMs)
+                ) {
                     popUpTo<JourneyLevelDestination> {
                         inclusive = false
                         saveState = false
@@ -293,6 +303,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                     restoreState = false
                 }
             })
+        }
+
+        composable<LevelClearTimeDestination> {
+            LevelClearTimeScreen()
         }
     }
 }

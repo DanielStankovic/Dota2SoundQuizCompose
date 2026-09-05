@@ -83,6 +83,7 @@ class JourneyRound @Inject constructor(
             else handleSoundquakeTimeout()
         },
     )
+    private val clearClock = LevelClearClock()
 
     suspend fun loadLevels() {
         _levelsState.value = JourneyLevelsState.Loading
@@ -109,6 +110,7 @@ class JourneyRound @Inject constructor(
     suspend fun startRound(levelNum: Int, scope: CoroutineScope) {
         roundScope = scope
         timer.resetPolicy()
+        clearClock.clear()
         extraLifeGateUsed = false
         pendingContinueOffer = null
         soundPlayCount = 0
@@ -183,6 +185,7 @@ class JourneyRound @Inject constructor(
                 showContinueDialog = false,
                 continueOffer = null,
             )
+            clearClock.start()
 
             engine.resolveTimer(levelContext)?.let { resolved ->
                 timer.endsRoundOnTimeout = resolved.endsRoundOnTimeout
@@ -236,7 +239,9 @@ class JourneyRound @Inject constructor(
             )
 
             if (validationResult.isCorrect) {
-                _events.emit(JourneyRoundEvent.Correct)
+                val elapsedMs = clearClock.elapsedMs()
+                clearClock.clear()
+                _events.emit(JourneyRoundEvent.Correct(elapsedMs))
             } else {
                 applyHeartLoss(restartSoundquakeTimerAfterGate = false)
             }
@@ -295,6 +300,7 @@ class JourneyRound @Inject constructor(
         val remaining =
             (_roundState.value as? JourneyRoundState.Ready)?.timer?.remainingMs ?: 0L
         timer.onSurfaceObscured(remaining)
+        clearClock.pause()
     }
 
     /**
@@ -304,6 +310,7 @@ class JourneyRound @Inject constructor(
     fun onGameplaySurfaceClear() {
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
         timer.onSurfaceClear(roundScope, ready.showContinueDialog)
+        resumeClearClockIfPlayable()
     }
 
     /** App background / ON_PAUSE — pause without treating as overlay (resume may still be blocked). */
@@ -311,23 +318,32 @@ class JourneyRound @Inject constructor(
         val remaining =
             (_roundState.value as? JourneyRoundState.Ready)?.timer?.remainingMs ?: 0L
         timer.onHostPaused(remaining)
+        clearClock.pause()
     }
 
     /** App foreground / ON_RESUME — resume only if nothing covers the board. */
     fun onHostResumed() {
         val ready = _roundState.value as? JourneyRoundState.Ready ?: return
         timer.onHostResumed(roundScope, ready.showContinueDialog)
+        resumeClearClockIfPlayable()
     }
 
     fun clear() {
         soundPlayback.stop()
         timer.clear()
         timer.blockedByOverlay = false
+        clearClock.clear()
         roundScope = null
     }
 
     private fun remainingPlaysOrNull(): Int? =
         maxSoundPlays?.let { max -> max - soundPlayCount }
+
+    private fun resumeClearClockIfPlayable() {
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (ready.showContinueDialog || timer.blockedByOverlay) return
+        clearClock.resume()
+    }
 
     private fun updateReady(transform: (JourneyRoundState.Ready) -> JourneyRoundState.Ready) {
         _roundState.update { state ->
@@ -442,6 +458,7 @@ class JourneyRound @Inject constructor(
             if (!extraLifeGateUsed) {
                 val remaining = ready.timer?.remainingMs ?: 0L
                 timer.pauseCapturingRemaining(remaining)
+                clearClock.pause()
                 pendingContinueOffer = ExtraLifeContinueOffer.Heart
                 if (restartSoundquakeTimerAfterGate) {
                     timer.pendingStartMs = timer.durationMs
@@ -468,6 +485,7 @@ class JourneyRound @Inject constructor(
             return
         }
         pendingContinueOffer = ExtraLifeContinueOffer.TimeExtension
+        clearClock.pause()
         updateReady {
             it.copy(
                 showContinueDialog = true,

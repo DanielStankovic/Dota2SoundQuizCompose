@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -32,12 +35,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -74,8 +75,9 @@ import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmptyContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.board.formatLevelClearTime
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.composables.AffixInfoBottomSheet
-import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
+import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevel
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
@@ -84,7 +86,8 @@ import kotlin.math.absoluteValue
 fun JourneyLevelScreen(
     modifier: Modifier = Modifier,
     levelViewModel: JourneyLevelViewModel = hiltViewModel(),
-    onLevelClicked: (Int) -> Unit
+    onLevelClicked: (Int) -> Unit,
+    onBoardClicked: (Int) -> Unit,
 ) {
 
     val journeyLevelState by levelViewModel.journeyLevelState.collectAsStateWithLifecycle()
@@ -94,28 +97,41 @@ fun JourneyLevelScreen(
     var bannerHeight by remember { mutableIntStateOf(0) }
 
     Scaffold(
+        containerColor = Color.Transparent,
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
-        topBar = {
-            JourneyLevelTopBar(
-                progressText = journeyProgressText
-            )
-        },
         content = { padding ->
             Box(
                 modifier = modifier
-                    .padding(
-                        bottom = padding.calculateBottomPadding(),
-                        top = padding.calculateTopPadding()
-                    )
+                    .fillMaxSize()
+                    .padding(bottom = padding.calculateBottomPadding())
                     .paint(
                         painterResource(id = R.drawable.journey_bg),
-                        contentScale = ContentScale.FillBounds
+                        contentScale = ContentScale.Crop
                     )
             ) {
-                JourneyLevelContent(
-                    journeyLevelState, levelViewModel, bannerHeight, onLevelClicked = { level ->
-                        onLevelClicked(level)
-                    })
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                ) {
+                    JourneyLevelTitle(
+                        progressText = journeyProgressText,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
+                    )
+                    Box(modifier = Modifier.weight(1f)) {
+                        JourneyLevelContent(
+                            journeyLevelState,
+                            levelViewModel,
+                            bannerHeight,
+                            onLevelClicked = { level ->
+                                onLevelClicked(level)
+                            },
+                            onBoardClicked = onBoardClicked,
+                        )
+                    }
+                }
                 BannerView(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     onHeightMeasured = { height ->
@@ -132,7 +148,8 @@ fun JourneyLevelContent(
     state: JourneyLevelsState,
     viewModel: JourneyLevelViewModel,
     bannerHeight: Int,
-    onLevelClicked: (Int) -> Unit
+    onLevelClicked: (Int) -> Unit,
+    onBoardClicked: (Int) -> Unit,
 ) {
     when (state) {
         JourneyLevelsState.Loading -> {
@@ -149,37 +166,43 @@ fun JourneyLevelContent(
                 totalItems = state.levels.size,
                 levelViewModel = viewModel,
                 bannerHeight = bannerHeight,
-                onLevelClicked = onLevelClicked
+                onLevelClicked = onLevelClicked,
+                onBoardClicked = onBoardClicked,
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JourneyLevelTopBar(
-    progressText: String
+fun JourneyLevelTitle(
+    progressText: String,
+    modifier: Modifier = Modifier,
 ) {
-    TopAppBar(
-        title = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Hero's Journey",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = progressText, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp
-                )
-            }
-        }, colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = JourneyButtonBackground.copy(alpha = 0.9f)
-        )
+    val titleShadow = Shadow(
+        color = Color.Black.copy(alpha = 0.9f),
+        offset = Offset(0f, 2f),
+        blurRadius = 10f,
     )
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.End,
+    ) {
+        Text(
+            text = stringResource(R.string.hero_journey_lbl),
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.End,
+            style = TextStyle(shadow = titleShadow),
+        )
+        Text(
+            text = progressText,
+            color = Color.White.copy(alpha = 0.88f),
+            fontSize = 14.sp,
+            textAlign = TextAlign.End,
+            style = TextStyle(shadow = titleShadow),
+        )
+    }
 }
 
 @Composable
@@ -189,10 +212,12 @@ fun LevelData(
     levelViewModel: JourneyLevelViewModel,
     bannerHeight: Int,
     onLevelClicked: (Int) -> Unit,
+    onBoardClicked: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val currentLevel by levelViewModel.journeyLevel.collectAsStateWithLifecycle()
     val currentAffix by levelViewModel.currentAffix.collectAsStateWithLifecycle()
+    val personalBests by levelViewModel.personalBests.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(initialPage = currentLevel) {
         totalItems
@@ -212,8 +237,10 @@ fun LevelData(
                 it,
                 levels[it],
                 currentLevel,
+                personalBests[levels[it].level],
                 pagerState,
                 onItemClicked = onLevelClicked,
+                onBoardClicked = onBoardClicked,
                 onAffixIconClicked = { affix ->
                     levelViewModel.setCurrentAffix(affix)
                 })
@@ -260,8 +287,10 @@ fun LevelCardContent(
     index: Int,
     levelModel: JourneyLevelModel,
     userCompletedLevel: Int,
+    personalBestMs: Long?,
     pagerState: PagerState,
     onItemClicked: (Int) -> Unit,
+    onBoardClicked: (Int) -> Unit,
     onAffixIconClicked: (AffixModel) -> Unit
 ) {
     val pageOffset = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
@@ -386,6 +415,44 @@ fun LevelCardContent(
                         .clickable {
                             onAffixIconClicked(affix)
                         })
+            }
+        }
+
+        val cleared = levelModel.level <= userCompletedLevel
+        if (cleared) {
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(1f - pageOffset.absoluteValue),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            ) {
+                if (personalBestMs != null) {
+                    Text(
+                        text = stringResource(
+                            R.string.level_clear_time_best,
+                            formatLevelClearTime(personalBestMs),
+                        ),
+                        color = JourneyTimeAccent,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        style = TextStyle(
+                            shadow = Shadow(
+                                color = Color.Black.copy(alpha = 0.9f),
+                                offset = Offset(0f, 2f),
+                                blurRadius = 8f,
+                            )
+                        ),
+                    )
+                }
+                Image(
+                    painter = painterResource(R.drawable.ic_level_clear_time),
+                    contentDescription = stringResource(R.string.level_clear_time_board_btn),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable { onBoardClicked(levelModel.level) },
+                )
             }
         }
     }

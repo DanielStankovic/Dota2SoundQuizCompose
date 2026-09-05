@@ -32,6 +32,7 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.FaqEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
+import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
@@ -78,6 +79,7 @@ class SyncSession @Inject constructor(
     private val configRepository: ConfigRepository,
     private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
+    private val levelClearTime: LevelClearTime,
 ) {
 
     companion object {
@@ -160,6 +162,7 @@ class SyncSession @Inject constructor(
 
             sendNextStep()
             leaderboardRepository.sendUnsentDetails()
+            levelClearTime.sendUnsent()
 
             sendNextStep()
             playerProgressRepository.sync()
@@ -537,6 +540,7 @@ class SyncSession @Inject constructor(
             affixDao.truncateTable()
             soundDao.truncateTable()
             leaderboardDetailsDao.truncateTable()
+            levelClearTime.clearLocal()
 
             val soundDirectory = getAppExternalStorage()
             soundDirectory?.let { dir ->

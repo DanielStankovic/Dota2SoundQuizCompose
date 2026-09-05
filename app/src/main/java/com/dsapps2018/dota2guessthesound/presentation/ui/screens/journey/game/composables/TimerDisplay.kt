@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dsapps2018.dota2guessthesound.data.journey.TimerState
+import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 
 @Composable
 fun TimerDisplay(timerState: TimerState) {
@@ -35,9 +36,9 @@ fun TimerDisplay(timerState: TimerState) {
 
         CircularProgressIndicator(
             color = when {
-                timerState.isPaused -> Color.Yellow.copy(alpha = 0.7f)
+                timerState.isPaused -> JourneyTimeAccent.copy(alpha = 0.75f)
                 timerState.isWarning -> Color.Red.copy(alpha = 0.7f)
-                else -> Color.Cyan.copy(alpha = 0.7f)
+                else -> JourneyTimeAccent.copy(alpha = 0.85f)
             },
             modifier = Modifier.matchParentSize(),
             progress = { progress },
@@ -47,7 +48,7 @@ fun TimerDisplay(timerState: TimerState) {
         Text(
             text,
             fontSize = fontSize,
-            color = if (timerState.isPaused) Color.Yellow else Color.White,
+            color = if (timerState.isPaused) JourneyTimeAccent else Color.White,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

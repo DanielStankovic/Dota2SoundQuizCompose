@@ -8,6 +8,10 @@ Android quiz app where players identify Dota 2 spell sounds across game modes, t
 The player's persistent game state: coins, per-mode high scores and play counts, and journey level. Distinct from who is signed in.
 _Avoid_: User data (as the domain name), score row, game stats
 
+**Journey level**:
+Highest Journey level the player has cleared. The level list unlocks the next playable level at `journey level + 1`. Distinct from a Journey Round (one attempt) and from arcade mode high scores.
+_Avoid_: XP, player level, rank (when you mean Journey progress)
+
 **Auth**:
 Whether the player is signed in to the cloud account used for sync and leaderboard identity.
 _Avoid_: User (when you mean signed-in state), profile (when you mean auth)
@@ -67,6 +71,23 @@ _Avoid_: continue dialog (the UI), additional life flag (as the domain name)
 **Mode Result**:
 Submitting the outcome of a finished mode run: write Player Progress (highs, plays, journey level, result coins) and, when applicable, enqueue an offline leaderboard score. Distinct from Invoker entry (coin spend to start) and from Sync Session.
 _Avoid_: score update (as the domain name), play-again submit
+
+**Level Clear Time**:
+The player's best finish duration for one Journey level, used for that level's ranking when Auth is present. The board shows the top 10; if the signed-in player is outside the top 10, their row is appended last with their real rank (same pattern as the arcade leaderboard). Extra Life Gate use does not disqualify the record. Distinct from arcade mode high scores and from journey level.
+_Avoid_: score (when you mean clear time), Journey high score
+
+## Journey progression (spine)
+
+Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side modes.
+
+- Advance **journey level** only via Mode Result on a win: `max(current, cleared)` — never regress on replay.
+- First clear of a level grants **20** coins via Mode Result; replay grants **0**.
+- Fail → free retry. No post-fail assist beyond the **Extra Life Gate**. If an Affix disables the Gate, the level stays as authored for all players.
+- Affix / Hero difficulty: introduce **one** new cognitive load per band (more Heroes, or a new Affix family, or a stack — not all at once).
+- Do **not** add a second currency or XP system for Journey progress.
+- Invoker entry cost remains **200** coins unless economy is revisited after Journey first-clear coins ship.
+- Near-term competition: per-level **Level Clear Time** boards (Auth) — top 10, plus the current player's standing appended last when outside the top 10. Weekly Affix gauntlet and reward arcade leaderboards are out of scope for this spine decision (see ADR-0015).
+- Implementation: [ADR-0015](docs/adr/0015-journey-progression-spine.md) (spine) and [ADR-0016](docs/adr/0016-level-clear-time.md) (`LevelClearTime` module).
 
 ## Journey Round hearts (baseline)
 
@@ -182,4 +203,4 @@ Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come fr
 
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0014). ADR-0002–0014 include **Revert** sections where those deepens need to be rolled back.
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0016). ADR-0002–0014 and ADR-0016 include **Revert** sections where those deepens need to be rolled back. Journey progression spine: [ADR-0015](docs/adr/0015-journey-progression-spine.md). Level Clear Time module: [ADR-0016](docs/adr/0016-level-clear-time.md).

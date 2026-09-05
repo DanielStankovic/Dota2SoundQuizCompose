@@ -34,3 +34,9 @@ fun initialPlayerProgress(): PlayerProgress = PlayerProgress(
     journeyLevel = 0,
     lastSyncAt = System.currentTimeMillis(),
 )
+
+/** Outcome of a Journey win write on Player Progress (watermark + first-clear coins). */
+data class JourneyProgressWrite(
+    val firstClear: Boolean,
+    val coinsGranted: Int,
+)

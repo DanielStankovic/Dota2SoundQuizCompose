@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelsState
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRound
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
+import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class JourneyLevelViewModel @Inject constructor(
     playerProgressRepository: PlayerProgressRepository,
     private val journeyRound: JourneyRound,
+    levelClearTime: LevelClearTime,
 ) : ViewModel() {
 
     val journeyLevelState: StateFlow<JourneyLevelsState> = journeyRound.levelsState
@@ -28,6 +30,12 @@ class JourneyLevelViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = 0
+    )
+
+    val personalBests: StateFlow<Map<Int, Long>> = levelClearTime.observePersonalBests().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyMap(),
     )
 
     val journeyProgressText: StateFlow<String> = combine(

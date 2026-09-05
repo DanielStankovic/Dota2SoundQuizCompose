@@ -61,6 +61,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
+import com.dsapps2018.dota2guessthesound.data.admob.loadRewardedAd
 import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.journey.ExtraLifeContinueOffer
@@ -76,6 +77,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.co
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.rememberSoundquakeFxState
 import kotlin.random.Random
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
+import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 
 /** SB-A: min cell width so SoundCard mark targets stay ≥ 48.dp; Adaptive drops columns on narrow widths. */
 private val SoundBoardMinCellSize: Dp = 72.dp
@@ -84,7 +86,7 @@ private val SoundBoardMinCellSize: Dp = 72.dp
 fun JourneyGameScreen(
     modifier: Modifier = Modifier,
     viewModel: JourneyGameViewModel = hiltViewModel(),
-    onNavigateToResultScreen: (Int, Boolean) -> Unit
+    onNavigateToResultScreen: (Int, Boolean, Long) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -110,15 +112,21 @@ fun JourneyGameScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
+    LaunchedEffect(showWatchAdContinueDialog, isRewardedReady) {
+        if (showWatchAdContinueDialog && !isRewardedReady) {
+            loadRewardedAd(context)
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.gameEvent.collect { gameEvent ->
             when (gameEvent) {
                 is JourneyRoundEvent.Correct -> {
-                    onNavigateToResultScreen(levelNum, true)
+                    onNavigateToResultScreen(levelNum, true, gameEvent.elapsedMs)
                 }
 
                 is JourneyRoundEvent.GameOver -> {
-                    onNavigateToResultScreen(levelNum, false)
+                    onNavigateToResultScreen(levelNum, false, 0L)
                 }
 
                 is JourneyRoundEvent.Soundquake -> {
@@ -136,20 +144,18 @@ fun JourneyGameScreen(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         content = { padding ->
             if (showWatchAdContinueDialog) {
-                if (isRewardedReady) {
-                    val isTimeOffer =
-                        continueOffer == ExtraLifeContinueOffer.TimeExtension
-                    WatchAdContinueDialog(
-                        onDismiss = {
-                            viewModel.setShowWatchAdContinueDialog(false)
-                        },
-                        onSkipClicked = {
-                            viewModel.setShowWatchAdContinueDialog(false)
-                            showInterstitial(context) {
-                                onNavigateToResultScreen(levelNum, false)
-                            }
-                        },
-                        onWatchAdClicked = {
+                val isTimeOffer =
+                    continueOffer == ExtraLifeContinueOffer.TimeExtension
+                WatchAdContinueDialog(
+                    onDismiss = { },
+                    onSkipClicked = {
+                        viewModel.setShowWatchAdContinueDialog(false)
+                        showInterstitial(context) {
+                            onNavigateToResultScreen(levelNum, false, 0L)
+                        }
+                    },
+                    onWatchAdClicked = {
+                        if (isRewardedReady) {
                             viewModel.continueFromExtraLifeGate { onRewarded, onAdDismissed ->
                                 showRewardedAd(
                                     context,
@@ -157,24 +163,21 @@ fun JourneyGameScreen(
                                     onAdDismissed = onAdDismissed,
                                 )
                             }
-                        },
-                        title = stringResource(
-                            if (isTimeOffer) R.string.times_up_lbl else R.string.game_over_lbl
-                        ),
-                        message = stringResource(
-                            if (isTimeOffer) {
-                                R.string.watch_ad_for_more_time_msg
-                            } else {
-                                R.string.watch_add_to_continue_msg
-                            }
-                        ),
-                    )
-                } else {
-                    viewModel.setShowWatchAdContinueDialog(false)
-                    showInterstitial(context) {
-                        onNavigateToResultScreen(levelNum, false)
-                    }
-                }
+                        } else {
+                            loadRewardedAd(context)
+                        }
+                    },
+                    title = stringResource(
+                        if (isTimeOffer) R.string.times_up_lbl else R.string.game_over_lbl
+                    ),
+                    message = stringResource(
+                        if (isTimeOffer) {
+                            R.string.watch_ad_for_more_time_msg
+                        } else {
+                            R.string.watch_add_to_continue_msg
+                        }
+                    ),
+                )
             }
             Box(
                 modifier
@@ -424,7 +427,7 @@ fun StatusInfoRow(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Plays: $playsLeft",
-                color = if (playsLeft <= 2) Color.Red else Color.Yellow,
+                color = if (playsLeft <= 2) Color.Red else JourneyTimeAccent,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold
             )

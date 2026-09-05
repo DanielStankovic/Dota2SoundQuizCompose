@@ -1,0 +1,11 @@
+# Journey is the engagement spine; Affixes, coins, and clear times follow
+
+**Journey** is the primary engagement path. Quiz, Fast Finger, and Invoker stay side modes (variety + coin economy). Difficulty is authored by **Hero** count and **Affix** composition — one new cognitive load per band — not by a second currency or XP. Soft-locks are solved by free retries and level retuning; the only ad mercy on Journey is the **Extra Life Gate**. When an Affix disables the Gate, the level stays that hard for everyone.
+
+**Player Progress** on a Journey win (Mode Result): set `journey level` to `max(current, cleared)`; grant **20** coins on first clear of that level only; replay grants **0** and must never regress `journey level`. **Invoker entry** stays **200** coins (do not raise further without revisiting arcade coin print rates).
+
+**Competition:** remove the old monthly reward arcade leaderboards as the retention bet. Near-term Journey competition is per-level clear times (Auth): show the top 10; if the signed-in player is not in that top 10, append their row last with their real rank (same pattern as the existing arcade leaderboard). Extra Life Gate use is allowed on records. There is no post-fail assist layer — so no assisted/clean split. A weekly Affix gauntlet (timed multi-level event) is deferred until there is enough player density; see Asana backlog.
+
+**Implementation (grilled):** table/RPC names, clock, submit path, UI surfaces, and the `LevelClearTime` module live in [ADR-0016](0016-level-clear-time.md). First-clear coins are Mode Result result-coins (ADR-0001 batch), detected as `cleared > current journey level` before the `max()` write. Journey stays Auth-gated at Home. `game_data.journey_level` default is **0** (nothing cleared).
+
+**Rejected:** post-fail Affix strip or Affix-aware assists (complexity, record pollution); flat time penalties for “help” on the same board; pay/ad skip to the next level; progress-by-`journey level` as the main leaderboard (lifetime head-start); raising Invoker cost above 200 before Journey first-clear coins ship; inventing XP or a second currency.

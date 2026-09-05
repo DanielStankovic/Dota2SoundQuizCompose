@@ -36,7 +36,11 @@ data class PlayAgainFastFingerDestination (val scoreGuessed:Int, val scoreTotal:
 data class PlayAgainInvokerDestination (val score: Int)
 
 @Serializable
-data class JourneyLevelResultDestination(val level: Int, val isLevelCompleted: Boolean)
+data class JourneyLevelResultDestination(
+    val level: Int,
+    val isLevelCompleted: Boolean,
+    val clearTimeMs: Long = 0L,
+)
 
 @Serializable
 object OptionsDestination
@@ -73,3 +77,6 @@ object JourneyLevelDestination
 
 @Serializable
 data class JourneyGameDestination(val levelNum: Int)
+
+@Serializable
+data class LevelClearTimeDestination(val level: Int)

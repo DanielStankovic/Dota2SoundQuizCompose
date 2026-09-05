@@ -101,6 +101,15 @@ fun CoinInfoDialog(
                 value = stringResource(R.string.score_larger_than_value, Constants.FF_90_SCORE_MIN.toInt()),
                 R.drawable.coin_90
             )
+
+            CoinInfoItem(
+                quizMode = stringResource(R.string.hero_journey_lbl),
+                value = stringResource(
+                    R.string.journey_first_clear_value,
+                    Constants.JOURNEY_FIRST_CLEAR_COINS,
+                ),
+                R.drawable.coin_unknown
+            )
         }
     }
 }

@@ -16,6 +16,10 @@ Single-context: root `CONTEXT.md` + `docs/adr/`. See `docs/agents/domain.md`.
 
 Touch-first Journey gameplay layout / Affix chrome / sound board / hero strip: skill `affix-gameplay-hud`. Related: `game-ui-ux`, `create-game-assets`.
 
+### Gameplay / progression meta
+
+Journey and app-wide progression, difficulty pacing, economy friction, leaderboards: Stanestane skills `game-design-core-loop-extractor`, `game-design-design-pillars-extractor`, `game-design-goal-density-and-immediacy-audit`, `game-design-flow-audit`, `game-design-failure-loop-audit`, `game-design-friction-journey-audit`, `game-design-leaderboard-audit`, `game-design-leaderboard-builder`, `game-design-feature-prioritization`. Prefer existing `CONTEXT.md` terms (coins, journey level, Mode Result) over inventing parallel XP/economy language.
+
 ### Verification
 
 Default: **lint only** — do not build or run the app unless the user explicitly asks. **Never** add or expand automated unit or instrumented tests. See `docs/agents/verification.md`.

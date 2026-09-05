@@ -23,6 +23,9 @@ val Quas = Color(0xFF22D9E5)
 
 val PlayLevel = Color(0xFFCB6908)
 
+/** Moonlight ice for Journey time chrome (timer, Level Clear Time). */
+val JourneyTimeAccent = Color(0xFF8EE8F2)
+
 val PlayLevelTextGradient = listOf(
     Color(0xFFBEBDBD),
     Color(0xFFEAEAE7)

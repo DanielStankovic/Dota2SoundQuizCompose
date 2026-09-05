@@ -109,7 +109,6 @@ fun WatchAdContinueDialog(
                         .width(300.toDp())
                         .clickable {
                             onWatchAdClicked()
-                            onDismiss()
                         },
                     contentScale = ContentScale.Fit
                 )

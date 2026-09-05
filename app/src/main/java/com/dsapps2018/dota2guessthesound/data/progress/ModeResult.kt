@@ -1,17 +1,26 @@
 package com.dsapps2018.dota2guessthesound.data.progress
 
 import com.dsapps2018.dota2guessthesound.data.enums.GameModeEnum
+import com.dsapps2018.dota2guessthesound.data.model.JourneyProgressWrite
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import javax.inject.Inject
 
+data class JourneyWinResult(
+    val progress: JourneyProgressWrite,
+    val clearTimeMs: Long,
+    val isNewPersonalBest: Boolean,
+)
+
 /**
  * Deep in-process module for finishing a mode run: Player Progress write + optional
- * leaderboard enqueue. See docs/adr/0010-mode-result.md and ADR-0001 for batching.
+ * leaderboard / Level Clear Time enqueue. See docs/adr/0010-mode-result.md,
+ * ADR-0001 for batching, ADR-0016 for Level Clear Time.
  */
 class ModeResult @Inject constructor(
     private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
+    private val levelClearTime: LevelClearTime,
 ) {
 
     suspend fun submitQuiz(score: Int) {
@@ -45,8 +54,18 @@ class ModeResult @Inject constructor(
         }
     }
 
-    suspend fun submitJourneyLevel(level: Int) {
-        playerProgressRepository.advanceJourney(level)
+    suspend fun submitJourneyLevel(level: Int, clearTimeMs: Long): JourneyWinResult {
+        val progress = playerProgressRepository.recordJourneyWin(level)
+        val isNewPersonalBest = try {
+            levelClearTime.recordWin(level, clearTimeMs)
+        } catch (_: Exception) {
+            false
+        }
+        return JourneyWinResult(
+            progress = progress,
+            clearTimeMs = clearTimeMs,
+            isNewPersonalBest = isNewPersonalBest,
+        )
     }
 
     fun calculateFastFingerScore(guessed: Int, total: Int): Double =

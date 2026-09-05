@@ -29,7 +29,7 @@ sealed interface JourneyRoundState {
 }
 
 sealed interface JourneyRoundEvent {
-    data object Correct : JourneyRoundEvent
+    data class Correct(val elapsedMs: Long) : JourneyRoundEvent
     data object GameOver : JourneyRoundEvent
 
     /**

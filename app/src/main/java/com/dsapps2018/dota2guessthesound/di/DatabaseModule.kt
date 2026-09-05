@@ -9,9 +9,11 @@ import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.FaqDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDetailsDao
+import com.dsapps2018.dota2guessthesound.data.dao.LevelClearTimeDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.DotaDatabase
+import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_5_6
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -27,7 +29,9 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideRoomDb(@ApplicationContext context: Context): DotaDatabase =
-        Room.databaseBuilder(context, DotaDatabase::class.java, Constants.DATABASE_NAME).build()
+        Room.databaseBuilder(context, DotaDatabase::class.java, Constants.DATABASE_NAME)
+            .addMigrations(MIGRATION_5_6)
+            .build()
 
     @Singleton
     @Provides
@@ -81,6 +85,12 @@ object DatabaseModule {
     @Provides
     fun provideAffixDao(database: DotaDatabase): AffixDao {
         return database.affixDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLevelClearTimeDao(database: DotaDatabase): LevelClearTimeDao {
+        return database.levelClearTimeDao()
     }
 
 }

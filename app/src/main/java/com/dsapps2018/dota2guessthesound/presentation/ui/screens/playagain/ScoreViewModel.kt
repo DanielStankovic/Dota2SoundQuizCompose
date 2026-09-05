@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
 import com.dsapps2018.dota2guessthesound.data.model.initialPlayerProgress
+import com.dsapps2018.dota2guessthesound.data.progress.JourneyWinResult
 import com.dsapps2018.dota2guessthesound.data.progress.ModeResult
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -13,10 +14,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,6 +54,10 @@ class ScoreViewModel @Inject constructor(
         initialValue = initialPlayerProgress()
     )
 
+    private val _journeyWinResult = MutableStateFlow<JourneyWinResult?>(null)
+    val journeyWinResult: StateFlow<JourneyWinResult?> = _journeyWinResult.asStateFlow()
+    private var journeySubmitStarted = false
+
     fun submitQuiz(score: Int) {
         viewModelScope.launch(coroutineExceptionHandler) {
             modeResult.submitQuiz(score)
@@ -69,9 +76,11 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
-    fun submitJourneyLevel(level: Int) {
+    fun submitJourneyLevel(level: Int, clearTimeMs: Long) {
+        if (journeySubmitStarted) return
+        journeySubmitStarted = true
         viewModelScope.launch(coroutineExceptionHandler) {
-            modeResult.submitJourneyLevel(level)
+            _journeyWinResult.value = modeResult.submitJourneyLevel(level, clearTimeMs)
         }
     }
 

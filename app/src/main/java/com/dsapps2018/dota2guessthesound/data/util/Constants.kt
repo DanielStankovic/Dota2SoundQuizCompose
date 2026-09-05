@@ -3,7 +3,7 @@ package com.dsapps2018.dota2guessthesound.data.util
 object Constants {
 
     const val DATABASE_NAME = "dota_database"
-    const val DATABASE_VERSION = 5
+    const val DATABASE_VERSION = 6
 
     const val TABLE_CASTER_TYPE = "caster_type"
     const val TABLE_CASTERS = "casters"
@@ -27,6 +27,7 @@ object Constants {
     const val FF_60_SCORE_MIN = 8.0
     const val FF_90_SCORE_MIN = 18.0
     const val JOKE_COIN_COST = 1
+    const val JOURNEY_FIRST_CLEAR_COINS = 20
 
     const val LAST_SYNC_KEY = "last_sync"
 

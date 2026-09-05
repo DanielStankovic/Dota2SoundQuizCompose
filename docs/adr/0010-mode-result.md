@@ -13,3 +13,4 @@ Finishing a mode run (Player Progress record + optional offline leaderboard enqu
 - Glossary: `CONTEXT.md` (**Mode Result**, **Player Progress**)
 - Batching vs coin sync: ADR-0001
 - Player Progress: ADR-0002
+- Level Clear Time enqueue: ADR-0016
