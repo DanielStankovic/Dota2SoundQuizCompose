@@ -139,13 +139,11 @@
     <string name="journey_submit">Submit</string>
 
     <string name="level_clear_time_title">Level %1$d times</string>
-    <string name="level_clear_time_subtitle">Fastest clear — Extra Life Gate allowed</string>
     <string name="level_clear_time_board_btn">Times</string>
     <string name="level_clear_time_you">You</string>
     <string name="level_clear_time_empty">No times yet.\n\nClear this level to set the first record.</string>
     <string name="level_clear_time_fetch_error">Couldn\'t load times.\n\nTry again…</string>
     <string name="level_clear_time_new_best">New personal best!</string>
-    <string name="level_clear_time_best">Best %1$s</string>
     <string name="journey_first_clear_coins">+%1$d coins — first clear</string>
     <string name="journey_first_clear_value">+%1$d</string>
 

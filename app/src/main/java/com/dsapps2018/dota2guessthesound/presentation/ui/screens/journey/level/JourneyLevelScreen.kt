@@ -273,10 +273,7 @@ fun LevelData(
                 )
                 if (viewedBestMs != null) {
                     Text(
-                        text = stringResource(
-                            R.string.level_clear_time_best,
-                            formatLevelClearTime(viewedBestMs),
-                        ),
+                        text = formatLevelClearTime(viewedBestMs),
                         color = JourneyTimeAccent,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,

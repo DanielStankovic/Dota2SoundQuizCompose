@@ -99,16 +99,9 @@ fun LevelClearTimeScreen(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Text(
-                        text = stringResource(R.string.level_clear_time_subtitle),
-                        color = Color.White.copy(alpha = 0.8f),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 4.dp, bottom = 16.dp),
+                            .padding(bottom = 16.dp),
                     )
                     Row(
                         modifier = Modifier
