@@ -1,5 +1,7 @@
 package com.dsapps2018.dota2guessthesound.data.progress
 
+import com.dsapps2018.dota2guessthesound.data.analytics.AnalyticsMode
+import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
 import com.dsapps2018.dota2guessthesound.data.enums.GameModeEnum
 import com.dsapps2018.dota2guessthesound.data.model.JourneyProgressWrite
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
@@ -21,10 +23,13 @@ class ModeResult @Inject constructor(
     private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
     private val levelClearTime: LevelClearTime,
+    private val productAnalytics: ProductAnalytics,
 ) {
 
     suspend fun submitQuiz(score: Int) {
         playerProgressRepository.recordQuizResult(score)
+        productAnalytics.postScore(AnalyticsMode.Quiz, score.toDouble())
+        productAnalytics.earnCoins(score.toLong(), ProductAnalytics.SOURCE_QUIZ)
         if (score > 0) {
             leaderboardRepository.updateLeaderboard(
                 score.toDouble(),
@@ -35,6 +40,7 @@ class ModeResult @Inject constructor(
 
     suspend fun submitInvoker(score: Int) {
         playerProgressRepository.recordInvokerResult(score)
+        productAnalytics.postScore(AnalyticsMode.Invoker, score.toDouble())
         if (score > 0) {
             leaderboardRepository.updateLeaderboard(
                 score.toDouble(),
@@ -46,6 +52,12 @@ class ModeResult @Inject constructor(
     suspend fun submitFastFinger(guessed: Int, total: Int, time: Int) {
         val currentScore = playerProgressRepository.calculateFastFingerScore(guessed, total)
         playerProgressRepository.recordFastFingerResult(guessed, total, time)
+        val mode = AnalyticsMode.fastFinger(time)
+        productAnalytics.postScore(mode, currentScore)
+        productAnalytics.earnCoins(
+            playerProgressRepository.fastFingerCoinsGranted(currentScore, time).toLong(),
+            ProductAnalytics.fastFingerCoinSource(time),
+        )
         if (currentScore > 0.0) {
             leaderboardRepository.updateLeaderboard(
                 currentScore,
@@ -56,6 +68,13 @@ class ModeResult @Inject constructor(
 
     suspend fun submitJourneyLevel(level: Int, clearTimeMs: Long): JourneyWinResult {
         val progress = playerProgressRepository.recordJourneyWin(level)
+        if (progress.firstClear) {
+            productAnalytics.earnCoins(
+                progress.coinsGranted.toLong(),
+                ProductAnalytics.SOURCE_JOURNEY_FIRST_CLEAR,
+            )
+            productAnalytics.setJourneyLevel(level)
+        }
         val isNewPersonalBest = try {
             levelClearTime.recordWin(level, clearTimeMs)
         } catch (_: Exception) {
@@ -77,4 +96,5 @@ class ModeResult @Inject constructor(
         90 -> GameModeEnum.FF_90
         else -> GameModeEnum.FF_30
     }
+
 }

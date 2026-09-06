@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.analytics.AnalyticsMode
+import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
+import com.dsapps2018.dota2guessthesound.data.auth.AuthSession
 import com.dsapps2018.dota2guessthesound.data.invoker.InvokerEntry
 import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
 import com.dsapps2018.dota2guessthesound.data.model.initialPlayerProgress
@@ -18,11 +21,13 @@ import com.dsapps2018.dota2guessthesound.data.util.SoundPlayback
 import com.dsapps2018.dota2guessthesound.data.util.formatTimestampToLocalDateTime
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -36,6 +41,8 @@ class HomeViewModel @Inject constructor(
     private val invokerEntry: InvokerEntry,
     private val firebaseCrashlytics: FirebaseCrashlytics,
     private val soundPlayback: SoundPlayback,
+    private val productAnalytics: ProductAnalytics,
+    private val authSession: AuthSession,
 ) : ViewModel() {
 
     private val _updateRequiredStatus = MutableStateFlow<Boolean>(false)
@@ -58,6 +65,29 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val MAX_INDEX = 4
     }
+
+    init {
+        viewModelScope.launch {
+            authSession.sessionStatus
+                .map { it is SessionStatus.Authenticated }
+                .distinctUntilChanged()
+                .collect { productAnalytics.setSignedIn(it) }
+        }
+        viewModelScope.launch {
+            playerProgressRepository.progress
+                .map { it.journeyLevel }
+                .distinctUntilChanged()
+                .collect { productAnalytics.setJourneyLevel(it) }
+        }
+    }
+
+    fun onQuizSelected() = productAnalytics.selectMode(AnalyticsMode.Quiz)
+
+    fun onFastFingerSelected() = productAnalytics.selectMode(AnalyticsMode.FastFinger)
+
+    fun onJourneySelected() = productAnalytics.selectMode(AnalyticsMode.Journey)
+
+    fun onJourneyGated() = productAnalytics.journeyGated()
 
     val coroutineExceptionHandler: CoroutineExceptionHandler =
         CoroutineExceptionHandler { _, throwable ->

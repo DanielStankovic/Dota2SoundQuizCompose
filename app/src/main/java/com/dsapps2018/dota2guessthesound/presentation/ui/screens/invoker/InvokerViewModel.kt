@@ -2,6 +2,8 @@ package com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dsapps2018.dota2guessthesound.data.analytics.AnalyticsMode
+import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
 import com.dsapps2018.dota2guessthesound.data.invoker.InvokerRound
 import com.dsapps2018.dota2guessthesound.data.invoker.OrbType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,6 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InvokerViewModel @Inject constructor(
     private val round: InvokerRound,
+    private val productAnalytics: ProductAnalytics,
 ) : ViewModel() {
 
     val orbList = round.orbList
@@ -25,6 +28,7 @@ class InvokerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             round.start(viewModelScope)
+            productAnalytics.modeStart(AnalyticsMode.Invoker)
         }
     }
 

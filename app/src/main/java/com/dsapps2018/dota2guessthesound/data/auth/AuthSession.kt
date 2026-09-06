@@ -1,5 +1,6 @@
 package com.dsapps2018.dota2guessthesound.data.auth
 
+import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
 import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
@@ -10,6 +11,7 @@ import io.github.jan.supabase.auth.providers.builtin.IDToken
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Count
+import kotlinx.coroutines.flow.first
 import java.security.MessageDigest
 import java.util.UUID
 import javax.inject.Inject
@@ -26,6 +28,7 @@ class AuthSession @Inject constructor(
     private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
     private val levelClearTime: LevelClearTime,
+    private val productAnalytics: ProductAnalytics,
 ) {
     val sessionStatus = auth.sessionStatus
 
@@ -53,7 +56,13 @@ class AuthSession @Inject constructor(
             } else {
                 playerProgressRepository.createServerUserData(id)
                 playerProgressRepository.sync()
+                productAnalytics.signUp()
             }
+            productAnalytics.login()
+            productAnalytics.setSignedIn(true)
+            productAnalytics.setJourneyLevel(
+                playerProgressRepository.progress.first().journeyLevel
+            )
             leaderboardRepository.updateUserIdAndSendData(id)
             levelClearTime.sendUnsent()
             levelClearTime.hydratePersonalBests()
@@ -66,6 +75,8 @@ class AuthSession @Inject constructor(
         auth.signOut()
         playerProgressRepository.resetLocalUserData()
         levelClearTime.clearLocal()
+        productAnalytics.setSignedIn(false)
+        productAnalytics.setJourneyLevel(0)
     }
 
     suspend fun syncProgress() {

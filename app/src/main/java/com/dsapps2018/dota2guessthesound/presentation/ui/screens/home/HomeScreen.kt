@@ -328,6 +328,7 @@ fun HomeScreen(
                                         homeViewModel.moveRight()
                                     },
                                     onQuizClicked = {
+                                        homeViewModel.onQuizSelected()
                                         onQuizClicked()
                                     },
                                     onMoveToJokeScreen = {
@@ -351,6 +352,7 @@ fun HomeScreen(
                                         homeViewModel.moveRight()
                                     },
                                     onFastFingerClicked = {
+                                        homeViewModel.onFastFingerSelected()
                                         onFastFingerClicked()
                                     },
                                     onMoveToJokeScreen = {
@@ -375,7 +377,11 @@ fun HomeScreen(
                                         homeViewModel.moveRight()
                                     },
                                     onJourneyClicked = {
+                                        homeViewModel.onJourneySelected()
                                         onJourneyClicked()
+                                    },
+                                    onJourneyGated = {
+                                        homeViewModel.onJourneyGated()
                                     })
                             }
 

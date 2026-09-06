@@ -40,7 +40,8 @@ fun HomeJourneyComposable(
     setIsFlippingForward: (Boolean) -> Unit,
     onMoveLeft: () -> Unit,
     onMoveRight: () -> Unit,
-    onJourneyClicked: () -> Unit
+    onJourneyClicked: () -> Unit,
+    onJourneyGated: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -70,6 +71,13 @@ fun HomeJourneyComposable(
                 modifier = Modifier
                     .weight(1f)
                     .wrapContentHeight()
+                    .then(
+                        if (!isLoggedIn) {
+                            Modifier.clickable { onJourneyGated() }
+                        } else {
+                            Modifier
+                        }
+                    )
             ) {
                 MenuButton(modifier = Modifier
                     .wrapContentHeight()

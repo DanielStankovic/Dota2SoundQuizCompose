@@ -87,25 +87,11 @@ class PlayerProgressRepository @Inject constructor(
             }
         }
         when (time) {
-            30 -> {
-                local.thirtyPlayed++
-                if (currentScore > Constants.FF_30_SCORE_MIN) {
-                    local.coinValue += time
-                }
-            }
-            60 -> {
-                local.sixtyPlayed++
-                if (currentScore > Constants.FF_60_SCORE_MIN) {
-                    local.coinValue += time
-                }
-            }
-            90 -> {
-                local.ninetyPlayed++
-                if (currentScore > Constants.FF_90_SCORE_MIN) {
-                    local.coinValue += time
-                }
-            }
+            30 -> local.thirtyPlayed++
+            60 -> local.sixtyPlayed++
+            90 -> local.ninetyPlayed++
         }
+        local.coinValue += fastFingerCoinsGranted(currentScore, time)
         local.modifiedAt = getCurrentDate()
         userDataDao.update(local)
     }
@@ -129,6 +115,15 @@ class PlayerProgressRepository @Inject constructor(
         if (total == 0) return 0.0
         val accuracy = guessed.toDouble() / total
         return (guessed * accuracy.pow(WEIGHT_MODIFIER)).roundTo(2)
+    }
+
+    fun fastFingerCoinsGranted(score: Double, time: Int): Int {
+        val min = when (time) {
+            60 -> Constants.FF_60_SCORE_MIN
+            90 -> Constants.FF_90_SCORE_MIN
+            else -> Constants.FF_30_SCORE_MIN
+        }
+        return if (score > min) time else 0
     }
 
     suspend fun sync() {

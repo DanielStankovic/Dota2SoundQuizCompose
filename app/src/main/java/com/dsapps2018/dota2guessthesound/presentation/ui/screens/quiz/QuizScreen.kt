@@ -96,6 +96,7 @@ fun QuizScreen(
 
                 MultipleChoiceEvent.Wrong -> {
                     if (quizViewModel.extraLifeGate.canOfferContinue() && isRewardedReady) {
+                        quizViewModel.onExtraLifeOffered()
                         showWatchAdContinueDialog = true
                     } else {
                         showInterstitial(context) {
@@ -138,6 +139,7 @@ fun QuizScreen(
                 },
                 onSkipClicked = {
                     showWatchAdContinueDialog = false
+                    quizViewModel.onExtraLifeDeclined()
                     showInterstitial(context) {
                         onPlayAgain(score, false)
                     }
@@ -151,11 +153,13 @@ fun QuizScreen(
                         //Back button does not work when ad is fully visible, so user can not
                         //exit the ad and trigger onPlayAgain, but we still include it to safe guard.
                         quizViewModel.extraLifeGate.markUsed()
+                        quizViewModel.onExtraLifeRecovered()
 
                     }, onAdDismissed = {
                         if (quizViewModel.extraLifeGate.used) {
                             quizViewModel.generateAndPlaySound()
                         } else {
+                            quizViewModel.onExtraLifeDeclined()
                             onPlayAgain(score, false)
                         }
                     })

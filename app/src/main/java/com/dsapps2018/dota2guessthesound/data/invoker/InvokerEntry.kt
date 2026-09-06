@@ -1,5 +1,7 @@
 package com.dsapps2018.dota2guessthesound.data.invoker
 
+import com.dsapps2018.dota2guessthesound.data.analytics.AnalyticsMode
+import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -10,6 +12,7 @@ import javax.inject.Inject
  */
 class InvokerEntry @Inject constructor(
     private val playerProgressRepository: PlayerProgressRepository,
+    private val productAnalytics: ProductAnalytics,
 ) {
 
     fun canEnter(coinValue: Int): Boolean = coinValue >= COIN_COST
@@ -19,12 +22,21 @@ class InvokerEntry @Inject constructor(
         val coins = playerProgressRepository.progress.first().coinValue
         if (!canEnter(coins)) return false
         playerProgressRepository.adjustCoins(-COIN_COST)
+        productAnalytics.spendCoins(
+            COIN_COST.toLong(),
+            ProductAnalytics.ITEM_INVOKER_ENTRY,
+        )
+        productAnalytics.selectMode(AnalyticsMode.Invoker)
         return true
     }
 
     /** Grants [COIN_COST] after a rewarded ad (same adjustCoins sync policy). */
     suspend fun grantFromAd() {
         playerProgressRepository.adjustCoins(COIN_COST)
+        productAnalytics.earnCoins(
+            COIN_COST.toLong(),
+            ProductAnalytics.SOURCE_INVOKER_AD_GRANT,
+        )
     }
 
     companion object {

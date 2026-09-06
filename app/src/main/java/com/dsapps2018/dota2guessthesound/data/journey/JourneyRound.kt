@@ -6,6 +6,8 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.affix.AffixEngine
 import com.dsapps2018.dota2guessthesound.data.affix.AffixGameState
 import com.dsapps2018.dota2guessthesound.data.affix.AffixLevelContext
+import com.dsapps2018.dota2guessthesound.data.analytics.AnalyticsMode
+import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
 import com.dsapps2018.dota2guessthesound.data.api.response.JourneyDto
 import com.dsapps2018.dota2guessthesound.data.api.response.JourneyLevelDto
 import com.dsapps2018.dota2guessthesound.data.dao.AffixDao
@@ -16,9 +18,11 @@ import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
+import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayback
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import kotlinx.coroutines.flow.first
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -49,6 +53,8 @@ class JourneyRound @Inject constructor(
     private val affixDao: AffixDao,
     private val soundPlayback: SoundPlayback,
     private val firebaseCrashlytics: FirebaseCrashlytics,
+    private val playerProgressRepository: PlayerProgressRepository,
+    private val productAnalytics: ProductAnalytics,
 ) {
 
     private val _levelCatalog =
@@ -84,6 +90,13 @@ class JourneyRound @Inject constructor(
     private var pendingContinueOffer: ExtraLifeContinueOffer? = null
 
     private var roundScope: CoroutineScope? = null
+    private var analyticsAttemptOpen = false
+    private var analyticsFirstClear = false
+    private var analyticsReplay = false
+    private var analyticsAffixNames: List<String> = emptyList()
+    private var analyticsLevel = 0
+    private var analyticsGateOffer: String = ProductAnalytics.GATE_NONE
+    private var analyticsFailReason: String? = null
 
     private val soundquake = SoundquakeInterval(
         updateReady = { transform -> updateReady(transform) },
@@ -142,6 +155,9 @@ class JourneyRound @Inject constructor(
         maxSoundPlays = null
         extraLifeGateAllowed = true
         soundquake.reset()
+        endAttemptIfOpen(ProductAnalytics.FAIL_QUIT)
+        analyticsGateOffer = ProductAnalytics.GATE_NONE
+        analyticsFailReason = null
         _roundState.value = JourneyRoundState.Loading
 
         try {
@@ -221,6 +237,22 @@ class JourneyRound @Inject constructor(
                 timer.endsRoundOnTimeout = it.endsRoundOnTimeout
                 timer.extensionMs = it.extensionMs
             }
+
+            val watermark = playerProgressRepository.progress.first().journeyLevel
+            analyticsLevel = levelNum
+            analyticsFirstClear = levelNum > watermark
+            analyticsReplay = levelNum <= watermark
+            analyticsAffixNames = currentAffixes.map { it.affix }
+            analyticsGateOffer = ProductAnalytics.GATE_NONE
+            analyticsFailReason = null
+            analyticsAttemptOpen = true
+            productAnalytics.levelStart(
+                level = levelNum,
+                firstClear = analyticsFirstClear,
+                replay = analyticsReplay,
+                affixNames = analyticsAffixNames,
+            )
+
             if (awaitingBegin) {
                 pendingTimerStartMs = resolved?.durationMs
             } else {
@@ -291,6 +323,7 @@ class JourneyRound @Inject constructor(
             if (validationResult.isCorrect) {
                 val elapsedMs = clearClock.elapsedMs()
                 clearClock.clear()
+                logLevelEnd(success = true, clearTimeMs = elapsedMs)
                 _events.emit(JourneyRoundEvent.Correct(elapsedMs))
             } else {
                 applyHeartLoss(restartSoundquakeTimerAfterGate = false)
@@ -326,9 +359,18 @@ class JourneyRound @Inject constructor(
      */
     fun declineExtraLifeGate() {
         if (pendingContinueOffer == null) return
+        val offer = pendingContinueOffer
         pendingContinueOffer = null
+        productAnalytics.extraLifeDecline(
+            mode = AnalyticsMode.Journey,
+            gateOffer = gateOfferParam(offer),
+            journeyLevel = analyticsLevel,
+            affixNames = analyticsAffixNames,
+        )
         updateReady { it.copy(showContinueDialog = false, continueOffer = null) }
+        analyticsFailReason = ProductAnalytics.FAIL_GATE_DECLINED
         stopClocks()
+        logLevelEnd(success = false, clearTimeMs = null)
         _events.tryEmit(JourneyRoundEvent.GameOver)
     }
 
@@ -340,6 +382,12 @@ class JourneyRound @Inject constructor(
         extraLifeGateUsed = true
         val offer = pendingContinueOffer
         pendingContinueOffer = null
+        productAnalytics.extraLifeRecover(
+            mode = AnalyticsMode.Journey,
+            gateOffer = gateOfferParam(offer),
+            journeyLevel = analyticsLevel,
+            affixNames = analyticsAffixNames,
+        )
         when (offer) {
             ExtraLifeContinueOffer.TimeExtension -> {
                 timer.pendingStartMs = timer.extensionMs
@@ -394,6 +442,7 @@ class JourneyRound @Inject constructor(
 
     fun clear() {
         soundPlayback.stop()
+        endAttemptIfOpen(ProductAnalytics.FAIL_QUIT)
         stopClocks()
         roundScope = null
     }
@@ -407,6 +456,7 @@ class JourneyRound @Inject constructor(
 
     private suspend fun emitGameOver() {
         stopClocks()
+        logLevelEnd(success = false, clearTimeMs = null)
         _events.emit(JourneyRoundEvent.GameOver)
     }
 
@@ -495,6 +545,7 @@ class JourneyRound @Inject constructor(
             // Sudden Death: Extra Life Gate disabled — first fail ends the round.
             // Fragile Spirit / default: offer Gate once if unused.
             if (!extraLifeGateAllowed) {
+                analyticsFailReason = ProductAnalytics.FAIL_SUDDEN_DEATH
                 emitGameOver()
                 return false
             }
@@ -503,6 +554,13 @@ class JourneyRound @Inject constructor(
                 timer.pauseCapturingRemaining(remaining)
                 clearClock.pause()
                 pendingContinueOffer = ExtraLifeContinueOffer.Heart
+                analyticsGateOffer = ProductAnalytics.GATE_HEART
+                productAnalytics.extraLifeOffer(
+                    mode = AnalyticsMode.Journey,
+                    gateOffer = ProductAnalytics.GATE_HEART,
+                    journeyLevel = analyticsLevel,
+                    affixNames = analyticsAffixNames,
+                )
                 if (restartSoundquakeTimerAfterGate) {
                     timer.pendingStartMs = timer.durationMs
                 }
@@ -515,6 +573,7 @@ class JourneyRound @Inject constructor(
                 }
                 return false
             }
+            analyticsFailReason = ProductAnalytics.FAIL_HEARTS
             emitGameOver()
             return false
         }
@@ -524,10 +583,18 @@ class JourneyRound @Inject constructor(
 
     private suspend fun offerTimeExtensionOrGameOver() {
         if (!extraLifeGateAllowed || extraLifeGateUsed) {
+            analyticsFailReason = ProductAnalytics.FAIL_RACE_TIMEOUT
             emitGameOver()
             return
         }
         pendingContinueOffer = ExtraLifeContinueOffer.TimeExtension
+        analyticsGateOffer = ProductAnalytics.GATE_TIME
+        productAnalytics.extraLifeOffer(
+            mode = AnalyticsMode.Journey,
+            gateOffer = ProductAnalytics.GATE_TIME,
+            journeyLevel = analyticsLevel,
+            affixNames = analyticsAffixNames,
+        )
         clearClock.pause()
         updateReady {
             it.copy(
@@ -559,6 +626,33 @@ class JourneyRound @Inject constructor(
             access = access,
             affixSlots = affixSlots,
         )
+    }
+
+    private fun logLevelEnd(success: Boolean, clearTimeMs: Long?) {
+        if (!analyticsAttemptOpen) return
+        analyticsAttemptOpen = false
+        productAnalytics.levelEnd(
+            level = analyticsLevel,
+            success = success,
+            firstClear = analyticsFirstClear,
+            replay = analyticsReplay,
+            affixNames = analyticsAffixNames,
+            failReason = if (success) null else analyticsFailReason,
+            extraLifeUsed = extraLifeGateUsed,
+            gateOffer = analyticsGateOffer,
+            clearTimeMs = clearTimeMs,
+        )
+    }
+
+    private fun endAttemptIfOpen(failReason: String) {
+        if (!analyticsAttemptOpen) return
+        analyticsFailReason = failReason
+        logLevelEnd(success = false, clearTimeMs = null)
+    }
+
+    private fun gateOfferParam(offer: ExtraLifeContinueOffer?): String = when (offer) {
+        ExtraLifeContinueOffer.TimeExtension -> ProductAnalytics.GATE_TIME
+        ExtraLifeContinueOffer.Heart, null -> ProductAnalytics.GATE_HEART
     }
 
     private sealed interface LevelCatalog {

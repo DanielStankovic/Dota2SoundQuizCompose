@@ -2,6 +2,8 @@ package com.dsapps2018.dota2guessthesound.presentation.ui.screens.quiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dsapps2018.dota2guessthesound.data.analytics.AnalyticsMode
+import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
 import com.dsapps2018.dota2guessthesound.data.quiz.ExtraLifeGate
 import com.dsapps2018.dota2guessthesound.data.quiz.MultipleChoiceSoundRound
 import com.dsapps2018.dota2guessthesound.data.quiz.MultipleChoiceWrongPolicy
@@ -14,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class QuizViewModel @Inject constructor(
     private val round: MultipleChoiceSoundRound,
+    private val productAnalytics: ProductAnalytics,
 ) : ViewModel() {
 
     val extraLifeGate = ExtraLifeGate()
@@ -26,6 +29,7 @@ class QuizViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             round.start(MultipleChoiceWrongPolicy.StayOnWrong)
+            productAnalytics.modeStart(AnalyticsMode.Quiz)
         }
     }
 
@@ -49,6 +53,27 @@ class QuizViewModel @Inject constructor(
         viewModelScope.launch {
             round.continueAfterExtraLife()
         }
+    }
+
+    fun onExtraLifeOffered() {
+        productAnalytics.extraLifeOffer(
+            mode = AnalyticsMode.Quiz,
+            gateOffer = ProductAnalytics.GATE_HEART,
+        )
+    }
+
+    fun onExtraLifeRecovered() {
+        productAnalytics.extraLifeRecover(
+            mode = AnalyticsMode.Quiz,
+            gateOffer = ProductAnalytics.GATE_HEART,
+        )
+    }
+
+    fun onExtraLifeDeclined() {
+        productAnalytics.extraLifeDecline(
+            mode = AnalyticsMode.Quiz,
+            gateOffer = ProductAnalytics.GATE_HEART,
+        )
     }
 
     override fun onCleared() {

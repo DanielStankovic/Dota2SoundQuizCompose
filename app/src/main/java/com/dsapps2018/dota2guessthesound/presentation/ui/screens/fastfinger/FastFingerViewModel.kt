@@ -1,9 +1,14 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.dsapps2018.dota2guessthesound.data.analytics.AnalyticsMode
+import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
 import com.dsapps2018.dota2guessthesound.data.quiz.MultipleChoiceSoundRound
 import com.dsapps2018.dota2guessthesound.data.quiz.MultipleChoiceWrongPolicy
+import com.dsapps2018.dota2guessthesound.presentation.navigation.FastFingerModeDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,8 +17,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FastFingerViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val round: MultipleChoiceSoundRound,
+    private val productAnalytics: ProductAnalytics,
 ) : ViewModel() {
+
+    private val timeSeconds = savedStateHandle.toRoute<FastFingerModeDestination>().time
 
     val quizEvent = round.events
 
@@ -26,6 +35,7 @@ class FastFingerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             round.start(MultipleChoiceWrongPolicy.AdvanceOnWrong)
+            productAnalytics.modeStart(AnalyticsMode.fastFinger(timeSeconds))
         }
     }
 
