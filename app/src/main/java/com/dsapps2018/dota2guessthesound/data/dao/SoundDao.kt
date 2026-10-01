@@ -47,4 +47,7 @@ interface SoundDao {
     @Query("SELECT  s.id, s.spellName, s.soundFileLink, s.isLocal, CASE WHEN c.id IS NULL THEN 0 ELSE 1 END  AS isCorrectSound FROM Sound s LEFT JOIN Caster c ON c.id = s.casterId AND c.id IN (:heroIds) WHERE s.isActive = 1")
     suspend fun getJourneySounds(heroIds: List<Int>): List<JourneySoundModel>
 
+    @Query("SELECT id, spellName, soundFileLink, isLocal FROM Sound WHERE casterId = :casterId AND isActive = 1 ORDER BY spellName COLLATE NOCASE ASC")
+    suspend fun getSoundsForCaster(casterId: Int): List<SoundModel>
+
 }

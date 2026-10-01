@@ -41,6 +41,7 @@
 
 
     //Home Screen
+    <string name="hero_catalog_lbl">Hero Catalog</string>
     <string name="quiz_lbl">Quiz</string>
     <string name="fast_finger_lbl">Fast Finger</string>
     <string name="hero_journey_lbl">Hero\'s Journey</string>

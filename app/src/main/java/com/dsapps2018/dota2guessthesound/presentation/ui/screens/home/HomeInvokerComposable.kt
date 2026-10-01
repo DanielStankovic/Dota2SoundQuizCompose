@@ -37,6 +37,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 @Composable
 fun HomeInvokerComposable(
     currentIndex: Int,
+    lastPageIndex: Int,
     animatedRotationY: Float,
     isRewardedReady: Boolean,
     canEnterInvoker: Boolean,
@@ -85,7 +86,7 @@ fun HomeInvokerComposable(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ArrowButton(false, currentIndex) {
+            ArrowButton(false, currentIndex, lastPageIndex) {
                 setShouldAnimate(true)
                 setIsFlippingForward(false)
                 onMoveLeft()
@@ -126,7 +127,7 @@ fun HomeInvokerComposable(
 
                 )
             }
-            ArrowButton(true, currentIndex) {
+            ArrowButton(true, currentIndex, lastPageIndex) {
                 setShouldAnimate(true)
                 setIsFlippingForward(true)
                 onMoveRight()

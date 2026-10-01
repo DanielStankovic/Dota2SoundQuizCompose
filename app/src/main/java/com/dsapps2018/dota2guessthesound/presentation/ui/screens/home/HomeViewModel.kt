@@ -62,9 +62,9 @@ class HomeViewModel @Inject constructor(
         initialValue = "--Data not synced--"
     )
 
-    companion object {
-        private const val MAX_INDEX = 4
-    }
+    val pages: List<HomeCarouselPage> =
+        homeCarouselPages(includeHeroCatalog = BuildConfig.FLAVOR == STAGING_FLAVOR)
+    val lastPageIndex: Int = pages.lastIndex
 
     init {
         viewModelScope.launch {
@@ -114,7 +114,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun moveRight() {
-        if (_currentIndex.value < MAX_INDEX) {
+        if (_currentIndex.value < lastPageIndex) {
             _currentIndex.value += 1
         }
     }
@@ -134,7 +134,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun moveToJokeIndex() {
-        _currentIndex.value = 4
+        val jokeIndex = pages.indexOf(HomeCarouselPage.Joke)
+        if (jokeIndex >= 0) _currentIndex.value = jokeIndex
     }
 
     fun playJokeSound() {
@@ -168,6 +169,10 @@ class HomeViewModel @Inject constructor(
     private fun setForcedVersionCheckTimestamp() {
         val currentTimestamp = System.currentTimeMillis()
         sharedPreferences.edit().putLong(FORCED_VERSION_TAG, currentTimestamp).apply()
+    }
+
+    companion object {
+        private const val STAGING_FLAVOR = "staging"
     }
 
 }

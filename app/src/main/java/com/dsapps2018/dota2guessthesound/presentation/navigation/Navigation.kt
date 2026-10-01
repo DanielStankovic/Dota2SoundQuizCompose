@@ -6,10 +6,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.dsapps2018.dota2guessthesound.BuildConfig
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.changelog.ChangelogScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.faq.FaqScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.FastFingerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.fastfinger.PickTimeScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.herocatalog.HeroCatalogScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.herocatalog.HeroCatalogSoundsScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.home.HomeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerExplanationScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.InvokerScreen
@@ -62,6 +65,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 navController.navigate(InvokerExplanationDestination)
             }, onJokeClicked = {
                 navController.navigate(JokeDestination)
+            }, onHeroCatalogClicked = {
+                if (BuildConfig.FLAVOR == "staging") {
+                    navController.navigate(HeroCatalogDestination)
+                }
             }, onOptionsClicked = {
                 navController.navigate(OptionsDestination)
             }, onProfileClicked = {
@@ -73,6 +80,20 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             }, onUpdateRequired = {
                 navController.navigate(ForceUpdateDestination)
             })
+        }
+
+        if (BuildConfig.FLAVOR == "staging") {
+            composable<HeroCatalogDestination> {
+                HeroCatalogScreen(onHeroClicked = { hero ->
+                    navController.navigate(
+                        HeroCatalogSoundsDestination(heroId = hero.id, heroName = hero.name)
+                    )
+                })
+            }
+
+            composable<HeroCatalogSoundsDestination> {
+                HeroCatalogSoundsScreen()
+            }
         }
 
         composable<QuizModeDestination> {

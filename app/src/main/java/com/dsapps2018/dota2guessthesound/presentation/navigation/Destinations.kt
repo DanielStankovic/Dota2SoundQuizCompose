@@ -9,6 +9,12 @@ object SyncDestination
 object HomeDestination
 
 @Serializable
+object HeroCatalogDestination
+
+@Serializable
+data class HeroCatalogSoundsDestination(val heroId: Int, val heroName: String)
+
+@Serializable
 object QuizModeDestination
 
 @Serializable

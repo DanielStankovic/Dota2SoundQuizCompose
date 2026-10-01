@@ -52,6 +52,14 @@ _Avoid_: tutorial overlay, countdown gate, pause menu (when you mean this hold)
 A Dota 2 playable character whose portrait and spell sounds appear in a Journey Round (and elsewhere in the app). Use this word in player-facing copy and domain language.
 _Avoid_: champion, character (when you mean a Dota 2 Hero)
 
+**Hero Catalog**:
+Inspection of every Hero and that Hero's Sounds — listen, not play. Distinct from a Journey Round board.
+_Avoid_: hero overview, ability browser, Game Mode (when you mean this)
+
+**Sound**:
+A named spell clip on a Hero (spell name + audio). Distinct from Sound Playback (the act of playing it).
+_Avoid_: ability, spell (when you mean this catalog row)
+
 **Hero Portrait Policy**:
 Resolved Radiant/Dire portrait slots for a Journey Round (mask, omit, blur by hero id, drawable). Affix enable flags plus level-authored membership; distinct from HUD chrome.
 _Avoid_: hero row resolver, portrait Affix join

@@ -96,6 +96,7 @@ fun HomeScreen(
     onJourneyClicked: () -> Unit,
     onInvokerClicked: () -> Unit,
     onJokeClicked: () -> Unit,
+    onHeroCatalogClicked: () -> Unit,
     onOptionsClicked: () -> Unit,
     onProfileClicked: () -> Unit,
     onQuestionClicked: () -> Unit,
@@ -111,6 +112,7 @@ fun HomeScreen(
     val progress by homeViewModel.progress.collectAsStateWithLifecycle()
     val lastSyncDate by homeViewModel.lastSyncDate.collectAsStateWithLifecycle()
     val currentIndex by homeViewModel.currentIndex.collectAsStateWithLifecycle()
+    val lastPageIndex = homeViewModel.lastPageIndex
     val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
     val updateRequiredStatus by homeViewModel.updateRequiredStatus.collectAsStateWithLifecycle()
     var targetRotation by remember { mutableFloatStateOf(0f) }
@@ -311,9 +313,31 @@ fun HomeScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 4.dp),
                     ) {
-                        when (currentIndex) {
-                            0 -> {
+                        when (homeViewModel.pages.getOrNull(currentIndex)) {
+                            HomeCarouselPage.HeroCatalog -> {
+                                HomeHeroCatalogComposable(
+                                    currentIndex = currentIndex,
+                                    lastPageIndex = lastPageIndex,
+                                    animatedRotationY = animatedRotationY,
+                                    setShouldAnimate = { boolValue ->
+                                        shouldAnimate = boolValue
+                                    },
+                                    setIsFlippingForward = { boolValue ->
+                                        isFlippingForward = boolValue
+                                    },
+                                    onMoveLeft = {
+                                        homeViewModel.moveLeft()
+                                    },
+                                    onMoveRight = {
+                                        homeViewModel.moveRight()
+                                    },
+                                    onHeroCatalogClicked = onHeroCatalogClicked,
+                                )
+                            }
+
+                            HomeCarouselPage.Quiz -> {
                                 HomeQuizComposable(currentIndex = currentIndex,
+                                    lastPageIndex = lastPageIndex,
                                     animatedRotationY = animatedRotationY,
                                     setShouldAnimate = { boolValue ->
                                         shouldAnimate = boolValue
@@ -336,8 +360,9 @@ fun HomeScreen(
                                     })
                             }
 
-                            1 -> {
+                            HomeCarouselPage.FastFinger -> {
                                 HomeFastFingerComposable(currentIndex = currentIndex,
+                                    lastPageIndex = lastPageIndex,
                                     animatedRotationY = animatedRotationY,
                                     setShouldAnimate = { boolValue ->
                                         shouldAnimate = boolValue
@@ -360,8 +385,9 @@ fun HomeScreen(
                                     })
                             }
 
-                            2 -> {
+                            HomeCarouselPage.Journey -> {
                                 HomeJourneyComposable(currentIndex = currentIndex,
+                                    lastPageIndex = lastPageIndex,
                                     isLoggedIn = authState is SessionStatus.Authenticated ,
                                     animatedRotationY = animatedRotationY,
                                     setShouldAnimate = { boolValue ->
@@ -385,8 +411,9 @@ fun HomeScreen(
                                     })
                             }
 
-                            3 -> {
+                            HomeCarouselPage.Invoker -> {
                                 HomeInvokerComposable(currentIndex = currentIndex,
+                                    lastPageIndex = lastPageIndex,
                                     animatedRotationY = animatedRotationY,
                                     isRewardedReady = isRewardedReady,
                                     canEnterInvoker = homeViewModel.canEnterInvoker(progress.coinValue),
@@ -417,8 +444,9 @@ fun HomeScreen(
                                 )
                             }
 
-                            4 -> {
+                            HomeCarouselPage.Joke -> {
                                 HomeJokeComposable(currentIndex = currentIndex,
+                                    lastPageIndex = lastPageIndex,
                                     animatedRotationY = animatedRotationY,
                                     isRewardedReady = isRewardedReady,
                                     scale = scale,
@@ -448,6 +476,8 @@ fun HomeScreen(
 
                                     })
                             }
+
+                            null -> {}
                         }
 
 
@@ -541,10 +571,10 @@ private fun HandlePermissionRequest(
 }
 
 @Composable
-fun ArrowButton(isRightArrow: Boolean, currentIndex: Int, onClick: () -> Unit) {
+fun ArrowButton(isRightArrow: Boolean, currentIndex: Int, lastPageIndex: Int, onClick: () -> Unit) {
     Image(painter = painterResource(
         if (isArrowEnabled(
-                isRightArrow, currentIndex
+                isRightArrow, currentIndex, lastPageIndex
             )
         ) R.drawable.arrow_enabled else R.drawable.arrow_disabled
     ),
@@ -552,7 +582,7 @@ fun ArrowButton(isRightArrow: Boolean, currentIndex: Int, onClick: () -> Unit) {
         modifier = Modifier
             .size(50.dp)
             .rotate(if (isRightArrow) 180f else 0f)
-            .then(if (isArrowEnabled(isRightArrow, currentIndex)) {
+            .then(if (isArrowEnabled(isRightArrow, currentIndex, lastPageIndex)) {
                 Modifier.clickable {
                     onClick()
                 }
@@ -561,9 +591,9 @@ fun ArrowButton(isRightArrow: Boolean, currentIndex: Int, onClick: () -> Unit) {
             }))
 }
 
-fun isArrowEnabled(isRightArrow: Boolean, currentIndex: Int): Boolean {
+fun isArrowEnabled(isRightArrow: Boolean, currentIndex: Int, lastPageIndex: Int): Boolean {
     return if (isRightArrow) {
-        currentIndex < 4
+        currentIndex < lastPageIndex
     } else {
         currentIndex > 0
     }

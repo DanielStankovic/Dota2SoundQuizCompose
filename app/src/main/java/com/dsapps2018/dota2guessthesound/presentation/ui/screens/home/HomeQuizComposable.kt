@@ -30,6 +30,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.composables.SpeechBubbl
 @Composable
 fun HomeQuizComposable(
     currentIndex: Int,
+    lastPageIndex: Int,
     animatedRotationY: Float,
     setShouldAnimate: (Boolean) -> Unit,
     setIsFlippingForward: (Boolean) -> Unit,
@@ -67,7 +68,7 @@ fun HomeQuizComposable(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ArrowButton(false, currentIndex) {
+            ArrowButton(false, currentIndex, lastPageIndex) {
                 setShouldAnimate(true)
                 setIsFlippingForward(false)
                 onMoveLeft()
@@ -91,7 +92,7 @@ fun HomeQuizComposable(
             ) {
                 onQuizClicked()
             }
-            ArrowButton(true, currentIndex) {
+            ArrowButton(true, currentIndex, lastPageIndex) {
                 setShouldAnimate(true)
                 setIsFlippingForward(true)
                 onMoveRight()

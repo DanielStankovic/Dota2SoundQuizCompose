@@ -33,4 +33,14 @@ interface CasterDao {
     @Query("SELECT * FROM Caster WHERE id IN (:heroIds) AND isActive = 1")
     suspend fun getActiveCasters(heroIds: List<Int>): List<CasterEntity>
 
+    @Query(
+        """
+        SELECT * FROM Caster
+        WHERE isActive = 1
+        AND casterTypeId = (SELECT id FROM CasterType WHERE type = :type LIMIT 1)
+        ORDER BY name COLLATE NOCASE ASC
+        """
+    )
+    suspend fun getActiveCastersOfType(type: String): List<CasterEntity>
+
 }
