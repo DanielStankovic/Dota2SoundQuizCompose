@@ -17,7 +17,7 @@ class ProductAnalytics @Inject constructor(
     fun selectMode(mode: AnalyticsMode) {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT) {
             param(FirebaseAnalytics.Param.CONTENT_TYPE, CONTENT_TYPE_MODE)
-            param(FirebaseAnalytics.Param.CONTENT_ID, mode.id)
+            param(PARAM_CONTENT_ID, mode.id)
         }
     }
 
@@ -181,6 +181,7 @@ class ProductAnalytics @Inject constructor(
         const val EVENT_EXTRA_LIFE_RECOVER = "extra_life_recover"
         const val EVENT_EXTRA_LIFE_DECLINE = "extra_life_decline"
 
+        const val PARAM_CONTENT_ID = "content_id"
         const val PARAM_MODE = "mode"
         const val PARAM_JOURNEY_LEVEL = "journey_level"
         const val PARAM_FIRST_CLEAR = "first_clear"
