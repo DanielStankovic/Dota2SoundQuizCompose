@@ -20,6 +20,10 @@ Firebase / GA4 event names, parameters, and user-flow timing: `docs/analytics-ev
 
 Touch-first Journey gameplay layout / Affix chrome / sound board / hero strip: skill `affix-gameplay-hud`. Related: `game-ui-ux`, `create-game-assets`.
 
+### Journey level catalog
+
+Author Journey levels (toolkit rollercoaster, 120-level seed, Affix / Hero / decoy mix): skill `journey-level-authoring`. Combo rules: `CONTEXT.md`. Prod copy: `docs/agents/staging-prod-sync.md`. ADR-0020.
+
 ### Gameplay / progression meta
 
 Journey and app-wide progression, difficulty pacing, economy friction, leaderboards: Stanestane skills `game-design-core-loop-extractor`, `game-design-design-pillars-extractor`, `game-design-goal-density-and-immediacy-audit`, `game-design-flow-audit`, `game-design-failure-loop-audit`, `game-design-friction-journey-audit`, `game-design-leaderboard-audit`, `game-design-leaderboard-builder`, `game-design-feature-prioritization`. Prefer existing `CONTEXT.md` terms (coins, journey level, Mode Result) over inventing parallel XP/economy language.

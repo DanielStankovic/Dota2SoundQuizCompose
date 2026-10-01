@@ -181,11 +181,35 @@ Game Over interstitial is **not** these events.
 
 ## Custom definitions to register
 
-Event-scoped dimensions: `mode`, `first_clear`, `replay`, `affixes`, `fail_reason`, `extra_life_used`, `gate_offer`, `source`, `content_id` (if not already mapped).
+GA4 **Admin → Data display → Custom definitions**. Paste **Description** into that field (it is a reminder for you, not shown to players). Parameter names must match the app exactly. Skip prescribed params (`content_id`, `level_name`, `success`, `score`, `method`, …).
 
-Event-scoped metrics: `journey_level`, `affix_count`, `clear_time_ms`.
+### Event-scoped dimensions
 
-User-scoped dimensions: `signed_in`, `journey_level`.
+| Dimension name | Event parameter | Description (paste) |
+| --- | --- | --- |
+| Mode | `mode` | Which mode this event belongs to. Set on arcade round start (`mode_start`), arcade finish (`post_score`), Extra Life Gate offer/recover/decline, and every Journey `level_start` / `level_end`. Values: quiz, ff_30, ff_60, ff_90, invoker, journey. |
+| First clear | `first_clear` | Journey attempt on a level the player has not cleared yet (above the watermark). Set on `level_start` and `level_end`. `"true"` / `"false"`. |
+| Replay | `replay` | Journey attempt on a level already cleared. Set on `level_start` and `level_end`. `"true"` / `"false"`. |
+| Affixes | `affixes` | Comma-separated Affix display names on this Journey attempt (e.g. Mirror Mode, Blurred Vision). Set on `level_start`, `level_end`, and Journey Extra Life Gate events. Empty when the level has none. |
+| Fail reason | `fail_reason` | Why a Journey attempt ended without a win. Only on `level_end` with success=0: hearts, race_timeout, sudden_death, gate_declined, quit (left the screen mid-round). |
+| Extra life used | `extra_life_used` | Whether Extra Life Gate recovered this Journey attempt. Set on `level_end`. `"true"` / `"false"`. |
+| Gate offer | `gate_offer` | Extra Life Gate type. On Journey/Quiz `extra_life_*` events: heart or time. On Journey `level_end`: last offer this attempt, or none. |
+| Coin source | `source` | Why coins were granted. Only on `earn_virtual_currency`: journey_first_clear (win, 20 coins), quiz (result = score), ff_30/ff_60/ff_90 (threshold grant), invoker_ad_grant (+200). |
+
+### Event-scoped metrics
+
+| Metric name | Event parameter | Unit | Description (paste) |
+| --- | --- | --- | --- |
+| Journey level (event) | `journey_level` | Standard | Catalog level number of this Journey attempt (1, 2, 3…). Set on `level_start`, `level_end`, and Journey Extra Life Gate events. Not the player's watermark. |
+| Affix count | `affix_count` | Standard | How many Affixes this Journey level has. Set on `level_start` and `level_end`. |
+| Clear time ms | `clear_time_ms` | Standard | Journey win duration in milliseconds (Ready clock → Correct; paused under ads / Gate). Only on `level_end` with success=1. |
+
+### User-scoped dimensions
+
+| Dimension name | User property | Description (paste) |
+| --- | --- | --- |
+| Signed in | `signed_in` | Whether the player currently has Auth. Updated on Home (session), Google sign-in (`true`), and sign-out (`false`). |
+| Journey level (user) | `journey_level` | Player's Journey watermark (highest cleared level as text, `"0"` if none). Updated on Home, sign-in, first-clear win, and sign-out → `"0"`. |
 
 ## DebugView
 

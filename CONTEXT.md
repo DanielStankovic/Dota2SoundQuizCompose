@@ -5,7 +5,7 @@ Android quiz app where players identify Dota 2 spell sounds across game modes, t
 ## Language
 
 **Player Progress**:
-The player's persistent game state: coins, per-mode high scores and play counts, and journey level. Distinct from who is signed in.
+The player's persistent game state: coins, per-mode high scores and play counts, and journey level. Distinct from who is signed in and from Issue Progress.
 _Avoid_: User data (as the domain name), score row, game stats
 
 **Journey level**:
@@ -53,7 +53,7 @@ A Dota 2 playable character whose portrait and spell sounds appear in a Journey 
 _Avoid_: champion, character (when you mean a Dota 2 Hero)
 
 **Hero Catalog**:
-Inspection of every Hero and that Hero's Sounds — listen, not play. Distinct from a Journey Round board.
+Inspection of every Hero and that Hero's Sounds — listen, not play. Distinct from a Journey Round board and from Issue Library.
 _Avoid_: hero overview, ability browser, Game Mode (when you mean this)
 
 **Sound**:
@@ -77,7 +77,7 @@ Playing a spell `SoundModel` (local resource or remote URL), or a raw resource i
 _Avoid_: SoundPlayer (when you mean the domain capability), play helper
 
 **Sync Session**:
-One boot-time sync of catalog data, optional wipe, leaderboard flush, Player Progress, and sound downloads, reported as progress events.
+One boot-time sync of catalog data, optional wipe, leaderboard flush, Player Progress, Issue catalog and art, Issue Progress, and sound downloads, reported as progress events.
 _Avoid_: Sync repository (as the domain name), boot sync pipeline
 
 **Multiple Choice Sound Round**:
@@ -89,26 +89,70 @@ The one-shot rewarded-ad continue in a Quiz or Journey Round. On Journey, one re
 _Avoid_: continue dialog (the UI), additional life flag (as the domain name)
 
 **Mode Result**:
-Submitting the outcome of a finished mode run: write Player Progress (highs, plays, journey level, result coins) and, when applicable, enqueue an offline leaderboard score. Distinct from Invoker entry (coin spend to start) and from Sync Session.
+Submitting the outcome of a finished mode run: write Player Progress (highs, plays, journey level, result coins) and, when applicable, enqueue an offline leaderboard score and grant the next Chapter of the Active Issue (or open the Issue Picker when there is none). Distinct from Invoker entry (coin spend to start) and from Sync Session.
 _Avoid_: score update (as the domain name), play-again submit
 
 **Level Clear Time**:
 The player's best finish duration for one Journey level, used for that level's ranking when Auth is present. The board shows the top 10; if the signed-in player is outside the top 10, their row is appended last with their real rank (same pattern as the arcade leaderboard). Extra Life Gate use does not disqualify the record. Distinct from arcade mode high scores and from journey level.
 _Avoid_: score (when you mean clear time), Journey high score
 
+**Issue**:
+A serial of Chapters about one Protagonist. Chapter count is authored per Issue. Distinct from Journey level, from a Journey Round, and from the Heroes on that round's board.
+_Avoid_: comic, story (when you mean this serial), season, album, campaign
+
+**Chapter**:
+One beat of an Issue: prose over that Issue’s Protagonist illustration, shown fullscreen after a first-clear. No Chapter title; chrome is `n / total`. Distinct from Journey Round briefing and from Mode Result coins / Level Clear Time.
+_Avoid_: page, scene, lore entry
+
+**Protagonist**:
+The Hero an Issue is about. Distinct from Heroes on the Journey Round board that granted the Chapter.
+_Avoid_: featured hero (when you mean the Issue lead), champion
+
+**Active Issue**:
+The Issue that receives the next Chapter grant. None until the player picks; they cannot pick another until this one is complete.
+_Avoid_: current story, selected campaign
+
+**Issue Picker**:
+The mandatory choice among uncompleted Issues when the player has no Active Issue (cover, synopsis, Chapter count). Distinct from the Chapter reader and from the Issue Library.
+_Avoid_: story select, campaign picker
+
+**Issue Library**:
+The Journey level-list entry into the Active Issue and completed Issues. Distinct from the Issue Picker (Issues not yet started).
+_Avoid_: story archive, comic rack
+
+**Reading Locale**:
+The player's preferred language for Chapter bodies, chosen from a curated list of major world languages (one code per language; regional dialects share that code). Distinct from the app UI locale. Missing bodies fall back to English until a translation exists.
+_Avoid_: story language, app language (when you mean Chapter bodies), dialect, regional variant (en-US, pt-BR as a second English/Portuguese)
+
+**Issue Progress**:
+The player's completed Issues, Active Issue (or none), Chapters unlocked in the Active Issue, owed Chapter grants, and Reading Locale. Persistent game state; not a currency; not journey level.
+_Avoid_: XP, story level, album, sticker book
+
 ## Journey progression (spine)
 
 Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side modes.
 
 - Advance **journey level** only via Mode Result on a win: `max(current, cleared)` — never regress on replay.
-- First clear of a level grants **20** coins via Mode Result; replay grants **0**.
-- Fail → free retry. No post-fail assist beyond the **Extra Life Gate**. If an Affix disables the Gate, the level stays as authored for all players.
-- Affix / Hero difficulty: introduce **one** new cognitive load per band (more Heroes, or a new Affix family, or a stack — not all at once).
+- First clear of a level grants **20** coins via Mode Result, and the next **Chapter** of the **Active Issue** (or the **Issue Picker** when there is none). Replay grants **0** coins and no Chapter.
+- Fail → free retry. No post-fail assist beyond the **Extra Life Gate**. If an Affix disables the Gate, the level stays as authored for all players. Fail does not grant or revoke a Chapter.
+- Affix / Hero difficulty: introduce **one** new cognitive load per band (more Heroes, or a new Affix family, or a stack — not all at once). Mix those axes inside the current set: a hard level is a **guest**, not a new floor (later levels may drop that Affix and raise Hero count or wrong-sound count). Launch catalog length and remix peak: [ADR-0020](docs/adr/0020-journey-level-catalog.md).
 - **Affix fog** on the Journey level list: Affix identity is visible through the next 3 locked levels after the playable one; farther cards show mystery tokens only (count, not names). The Journey Round still reveals Affixes at play time.
-- Do **not** add a second currency or XP system for Journey progress.
+- Do **not** add a second currency or XP system for Journey progress. **Issue Progress** is a checklist of Chapters, not XP.
+- An Issue's Protagonist and Chapters are catalog. They are **not** authored on the Journey level row (board Heroes / Affixes do not pick the Issue).
 - Invoker entry cost remains **200** coins unless economy is revisited after Journey first-clear coins ship.
 - Near-term competition: per-level **Level Clear Time** boards (Auth) — top 10, plus the current player's standing appended last when outside the top 10. Weekly Affix gauntlet and reward arcade leaderboards are out of scope for this spine decision (see ADR-0015).
-- Implementation: [ADR-0015](docs/adr/0015-journey-progression-spine.md) (spine) and [ADR-0016](docs/adr/0016-level-clear-time.md) (`LevelClearTime` module).
+- Implementation: [ADR-0015](docs/adr/0015-journey-progression-spine.md) (spine), [ADR-0016](docs/adr/0016-level-clear-time.md) (`LevelClearTime` module), [ADR-0019](docs/adr/0019-journey-issue.md) (`JourneyIssue` catalog + Issue Progress), [ADR-0020](docs/adr/0020-journey-level-catalog.md) (120-level catalog).
+
+## Journey Issues
+
+- One **Issue** = one **Protagonist**, one illustration (picker cover and reader backdrop), and an authored Chapter count (10, 15, 20, …). Board Heroes / Affixes do not choose the Issue. Chapters have no titles.
+- **Catalog invariant:** every playable Journey level has a Chapter grant behind it. Count only **active** Issues. Do not author more Journey levels than that sum; author toward **equal** counts. Do not unpublish an Issue if that would make active Chapter capacity smaller than the Journey level count.
+- Players start with **no Active Issue**. Hero’s Journey is unpublished at this feature’s launch, so every player starts Issue Progress from scratch (no fill-from-existing-`journey level`; staging testers included).
+- A first-clear with no Active Issue opens the **Issue Picker** (cover, short synopsis, Chapter count). Completed Issues are omitted. The player must pick; quitting without a pick leaves owed grants. The next first-clear shows the Picker again, then unlocks one Chapter per owed first-clear (e.g. pick after two first-clears → two Chapters). If applying owed **completes** that Issue and owed remains, the Picker opens **again in the same session** (no Chapter reader between picks) until owed is 0 or nothing is left to pick. If they complete an Issue with owed already 0, the next Picker waits until the **next** first-clear.
+- While an Issue is Active, the player cannot start another.
+- First-clear path: drain owed via Picker(s) if needed → **one** Chapter reader on the **newest** Chapter just granted (if that grant completed the Issue, still show its last Chapter this once; previous/next only inside that Issue) → **Continue** (always enabled, even on an older Chapter) → existing Mode Result (coins / time / LCT). Reader: one bundled music bed, repeating zoom, prose revealed line-by-line (tap shows the rest), scroll if needed, `n / total`. Earlier Issues completed in a picker chain are in the Library only.
+- **Issue Library** on the Journey level list re-opens the Active Issue and completed Issues (close/back only — no Continue to Mode Result). The post-clear reader does not switch Issues.
+- English Chapter bodies sync at boot. **Reading Locale** is stored locally and on the server. Opening a locale uses local Room first, then the server catalog, and fetches the **whole Issue** (not one Chapter). If that locale is still missing, a server function translates the whole Issue, stores it, and syncs it down. Missing locale falls back to English until that finishes. Device language does not pick Reading Locale.
 
 ## Journey Round hearts (baseline)
 
@@ -244,4 +288,4 @@ Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come fr
 
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0016). ADR-0002–0014 and ADR-0016 include **Revert** sections where those deepens need to be rolled back. Journey progression spine: [ADR-0015](docs/adr/0015-journey-progression-spine.md). Level Clear Time module: [ADR-0016](docs/adr/0016-level-clear-time.md).
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0020). ADR-0002–0014 and ADR-0016 include **Revert** sections where those deepens need to be rolled back. Journey progression spine: [ADR-0015](docs/adr/0015-journey-progression-spine.md). Level Clear Time module: [ADR-0016](docs/adr/0016-level-clear-time.md). Journey Issue catalog + Issue Progress: [ADR-0019](docs/adr/0019-journey-issue.md). Journey level catalog pacing: [ADR-0020](docs/adr/0020-journey-level-catalog.md).
