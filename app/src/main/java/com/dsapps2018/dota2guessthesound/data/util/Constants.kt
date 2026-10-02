@@ -45,7 +45,7 @@ object Constants {
     const val BUCKET_NAME = "sounds"
     const val BUCKET_FOLDER_NAME = "spell_sounds"
 
-    const val DOTA_VERSION = "7.37e"
+    const val DOTA_VERSION = "7.41f"
 
     const val USER_DATA_ID = 1
 
