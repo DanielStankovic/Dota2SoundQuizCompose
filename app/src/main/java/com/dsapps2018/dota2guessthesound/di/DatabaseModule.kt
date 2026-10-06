@@ -11,9 +11,15 @@ import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDetailsDao
 import com.dsapps2018.dota2guessthesound.data.dao.LevelClearTimeDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
+import com.dsapps2018.dota2guessthesound.data.dao.StoryChapterDao
+import com.dsapps2018.dota2guessthesound.data.dao.StoryChapterI18nDao
+import com.dsapps2018.dota2guessthesound.data.dao.StoryIssueDao
+import com.dsapps2018.dota2guessthesound.data.dao.StoryIssueI18nDao
+import com.dsapps2018.dota2guessthesound.data.dao.StoryProgressDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.DotaDatabase
 import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_5_6
+import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_6_7
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -30,7 +36,7 @@ object DatabaseModule {
     @Provides
     fun provideRoomDb(@ApplicationContext context: Context): DotaDatabase =
         Room.databaseBuilder(context, DotaDatabase::class.java, Constants.DATABASE_NAME)
-            .addMigrations(MIGRATION_5_6)
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
             .build()
 
     @Singleton
@@ -91,6 +97,36 @@ object DatabaseModule {
     @Provides
     fun provideLevelClearTimeDao(database: DotaDatabase): LevelClearTimeDao {
         return database.levelClearTimeDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoryIssueDao(database: DotaDatabase): StoryIssueDao {
+        return database.storyIssueDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoryChapterDao(database: DotaDatabase): StoryChapterDao {
+        return database.storyChapterDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoryIssueI18nDao(database: DotaDatabase): StoryIssueI18nDao {
+        return database.storyIssueI18nDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoryChapterI18nDao(database: DotaDatabase): StoryChapterI18nDao {
+        return database.storyChapterI18nDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoryProgressDao(database: DotaDatabase): StoryProgressDao {
+        return database.storyProgressDao()
     }
 
 }

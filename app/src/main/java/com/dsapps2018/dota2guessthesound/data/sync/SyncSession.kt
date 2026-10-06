@@ -32,6 +32,7 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.FaqEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
+import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
@@ -80,6 +81,7 @@ class SyncSession @Inject constructor(
     private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
     private val levelClearTime: LevelClearTime,
+    private val journeyIssue: JourneyIssue,
 ) {
 
     companion object {
@@ -92,6 +94,7 @@ class SyncSession @Inject constructor(
             "Syncing changelog",
             "Syncing faq",
             "Syncing affix data",
+            "Syncing issues",
             "Syncing leaderboard data",
             "Syncing user data",
             "Syncing sounds",
@@ -159,6 +162,10 @@ class SyncSession @Inject constructor(
 
             sendNextStep()
             syncAffixData()
+
+            sendNextStep()
+            journeyIssue.hydrateProgress()
+            journeyIssue.syncCatalog()
 
             sendNextStep()
             leaderboardRepository.sendUnsentDetails()
@@ -539,6 +546,8 @@ class SyncSession @Inject constructor(
             changelogDao.truncateTable()
             faqDao.truncateTable()
             affixDao.truncateTable()
+            journeyIssue.clearLocalCatalog()
+            journeyIssue.clearLocalProgress()
             soundDao.truncateTable()
             leaderboardDetailsDao.truncateTable()
             levelClearTime.clearLocal()

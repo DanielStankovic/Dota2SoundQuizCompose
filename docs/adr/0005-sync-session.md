@@ -1,6 +1,6 @@
 # Deepen Sync Session into one boot-sync module
 
-Boot sync (forced-update check, optional wipe, catalog syncs, leaderboard flush, Player Progress sync, sound downloads) lives in one concrete Data-layer module: `SyncSession`. Callers use `run(): Flow<SyncProgress>`. Shallow per-table `syncXxx` methods are private internals. Trivia rotation stays in the Sync screen ViewModel (presentation).
+Boot sync (forced-update check, optional wipe, catalog syncs including the Issue catalog and art, leaderboard flush, Player Progress sync, Issue Progress hydrate, sound downloads) lives in one concrete Data-layer module: `SyncSession`. Callers use `run(): Flow<SyncProgress>`. Shallow per-table `syncXxx` methods are private internals. Trivia rotation stays in the Sync screen ViewModel (presentation). Issue catalog download lives in `JourneyIssue`; Sync Session only sequences it.
 
 ## Revert
 
