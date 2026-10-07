@@ -59,7 +59,10 @@ class ChapterReaderViewModel @Inject constructor(
     }
 
     private fun load(index: Int) = viewModelScope.launch(exceptionHandler) {
-        _uiState.value = ChapterReaderUiState.Loading
+        // Keep the current page painted while swapping Chapters — only the first open shows Loading.
+        if (_uiState.value !is ChapterReaderUiState.Ready) {
+            _uiState.value = ChapterReaderUiState.Loading
+        }
         val page = journeyIssue.chapterPage(issueId, index, unlockedCount)
         viewingIndex = index
         _uiState.value = if (page == null) {
