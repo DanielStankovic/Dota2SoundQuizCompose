@@ -22,7 +22,11 @@ Touch-first Journey gameplay layout / Affix chrome / sound board / hero strip: s
 
 ### Journey level catalog
 
-Author Journey levels (toolkit rollercoaster, 120-level seed, Affix / Hero / decoy mix): skill `journey-level-authoring`. Combo rules: `CONTEXT.md`. Prod copy: `docs/agents/staging-prod-sync.md`. ADR-0020.
+Author Journey levels (toolkit rollercoaster, 150-level seed, Affix / Hero / decoy mix): skill `journey-level-authoring`. Combo rules: `CONTEXT.md`. Prod copy: `docs/agents/staging-prod-sync.md`. ADR-0020.
+
+### Issue catalog translation
+
+Retell Issues into Reading Locales (one Issue × one locale): skill `issue-catalog-translation`. Full matrix / AFK waves via subagents: skill `issue-catalog-wave`. Sources `docs/story/*.md`; output `docs/story/i18n/{locale}/{slug}.md`. ADR-0019.
 
 ### Gameplay / progression meta
 

@@ -177,20 +177,29 @@ class JourneyRound @Inject constructor(
             soundquake.clearsMarks = affixGameState.soundquakeClearsMarks
             soundquake.drainsHeart = affixGameState.soundquakeDrainsHeart
 
+            val heroIds = levelData.radiantHeroes + levelData.direHeroes
+            val journeySounds = soundDao.getJourneySounds(heroIds)
+            val (correctSounds, incorrectSounds) = journeySounds.partition { it.isCorrectSound }
+            val targetSize = JourneySoundBoard.targetSize(
+                authoredMaxSounds = levelData.maxSounds,
+                correctCount = correctSounds.size,
+            )
+            val decoyCount = (targetSize - correctSounds.size)
+                .coerceAtLeast(JourneySoundBoard.MIN_DECOYS)
+            val correctIds = correctSounds.map { it.soundModel.id }.toSet()
+            val decoyPool = incorrectSounds
+                .filter { it.soundModel.id !in correctIds }
+                .distinctBy { it.soundModel.id }
+            val randomSounds = decoyPool.shuffled().take(decoyCount)
+            val soundList = (correctSounds + randomSounds).shuffled()
+
             val levelContext = AffixLevelContext(
-                maxSounds = levelData.maxSounds,
+                maxSounds = soundList.size,
                 echoLimitOffset = levelData.echoLimitOffset,
                 timerSeconds = levelData.timerSeconds,
                 timerExtensionSeconds = levelData.timerExtensionSeconds,
             )
             maxSoundPlays = engine.resolveSoundPlayBudget(levelContext)
-
-            val heroIds = levelData.radiantHeroes + levelData.direHeroes
-            val journeySounds = soundDao.getJourneySounds(heroIds)
-            val (correctSounds, incorrectSounds) = journeySounds.partition { it.isCorrectSound }
-            val randomSounds =
-                incorrectSounds.shuffled().take(levelData.maxSounds - correctSounds.size)
-            val soundList = (correctSounds + randomSounds).shuffled()
             val casterNameById =
                 casterDao.getActiveCasters(heroIds).associate { it.id to it.name }
             val portraits = HeroPortraitPolicy.resolve(

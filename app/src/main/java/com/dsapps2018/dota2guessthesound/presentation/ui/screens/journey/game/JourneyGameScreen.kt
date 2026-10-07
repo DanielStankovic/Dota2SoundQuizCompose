@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -53,7 +54,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -68,6 +68,7 @@ import com.dsapps2018.dota2guessthesound.data.admob.showInterstitial
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.journey.ExtraLifeContinueOffer
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyHudChrome
+import com.dsapps2018.dota2guessthesound.data.journey.JourneySoundBoard
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundEvent
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRoundState
 import com.dsapps2018.dota2guessthesound.data.journey.TimerState
@@ -84,8 +85,6 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.c
 import kotlin.random.Random
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 
-/** SB-A: min cell width so SoundCard mark targets stay ≥ 48.dp; Adaptive drops columns on narrow widths. */
-private val SoundBoardMinCellSize: Dp = 72.dp
 
 @Composable
 fun JourneyGameScreen(
@@ -333,7 +332,8 @@ fun JourneyGameData(
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            columns = GridCells.Adaptive(minSize = SoundBoardMinCellSize),
+            columns = GridCells.Fixed(JourneySoundBoard.COLUMNS),
+            contentPadding = PaddingValues(bottom = 2.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
         ) {
@@ -349,9 +349,6 @@ fun JourneyGameData(
                     remainingPlays = ready.remainingPlays,
                     modifier = Modifier.animateItem(),
                 )
-            }
-            item {
-                Spacer(modifier = Modifier.height(2.dp))
             }
         }
     }
