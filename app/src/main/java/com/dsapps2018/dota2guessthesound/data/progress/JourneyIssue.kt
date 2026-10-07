@@ -101,10 +101,42 @@ class JourneyIssue @Inject constructor(
                 activeUnlocked = remote.activeUnlocked,
                 owedGrants = remote.owedGrants,
                 completedIssueIds = remote.completedIssueIds,
-                readingLocale = remote.readingLocale.ifBlank { ENGLISH },
+                readingLocale = remote.readingLocale?.takeIf { it.isNotBlank() },
                 modifiedAt = remote.modifiedAt,
             )
         )
+    }
+
+    /** True when Issue Progress has no confirmed Reading Locale yet. */
+    suspend fun needsReadingLocaleChoice(): Boolean {
+        val progress = requireProgress() ?: return true
+        return progress.readingLocale.isNullOrBlank()
+    }
+
+    suspend fun readingLocaleOrNull(): String? =
+        requireProgress()?.readingLocale?.takeIf { it.isNotBlank() }
+
+    /**
+     * Confirms the player's Reading Locale, upserts Issue Progress, and downloads that
+     * locale's full i18n catalog when it is not already complete locally.
+     * Boot [syncCatalog] still applies `modified_at` incremental updates later.
+     */
+    suspend fun setReadingLocale(locale: String) {
+        val progress = requireProgress() ?: return
+        val normalized = locale.takeIf { ReadingLocales.isCurated(it) } ?: ENGLISH
+        val alreadyChosen = progress.readingLocale == normalized
+        if (!alreadyChosen) {
+            persistProgress(
+                progress.copy(
+                    readingLocale = normalized,
+                    modifiedAt = getCurrentDate(),
+                )
+            )
+        }
+        if (!isLocaleCatalogComplete(normalized)) {
+            syncIssueI18n(normalized, forceFull = true)
+            syncChapterI18n(normalized, forceFull = true)
+        }
     }
 
     suspend fun clearLocalProgress() {
@@ -206,7 +238,7 @@ class JourneyIssue @Inject constructor(
     suspend fun pickerItems(): List<IssuePickerItem> {
         val progress = requireProgress()
         val completed = progress?.completedIssueIds.orEmpty().toSet()
-        val locale = progress?.readingLocale?.takeIf { it.isNotBlank() } ?: ENGLISH
+        val locale = preferredLocale(progress)
         return issueDao.getActive()
             .filter { it.id !in completed }
             .map { issue ->
@@ -235,7 +267,7 @@ class JourneyIssue @Inject constructor(
      */
     suspend fun libraryItems(): List<IssueLibraryItem> {
         val progress = requireProgress() ?: return emptyList()
-        val locale = progress.readingLocale.takeIf { it.isNotBlank() } ?: ENGLISH
+        val locale = preferredLocale(progress)
         val completed = progress.completedIssueIds.toSet()
         val activeId = progress.activeIssueId
         val items = ArrayList<IssueLibraryItem>()
@@ -313,7 +345,7 @@ class JourneyIssue @Inject constructor(
         if (total <= 0 || chapterIndex !in 1..unlockedCount || chapterIndex > total) return null
         val chapter = chapterDao.getByIssueAndIndex(issueId, chapterIndex) ?: return null
         val progress = requireProgress()
-        val locale = progress?.readingLocale?.takeIf { it.isNotBlank() } ?: ENGLISH
+        val locale = preferredLocale(progress)
         val i18nRow = chapterI18n(chapter.id, locale)
         val issueTitle = issueI18n(issueId, locale)?.title.orEmpty().ifBlank { issue.slug }
         return ChapterReaderPage(
@@ -381,11 +413,27 @@ class JourneyIssue @Inject constructor(
         chapterI18nDao.get(chapterId, locale)
             ?: if (locale != ENGLISH) chapterI18nDao.get(chapterId, ENGLISH) else null
 
+    private fun preferredLocale(progress: StoryProgressEntity?): String =
+        progress?.readingLocale?.takeIf { it.isNotBlank() } ?: ENGLISH
+
+    /**
+     * Completeness: issue + chapter i18n row counts for [locale] match English's
+     * counts for active Issues (empty English catalog → treat as complete).
+     */
+    private suspend fun isLocaleCatalogComplete(locale: String): Boolean {
+        val expectedIssues = issueI18nDao.countForActiveIssues(ENGLISH)
+        if (expectedIssues <= 0) return true
+        if (issueI18nDao.countForActiveIssues(locale) < expectedIssues) return false
+        val expectedChapters = chapterI18nDao.countForActiveIssues(ENGLISH)
+        if (expectedChapters <= 0) return true
+        return chapterI18nDao.countForActiveIssues(locale) >= expectedChapters
+    }
+
     private suspend fun catalogLocales(): List<String> {
         val preferred = auth.currentUserOrNull()?.id
             ?.let { progressDao.get(it)?.readingLocale }
             ?.takeIf { it.isNotBlank() }
-            ?: ENGLISH
+            ?: return listOf(ENGLISH)
         return if (preferred == ENGLISH) listOf(ENGLISH) else listOf(ENGLISH, preferred)
     }
 
@@ -451,8 +499,12 @@ class JourneyIssue @Inject constructor(
         chapterDao.insertAll(fetched)
     }
 
-    private suspend fun syncIssueI18n(locale: String) {
-        val modifiedDate = issueI18nDao.getModifiedDate(locale) ?: getInitialModifiedDate()
+    private suspend fun syncIssueI18n(locale: String, forceFull: Boolean = false) {
+        val modifiedDate = if (forceFull) {
+            getInitialModifiedDate()
+        } else {
+            issueI18nDao.getModifiedDate(locale) ?: getInitialModifiedDate()
+        }
         val fetched = postgrest.from(Constants.TABLE_STORY_ISSUE_I18N)
             .select(Columns.list("issue_id", "locale", "title", "synopsis", "modified_at")) {
                 filter {
@@ -476,8 +528,12 @@ class JourneyIssue @Inject constructor(
         issueI18nDao.insertAll(fetched)
     }
 
-    private suspend fun syncChapterI18n(locale: String) {
-        val modifiedDate = chapterI18nDao.getModifiedDate(locale) ?: getInitialModifiedDate()
+    private suspend fun syncChapterI18n(locale: String, forceFull: Boolean = false) {
+        val modifiedDate = if (forceFull) {
+            getInitialModifiedDate()
+        } else {
+            chapterI18nDao.getModifiedDate(locale) ?: getInitialModifiedDate()
+        }
         val fetched = postgrest.from(Constants.TABLE_STORY_CHAPTER_I18N)
             .select(Columns.list("chapter_id", "locale", "title", "body", "modified_at")) {
                 filter {
@@ -555,7 +611,7 @@ class JourneyIssue @Inject constructor(
         activeUnlocked = 0,
         owedGrants = 0,
         completedIssueIds = emptyList(),
-        readingLocale = ENGLISH,
+        readingLocale = null,
         modifiedAt = modifiedAt,
     )
 

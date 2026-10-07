@@ -17,6 +17,18 @@ interface StoryChapterI18nDao {
     )
     suspend fun get(chapterId: Int, locale: String): StoryChapterI18nEntity?
 
+    @Query(
+        """
+        SELECT COUNT(*) FROM StoryChapterI18n
+        WHERE locale = :locale
+          AND chapterId IN (
+            SELECT id FROM StoryChapter
+            WHERE issueId IN (SELECT id FROM StoryIssue WHERE isActive = 1)
+          )
+        """
+    )
+    suspend fun countForActiveIssues(locale: String): Int
+
     @Insert
     suspend fun insertAll(list: List<StoryChapterI18nEntity>)
 

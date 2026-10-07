@@ -83,6 +83,7 @@
 
     //Options Screen
     <string name="profile">Profile</string>
+    <string name="reading_locale_options_row">Story language</string>
     <string name="notifications">Notifications</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="attributions">Attributions</string>
@@ -147,6 +148,13 @@
     <string name="level_clear_time_new_best">New personal best!</string>
     <string name="journey_first_clear_coins">+%1$d coins — first clear</string>
     <string name="journey_first_clear_value">+%1$d</string>
+    <string name="reading_locale_gate_title">Story language</string>
+    <string name="reading_locale_gate_subtitle">Hero stories unlock chapter by chapter. Pick a language now — we\'ll show translations for that language as chapters unlock. You can change this later in Options. English is ready offline; other languages download when you confirm.</string>
+    <string name="reading_locale_options_title">Story language</string>
+    <string name="reading_locale_options_subtitle">Titles, synopses, and chapter text use this language. The rest of the app stays in English.</string>
+    <string name="reading_locale_confirm">Continue</string>
+    <string name="reading_locale_syncing">Downloading stories…</string>
+    <string name="reading_locale_error">Couldn\'t save story language.\n\nCheck your connection and try again.</string>
     <string name="issue_picker_title">Choose a story</string>
     <string name="issue_picker_subtitle">Pick a hero serial. You\'ll unlock chapters as you clear Journey levels.</string>
     <string name="issue_picker_chapter_count">%1$d chapters</string>

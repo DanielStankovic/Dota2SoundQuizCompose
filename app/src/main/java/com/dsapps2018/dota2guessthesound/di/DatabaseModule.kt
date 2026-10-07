@@ -21,6 +21,7 @@ import com.dsapps2018.dota2guessthesound.data.db.DotaDatabase
 import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_5_6
 import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_6_7
 import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_7_8
+import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_8_9
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -37,7 +38,7 @@ object DatabaseModule {
     @Provides
     fun provideRoomDb(@ApplicationContext context: Context): DotaDatabase =
         Room.databaseBuilder(context, DotaDatabase::class.java, Constants.DATABASE_NAME)
-            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
             .build()
 
     @Singleton

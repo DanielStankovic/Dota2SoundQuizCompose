@@ -94,6 +94,7 @@ fun HomeScreen(
     onQuizClicked: () -> Unit,
     onFastFingerClicked: () -> Unit,
     onJourneyClicked: () -> Unit,
+    onReadingLocaleClicked: () -> Unit,
     onInvokerClicked: () -> Unit,
     onJokeClicked: () -> Unit,
     onHeroCatalogClicked: () -> Unit,
@@ -157,6 +158,15 @@ fun HomeScreen(
             repeatMode = RepeatMode.Reverse
         ), label = "PulsatingButton"
     )
+
+    LaunchedEffect(Unit) {
+        homeViewModel.journeyEntry.collect { entry ->
+            when (entry) {
+                HomeViewModel.JourneyEntry.ReadingLocale -> onReadingLocaleClicked()
+                HomeViewModel.JourneyEntry.Levels -> onJourneyClicked()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         authViewModel.authEventStatus.collect { authEvent ->
@@ -403,8 +413,7 @@ fun HomeScreen(
                                         homeViewModel.moveRight()
                                     },
                                     onJourneyClicked = {
-                                        homeViewModel.onJourneySelected()
-                                        onJourneyClicked()
+                                        homeViewModel.requestJourneyEntry()
                                     },
                                     onJourneyGated = {
                                         homeViewModel.onJourneyGated()

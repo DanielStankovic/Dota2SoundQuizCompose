@@ -49,6 +49,7 @@ import com.google.firebase.crashlytics.crashlytics
 fun OptionsScreen(
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit,
+    onReadingLocaleClick: () -> Unit,
     onPrivacyPolicyClick: () -> Unit,
     onChangelogClick: () -> Unit,
     onAttributionsClicked: () -> Unit
@@ -91,6 +92,14 @@ fun OptionsScreen(
                         optionText = stringResource(R.string.profile)
                     ) {
                         onProfileClick()
+                    }
+
+                    OptionsItem(
+                        leadingIcon = R.drawable.ic_language,
+                        trailingIcon = R.drawable.ic_arrow_right,
+                        optionText = stringResource(R.string.reading_locale_options_row)
+                    ) {
+                        onReadingLocaleClick()
                     }
 
                     OptionsItem(

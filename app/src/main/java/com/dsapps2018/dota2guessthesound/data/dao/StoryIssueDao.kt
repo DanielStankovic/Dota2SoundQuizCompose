@@ -15,6 +15,9 @@ interface StoryIssueDao {
     @Query("SELECT * FROM StoryIssue WHERE isActive = 1 ORDER BY sort")
     suspend fun getActive(): List<StoryIssueEntity>
 
+    @Query("SELECT COUNT(*) FROM StoryIssue WHERE isActive = 1")
+    suspend fun countActive(): Int
+
     @Query("SELECT * FROM StoryIssue WHERE id = :id LIMIT 1")
     suspend fun getById(id: Int): StoryIssueEntity?
 

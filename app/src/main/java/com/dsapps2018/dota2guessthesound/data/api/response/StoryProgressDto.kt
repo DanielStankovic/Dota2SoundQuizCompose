@@ -16,7 +16,7 @@ data class StoryProgressDto(
     @SerialName("completed_issue_ids")
     val completedIssueIds: List<Int> = emptyList(),
     @SerialName("reading_locale")
-    val readingLocale: String,
+    val readingLocale: String? = null,
     @SerialName("modified_at")
     val modifiedAt: String,
 )

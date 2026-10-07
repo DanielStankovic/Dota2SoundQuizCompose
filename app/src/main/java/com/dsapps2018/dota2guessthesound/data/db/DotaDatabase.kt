@@ -57,6 +57,32 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
     }
 }
 
+/** Reading Locale is null until the player confirms a choice (defaults were never chosen). */
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `StoryProgress_new` (" +
+                "`userId` TEXT NOT NULL, " +
+                "`activeIssueId` INTEGER, " +
+                "`activeUnlocked` INTEGER NOT NULL, " +
+                "`owedGrants` INTEGER NOT NULL, " +
+                "`completedIssueIds` TEXT NOT NULL, " +
+                "`readingLocale` TEXT, " +
+                "`modifiedAt` TEXT NOT NULL, " +
+                "PRIMARY KEY(`userId`))"
+        )
+        db.execSQL(
+            "INSERT INTO `StoryProgress_new` (" +
+                "`userId`, `activeIssueId`, `activeUnlocked`, `owedGrants`, " +
+                "`completedIssueIds`, `readingLocale`, `modifiedAt`) " +
+                "SELECT `userId`, `activeIssueId`, `activeUnlocked`, `owedGrants`, " +
+                "`completedIssueIds`, NULL, `modifiedAt` FROM `StoryProgress`"
+        )
+        db.execSQL("DROP TABLE `StoryProgress`")
+        db.execSQL("ALTER TABLE `StoryProgress_new` RENAME TO `StoryProgress`")
+    }
+}
+
 val MIGRATION_6_7 = object : Migration(6, 7) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(

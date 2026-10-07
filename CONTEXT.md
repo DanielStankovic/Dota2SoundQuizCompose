@@ -133,8 +133,8 @@ The Journey level-list entry into the Active Issue, completed Issues, and locked
 _Avoid_: story archive, comic rack
 
 **Reading Locale**:
-The player's preferred language for Issue title, synopsis, and Chapter bodies, chosen from a curated list of major world languages (one code per language; regional dialects share that code). Distinct from the app UI locale. Missing copy falls back to English until a translation exists.
-_Avoid_: story language, app language (when you mean Issue copy), dialect, regional variant (en-US, pt-BR as a second English/Portuguese)
+The player's preferred language for Issue title, synopsis, and Chapter bodies, chosen from a curated list of major world languages (one code per language; regional dialects share that code). Distinct from the app UI locale. Null until the player confirms a choice (mandatory first visit into Hero's Journey; changeable in Options). Missing copy falls back to English until a translation exists.
+_Avoid_: story language (domain term — UI may say it), app language (when you mean Issue copy), dialect, regional variant (en-US, pt-BR as a second English/Portuguese)
 
 **Issue Progress**:
 The player's completed Issues, Active Issue (or none), Chapters unlocked in the Active Issue, owed Chapter grants, and Reading Locale. Persistent game state; not a currency; not journey level.
@@ -166,7 +166,7 @@ Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side 
 - While an Issue is Active, the player cannot start another.
 - First-clear path: drain owed via Picker(s) if needed → **one** Chapter reader on the **newest** Chapter just granted (if that grant completed the Issue, still show its last Chapter this once; previous/next only inside that Issue) → **Continue** (always enabled, even on an older Chapter) → existing Mode Result (coins / time / LCT). Reader: one bundled music bed (local mute preference), repeating zoom, prose revealed line-by-line (tap shows the rest), scroll if needed, Chapter title plus `n / total`. Earlier Issues completed in a picker chain are in the Library only.
 - **Issue Library** on the Journey level list re-opens the Active Issue and completed Issues (close/back only — no Continue to Mode Result), and shows locked unstarted Issues as cover/synopsis teasers. The post-clear reader does not switch Issues.
-- English catalog (Issues, Chapters, titles, synopses, bodies, Issue cover, Issue backdrop) syncs at boot. **Reading Locale** is stored locally and on the server. Boot also pulls existing rows for that locale when present. Opening a locale uses local Room first, then the server catalog, and fetches the **whole Issue** (not one Chapter). If that locale is still missing, a server function translates the whole Issue (title, synopsis, and bodies), stores it, and syncs it down. Missing locale falls back to English until that finishes. Device language does not pick Reading Locale. The first-visit Reading Locale choice is a later gate, not boot.
+- English catalog (Issues, Chapters, titles, synopses, bodies, Issue cover, Issue backdrop) syncs at boot. **Reading Locale** is stored locally and on the server (`null` until chosen). The first visit into Hero's Journey requires a Reading Locale pick (English pre-selected); Options can change it later. Confirming a locale downloads that locale's full i18n catalog when it is not already complete locally; boot still applies `modified_at` incremental updates for English plus the preferred locale. Missing locale falls back to English. Device language does not pick Reading Locale. Curated locales are pre-translated in the catalog; on-demand server translation is out of scope for the client.
 
 ## Journey Round hearts (baseline)
 

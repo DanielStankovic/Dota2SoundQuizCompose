@@ -113,6 +113,13 @@ object JokeDestination
 @Serializable
 object JourneyLevelDestination
 
+/**
+ * First-visit Reading Locale gate ([fromOptions] = false) or Options setting
+ * ([fromOptions] = true).
+ */
+@Serializable
+data class ReadingLocaleDestination(val fromOptions: Boolean = false)
+
 @Serializable
 data class JourneyGameDestination(val levelNum: Int, val briefing: Boolean = false)
 

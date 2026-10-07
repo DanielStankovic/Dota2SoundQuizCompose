@@ -14,6 +14,7 @@ data class StoryProgressEntity(
     val owedGrants: Int,
     @field:TypeConverters(IntListTypeConverter::class)
     val completedIssueIds: List<Int>,
-    val readingLocale: String,
+    /** Null until the player confirms a Reading Locale. */
+    val readingLocale: String?,
     val modifiedAt: String,
 )

@@ -3,7 +3,7 @@ package com.dsapps2018.dota2guessthesound.data.util
 object Constants {
 
     const val DATABASE_NAME = "dota_database"
-    const val DATABASE_VERSION = 8
+    const val DATABASE_VERSION = 9
 
     /** Local mute for Chapter reader music bed (persists across Issues / Chapters). */
     const val PREF_STORY_MUSIC_MUTED = "story_music_muted"

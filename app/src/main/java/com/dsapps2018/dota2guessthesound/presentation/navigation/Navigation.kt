@@ -23,6 +23,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.C
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.IssueLibraryScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.IssuePickerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.JourneyIssueGateScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.ReadingLocaleScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.JourneyLevelScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.LeaderboardScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.leaderboardhistory.LeaderboardHistoryScreen
@@ -65,6 +66,8 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 navController.navigate(PickTimeDestination)
             }, onJourneyClicked = {
                 navController.navigate(JourneyLevelDestination)
+            }, onReadingLocaleClicked = {
+                navController.navigate(ReadingLocaleDestination(fromOptions = false))
             }, onInvokerClicked = {
                 navController.navigate(InvokerExplanationDestination)
             }, onJokeClicked = {
@@ -351,6 +354,8 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         composable<OptionsDestination> {
             OptionsScreen(onProfileClick = {
                 navController.navigate(route = ProfileDestination)
+            }, onReadingLocaleClick = {
+                navController.navigate(ReadingLocaleDestination(fromOptions = true))
             }, onPrivacyPolicyClick = {
                 navController.navigate(route = PrivacyDestination)
             }, onChangelogClick = {
@@ -358,6 +363,22 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
             }, onAttributionsClicked = {
                 navController.navigate(route = AttributionDestination)
             })
+        }
+
+        composable<ReadingLocaleDestination> { backStackEntry ->
+            val destination: ReadingLocaleDestination = backStackEntry.toRoute()
+            ReadingLocaleScreen(
+                onDone = {
+                    if (destination.fromOptions) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate(JourneyLevelDestination) {
+                            popUpTo<ReadingLocaleDestination> { inclusive = true }
+                        }
+                    }
+                },
+                onBack = { navController.popBackStack() },
+            )
         }
 
         composable<PrivacyDestination> {
