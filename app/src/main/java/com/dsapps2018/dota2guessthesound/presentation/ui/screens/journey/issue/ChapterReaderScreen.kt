@@ -109,21 +109,14 @@ fun ChapterReaderScreen(
                             .padding(horizontal = 20.dp, vertical = 16.dp)
                     ) {
                         Text(
-                            text = page.issueTitle,
-                            color = JourneyTimeAccent,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            maxLines = 2,
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text(
                             text = stringResource(
                                 R.string.chapter_reader_progress,
                                 page.chapterIndex,
                                 page.totalChapters,
                             ),
-                            color = Color.White.copy(alpha = 0.7f),
-                            fontSize = 14.sp,
+                            color = JourneyTimeAccent,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
                         Spacer(Modifier.height(16.dp))
                         Text(
