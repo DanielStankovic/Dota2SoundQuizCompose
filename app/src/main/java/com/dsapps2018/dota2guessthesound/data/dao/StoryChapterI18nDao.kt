@@ -12,6 +12,11 @@ interface StoryChapterI18nDao {
     @Query("SELECT modifiedAt FROM StoryChapterI18n WHERE locale = :locale ORDER BY modifiedAt DESC LIMIT 1")
     suspend fun getModifiedDate(locale: String): String?
 
+    @Query(
+        "SELECT * FROM StoryChapterI18n WHERE chapterId = :chapterId AND locale = :locale LIMIT 1"
+    )
+    suspend fun get(chapterId: Int, locale: String): StoryChapterI18nEntity?
+
     @Insert
     suspend fun insertAll(list: List<StoryChapterI18nEntity>)
 

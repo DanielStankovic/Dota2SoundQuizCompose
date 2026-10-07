@@ -12,6 +12,14 @@ interface StoryChapterDao {
     @Query("SELECT modifiedAt FROM StoryChapter ORDER BY modifiedAt DESC LIMIT 1")
     suspend fun getModifiedDate(): String?
 
+    @Query("SELECT COUNT(*) FROM StoryChapter WHERE issueId = :issueId")
+    suspend fun countForIssue(issueId: Int): Int
+
+    @Query(
+        "SELECT * FROM StoryChapter WHERE issueId = :issueId AND chapterIndex = :chapterIndex LIMIT 1"
+    )
+    suspend fun getByIssueAndIndex(issueId: Int, chapterIndex: Int): StoryChapterEntity?
+
     @Insert
     suspend fun insertAll(list: List<StoryChapterEntity>)
 

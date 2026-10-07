@@ -19,6 +19,9 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.invoker.Invoker
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.joke.JokeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.board.LevelClearTimeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.JourneyGameScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.ChapterReaderScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.IssuePickerScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.JourneyIssueGateScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.JourneyLevelScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.LeaderboardScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.leaderboardhistory.LeaderboardHistoryScreen
@@ -220,6 +223,7 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 level = journeyLevelResultDestination.level,
                 isLevelCompleted = journeyLevelResultDestination.isLevelCompleted,
                 clearTimeMs = journeyLevelResultDestination.clearTimeMs,
+                alreadySubmitted = journeyLevelResultDestination.alreadySubmitted,
                 onPlayClicked = { levelNum ->
                     navController.navigate(
                         JourneyGameDestination(
@@ -236,6 +240,92 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onBoardClicked = { level ->
                     navController.navigate(LevelClearTimeDestination(level))
+                },
+            )
+        }
+
+        composable<JourneyIssueGateDestination> {
+            JourneyIssueGateScreen(
+                onGoToResult = { level, clearTimeMs ->
+                    navController.navigate(
+                        JourneyLevelResultDestination(
+                            level = level,
+                            isLevelCompleted = true,
+                            clearTimeMs = clearTimeMs,
+                            alreadySubmitted = true,
+                        )
+                    ) {
+                        popUpTo<JourneyIssueGateDestination> { inclusive = true }
+                    }
+                },
+                onGoToPicker = { level, clearTimeMs ->
+                    navController.navigate(IssuePickerDestination(level, clearTimeMs)) {
+                        popUpTo<JourneyIssueGateDestination> { inclusive = true }
+                    }
+                },
+                onGoToReader = { level, clearTimeMs, issueId, chapterIndex, unlockedCount ->
+                    navController.navigate(
+                        ChapterReaderDestination(
+                            level = level,
+                            clearTimeMs = clearTimeMs,
+                            issueId = issueId,
+                            chapterIndex = chapterIndex,
+                            unlockedCount = unlockedCount,
+                        )
+                    ) {
+                        popUpTo<JourneyIssueGateDestination> { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable<IssuePickerDestination> {
+            IssuePickerScreen(
+                onOpenReader = { level, clearTimeMs, issueId, chapterIndex, unlockedCount ->
+                    navController.navigate(
+                        ChapterReaderDestination(
+                            level = level,
+                            clearTimeMs = clearTimeMs,
+                            issueId = issueId,
+                            chapterIndex = chapterIndex,
+                            unlockedCount = unlockedCount,
+                        )
+                    ) {
+                        popUpTo<IssuePickerDestination> { inclusive = true }
+                    }
+                },
+                onNoIssues = { level, clearTimeMs ->
+                    navController.navigate(
+                        JourneyLevelResultDestination(
+                            level = level,
+                            isLevelCompleted = true,
+                            clearTimeMs = clearTimeMs,
+                            alreadySubmitted = true,
+                        )
+                    ) {
+                        popUpTo<IssuePickerDestination> { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable<ChapterReaderDestination> {
+            ChapterReaderScreen(
+                onContinue = { level, clearTimeMs ->
+                    navController.navigate(
+                        JourneyLevelResultDestination(
+                            level = level,
+                            isLevelCompleted = true,
+                            clearTimeMs = clearTimeMs,
+                            alreadySubmitted = true,
+                        )
+                    ) {
+                        popUpTo<JourneyLevelDestination> {
+                            inclusive = false
+                            saveState = false
+                        }
+                        restoreState = false
+                    }
                 },
             )
         }
@@ -319,14 +409,26 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
 
         composable<JourneyGameDestination> {
             JourneyGameScreen(onNavigateToResultScreen = { level, isLevelCompleted, clearTimeMs ->
-                navController.navigate(
-                    JourneyLevelResultDestination(level, isLevelCompleted, clearTimeMs)
-                ) {
-                    popUpTo<JourneyLevelDestination> {
-                        inclusive = false
-                        saveState = false
+                if (isLevelCompleted) {
+                    navController.navigate(
+                        JourneyIssueGateDestination(level, clearTimeMs)
+                    ) {
+                        popUpTo<JourneyLevelDestination> {
+                            inclusive = false
+                            saveState = false
+                        }
+                        restoreState = false
                     }
-                    restoreState = false
+                } else {
+                    navController.navigate(
+                        JourneyLevelResultDestination(level, false, clearTimeMs)
+                    ) {
+                        popUpTo<JourneyLevelDestination> {
+                            inclusive = false
+                            saveState = false
+                        }
+                        restoreState = false
+                    }
                 }
             })
         }

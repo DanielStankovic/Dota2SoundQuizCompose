@@ -7,6 +7,7 @@ import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
 import com.dsapps2018.dota2guessthesound.data.model.initialPlayerProgress
 import com.dsapps2018.dota2guessthesound.data.progress.JourneyWinResult
+import com.dsapps2018.dota2guessthesound.data.progress.JourneyWinSession
 import com.dsapps2018.dota2guessthesound.data.progress.ModeResult
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -28,6 +29,7 @@ import javax.inject.Inject
 class ScoreViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val modeResult: ModeResult,
+    private val journeyWinSession: JourneyWinSession,
     playerProgressRepository: PlayerProgressRepository,
     private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ViewModel() {
@@ -76,9 +78,13 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
-    fun submitJourneyLevel(level: Int, clearTimeMs: Long) {
+    fun submitJourneyLevel(level: Int, clearTimeMs: Long, alreadySubmitted: Boolean = false) {
         if (journeySubmitStarted) return
         journeySubmitStarted = true
+        if (alreadySubmitted) {
+            _journeyWinResult.value = journeyWinSession.pending
+            return
+        }
         viewModelScope.launch(coroutineExceptionHandler) {
             _journeyWinResult.value = modeResult.submitJourneyLevel(level, clearTimeMs)
         }

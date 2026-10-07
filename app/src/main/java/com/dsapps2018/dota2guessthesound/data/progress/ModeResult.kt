@@ -12,17 +12,19 @@ data class JourneyWinResult(
     val progress: JourneyProgressWrite,
     val clearTimeMs: Long,
     val isNewPersonalBest: Boolean,
+    val issueOutcome: FirstClearOutcome = FirstClearOutcome.None,
 )
 
 /**
  * Deep in-process module for finishing a mode run: Player Progress write + optional
  * leaderboard / Level Clear Time enqueue. See docs/adr/0010-mode-result.md,
- * ADR-0001 for batching, ADR-0016 for Level Clear Time.
+ * ADR-0001 for batching, ADR-0016 for Level Clear Time, ADR-0019 for Journey Issues.
  */
 class ModeResult @Inject constructor(
     private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
     private val levelClearTime: LevelClearTime,
+    private val journeyIssue: JourneyIssue,
     private val productAnalytics: ProductAnalytics,
 ) {
 
@@ -80,10 +82,20 @@ class ModeResult @Inject constructor(
         } catch (_: Exception) {
             false
         }
+        val issueOutcome = if (progress.firstClear) {
+            try {
+                journeyIssue.onFirstClear()
+            } catch (_: Exception) {
+                FirstClearOutcome.None
+            }
+        } else {
+            FirstClearOutcome.None
+        }
         return JourneyWinResult(
             progress = progress,
             clearTimeMs = clearTimeMs,
             isNewPersonalBest = isNewPersonalBest,
+            issueOutcome = issueOutcome,
         )
     }
 

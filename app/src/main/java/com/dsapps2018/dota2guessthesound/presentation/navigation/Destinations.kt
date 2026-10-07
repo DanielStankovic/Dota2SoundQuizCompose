@@ -46,6 +46,30 @@ data class JourneyLevelResultDestination(
     val level: Int,
     val isLevelCompleted: Boolean,
     val clearTimeMs: Long = 0L,
+    /** True when Mode Result already ran (Issue gate / Picker / reader path). */
+    val alreadySubmitted: Boolean = false,
+)
+
+/** Submits Mode Result on Journey win, then routes to Picker, Chapter reader, or Result. */
+@Serializable
+data class JourneyIssueGateDestination(
+    val level: Int,
+    val clearTimeMs: Long,
+)
+
+@Serializable
+data class IssuePickerDestination(
+    val level: Int,
+    val clearTimeMs: Long,
+)
+
+@Serializable
+data class ChapterReaderDestination(
+    val level: Int,
+    val clearTimeMs: Long,
+    val issueId: Int,
+    val chapterIndex: Int,
+    val unlockedCount: Int,
 )
 
 @Serializable

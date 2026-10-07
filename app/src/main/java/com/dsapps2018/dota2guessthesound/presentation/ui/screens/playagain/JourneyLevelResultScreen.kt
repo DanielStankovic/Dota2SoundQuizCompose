@@ -57,6 +57,7 @@ fun JourneyLevelResultScreen(
     level: Int,
     isLevelCompleted: Boolean,
     clearTimeMs: Long,
+    alreadySubmitted: Boolean = false,
     onPlayClicked: (Int) -> Unit,
     onBoardClicked: (Int) -> Unit,
 ) {
@@ -79,9 +80,9 @@ fun JourneyLevelResultScreen(
 
     val journeyWin by scoreViewModel.journeyWinResult.collectAsStateWithLifecycle()
 
-    LaunchedEffect(isLevelCompleted, level, clearTimeMs) {
+    LaunchedEffect(isLevelCompleted, level, clearTimeMs, alreadySubmitted) {
         if (isLevelCompleted) {
-            scoreViewModel.submitJourneyLevel(level, clearTimeMs)
+            scoreViewModel.submitJourneyLevel(level, clearTimeMs, alreadySubmitted)
         }
     }
     Scaffold(

@@ -147,6 +147,16 @@
     <string name="level_clear_time_new_best">New personal best!</string>
     <string name="journey_first_clear_coins">+%1$d coins — first clear</string>
     <string name="journey_first_clear_value">+%1$d</string>
+    <string name="issue_picker_title">Choose a story</string>
+    <string name="issue_picker_subtitle">Pick a hero serial. You\'ll unlock chapters as you clear Journey levels.</string>
+    <string name="issue_picker_chapter_count">%1$d chapters</string>
+    <string name="issue_picker_empty">No stories available right now.</string>
+    <string name="issue_picker_error">Couldn\'t load stories.\n\nTry again…</string>
+    <string name="chapter_reader_progress">%1$d / %2$d</string>
+    <string name="chapter_reader_previous">Previous</string>
+    <string name="chapter_reader_next">Next</string>
+    <string name="chapter_reader_continue">Continue</string>
+    <string name="chapter_reader_error">Couldn\'t load this chapter.</string>
 
 
 </resources>

@@ -21,6 +21,7 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.StoryIssueEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.StoryIssueI18nEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.StoryProgressEntity
 import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.getCurrentDate
 import com.dsapps2018.dota2guessthesound.data.util.getInitialModifiedDate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.auth.Auth
@@ -38,6 +39,7 @@ import kotlinx.coroutines.sync.withPermit
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.min
 
 /**
  * Deep Data-layer module for the Journey Issue catalog, local art, and Issue Progress.
@@ -116,6 +118,185 @@ class JourneyIssue @Inject constructor(
         issueDao.truncateTable()
         storyArtDirectory()?.deleteRecursively()
     }
+
+    /**
+     * Journey first-clear only. With an Active Issue, grants one Chapter.
+     * With none, accrues an owed grant and asks for the Issue Picker.
+     */
+    suspend fun onFirstClear(): FirstClearOutcome {
+        val progress = requireProgress() ?: return FirstClearOutcome.None
+        val activeId = progress.activeIssueId
+        if (activeId == null) {
+            val updated = progress.copy(
+                owedGrants = progress.owedGrants + 1,
+                modifiedAt = getCurrentDate(),
+            )
+            persistProgress(updated)
+            return if (hasPickableIssues(updated.completedIssueIds)) {
+                FirstClearOutcome.ShowPicker
+            } else {
+                FirstClearOutcome.None
+            }
+        }
+        val total = chapterDao.countForIssue(activeId)
+        if (total <= 0) return FirstClearOutcome.None
+        val grantedIndex = (progress.activeUnlocked + 1).coerceAtMost(total)
+        val completed = if (grantedIndex >= total && activeId !in progress.completedIssueIds) {
+            progress.completedIssueIds + activeId
+        } else {
+            progress.completedIssueIds
+        }
+        val updated = progress.copy(
+            activeIssueId = if (grantedIndex >= total) null else activeId,
+            activeUnlocked = if (grantedIndex >= total) 0 else grantedIndex,
+            completedIssueIds = completed,
+            modifiedAt = getCurrentDate(),
+        )
+        persistProgress(updated)
+        return FirstClearOutcome.ShowReader(
+            issueId = activeId,
+            chapterIndex = grantedIndex,
+            unlockedCount = grantedIndex,
+            totalChapters = total,
+        )
+    }
+
+    suspend fun pickIssue(issueId: Int): PickOutcome {
+        val progress = requireProgress() ?: return PickOutcome.ShowPickerAgain
+        if (progress.activeIssueId != null) {
+            return readerOrPickerAfterPick(progress)
+        }
+        if (issueId in progress.completedIssueIds) {
+            return PickOutcome.ShowPickerAgain
+        }
+        val total = chapterDao.countForIssue(issueId)
+        if (total <= 0) return PickOutcome.ShowPickerAgain
+
+        val applied = min(progress.owedGrants, total)
+        val owedLeft = progress.owedGrants - applied
+        val completedIssue = applied >= total
+        val completed = if (completedIssue && issueId !in progress.completedIssueIds) {
+            progress.completedIssueIds + issueId
+        } else {
+            progress.completedIssueIds
+        }
+        val updated = progress.copy(
+            activeIssueId = if (completedIssue) null else issueId,
+            activeUnlocked = if (completedIssue) 0 else applied,
+            owedGrants = owedLeft,
+            completedIssueIds = completed,
+            modifiedAt = getCurrentDate(),
+        )
+        persistProgress(updated)
+
+        if (owedLeft > 0 && updated.activeIssueId == null &&
+            hasPickableIssues(updated.completedIssueIds)
+        ) {
+            return PickOutcome.ShowPickerAgain
+        }
+        if (applied <= 0) return PickOutcome.ShowPickerAgain
+        return PickOutcome.ShowReader(
+            issueId = issueId,
+            chapterIndex = applied,
+            unlockedCount = applied,
+            totalChapters = total,
+        )
+    }
+
+    suspend fun pickerItems(): List<IssuePickerItem> {
+        val progress = requireProgress()
+        val completed = progress?.completedIssueIds.orEmpty().toSet()
+        val locale = progress?.readingLocale?.takeIf { it.isNotBlank() } ?: ENGLISH
+        return issueDao.getActive()
+            .filter { it.id !in completed }
+            .map { issue ->
+                val i18n = issueI18n(issue.id, locale)
+                IssuePickerItem(
+                    issueId = issue.id,
+                    title = i18n?.title.orEmpty().ifBlank { issue.slug },
+                    synopsis = i18n?.synopsis.orEmpty(),
+                    chapterCount = chapterDao.countForIssue(issue.id),
+                    coverFilePath = issue.coverFileLink,
+                )
+            }
+    }
+
+    suspend fun chapterPage(
+        issueId: Int,
+        chapterIndex: Int,
+        unlockedCount: Int,
+    ): ChapterReaderPage? {
+        val issue = issueDao.getById(issueId) ?: return null
+        val total = chapterDao.countForIssue(issueId)
+        if (total <= 0 || chapterIndex !in 1..unlockedCount || chapterIndex > total) return null
+        val chapter = chapterDao.getByIssueAndIndex(issueId, chapterIndex) ?: return null
+        val progress = requireProgress()
+        val locale = progress?.readingLocale?.takeIf { it.isNotBlank() } ?: ENGLISH
+        val body = chapterBody(chapter.id, locale).orEmpty()
+        val title = issueI18n(issueId, locale)?.title.orEmpty().ifBlank { issue.slug }
+        return ChapterReaderPage(
+            issueId = issueId,
+            chapterIndex = chapterIndex,
+            unlockedCount = unlockedCount.coerceAtMost(total),
+            totalChapters = total,
+            body = body,
+            backdropFilePath = issue.backdropFileLink,
+            issueTitle = title,
+        )
+    }
+
+    private suspend fun readerOrPickerAfterPick(progress: StoryProgressEntity): PickOutcome {
+        val activeId = progress.activeIssueId ?: return PickOutcome.ShowPickerAgain
+        val total = chapterDao.countForIssue(activeId)
+        val unlocked = progress.activeUnlocked.coerceAtMost(total)
+        if (unlocked <= 0) return PickOutcome.ShowPickerAgain
+        return PickOutcome.ShowReader(
+            issueId = activeId,
+            chapterIndex = unlocked,
+            unlockedCount = unlocked,
+            totalChapters = total,
+        )
+    }
+
+    private suspend fun hasPickableIssues(completedIds: List<Int>): Boolean {
+        val completed = completedIds.toSet()
+        return issueDao.getActive().any { it.id !in completed }
+    }
+
+    private suspend fun requireProgress(): StoryProgressEntity? {
+        val uid = auth.currentUserOrNull()?.id ?: return null
+        progressDao.get(uid)?.let { return it }
+        val empty = emptyProgress(uid, getCurrentDate())
+        progressDao.upsert(empty)
+        return empty
+    }
+
+    private suspend fun persistProgress(entity: StoryProgressEntity) {
+        progressDao.upsert(entity)
+        try {
+            postgrest.from(Constants.TABLE_STORY_PROGRESS).upsert(
+                StoryProgressDto(
+                    userId = entity.userId,
+                    activeIssueId = entity.activeIssueId,
+                    activeUnlocked = entity.activeUnlocked,
+                    owedGrants = entity.owedGrants,
+                    completedIssueIds = entity.completedIssueIds,
+                    readingLocale = entity.readingLocale,
+                    modifiedAt = entity.modifiedAt,
+                )
+            )
+        } catch (_: Exception) {
+            // Local row is source of truth until Sync Session / next write retries.
+        }
+    }
+
+    private suspend fun issueI18n(issueId: Int, locale: String): StoryIssueI18nEntity? =
+        issueI18nDao.get(issueId, locale)
+            ?: if (locale != ENGLISH) issueI18nDao.get(issueId, ENGLISH) else null
+
+    private suspend fun chapterBody(chapterId: Int, locale: String): String? =
+        chapterI18nDao.get(chapterId, locale)?.body
+            ?: if (locale != ENGLISH) chapterI18nDao.get(chapterId, ENGLISH)?.body else null
 
     private suspend fun catalogLocales(): List<String> {
         val preferred = auth.currentUserOrNull()?.id

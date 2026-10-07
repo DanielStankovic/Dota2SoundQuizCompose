@@ -1,0 +1,85 @@
+package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue
+
+import android.content.Context
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.progress.ChapterReaderPage
+import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
+import com.dsapps2018.dota2guessthesound.presentation.navigation.ChapterReaderDestination
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class ChapterReaderViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    savedStateHandle: SavedStateHandle,
+    private val journeyIssue: JourneyIssue,
+    private val firebaseCrashlytics: FirebaseCrashlytics,
+) : ViewModel() {
+
+    private val route = savedStateHandle.toRoute<ChapterReaderDestination>()
+    val level: Int = route.level
+    val clearTimeMs: Long = route.clearTimeMs
+    private val issueId: Int = route.issueId
+    private val unlockedCount: Int = route.unlockedCount
+
+    private val _uiState = MutableStateFlow<ChapterReaderUiState>(ChapterReaderUiState.Loading)
+    val uiState = _uiState.asStateFlow()
+
+    private var viewingIndex: Int = route.chapterIndex
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        firebaseCrashlytics.recordException(throwable)
+        _uiState.value = ChapterReaderUiState.Error(
+            context.getString(R.string.chapter_reader_error)
+        )
+    }
+
+    init {
+        load(viewingIndex)
+    }
+
+    fun previousChapter() {
+        if (viewingIndex <= 1) return
+        load(viewingIndex - 1)
+    }
+
+    fun nextChapter() {
+        if (viewingIndex >= unlockedCount) return
+        load(viewingIndex + 1)
+    }
+
+    private fun load(index: Int) = viewModelScope.launch(exceptionHandler) {
+        _uiState.value = ChapterReaderUiState.Loading
+        val page = journeyIssue.chapterPage(issueId, index, unlockedCount)
+        viewingIndex = index
+        _uiState.value = if (page == null) {
+            ChapterReaderUiState.Error(context.getString(R.string.chapter_reader_error))
+        } else {
+            ChapterReaderUiState.Ready(
+                page = page,
+                canGoPrevious = index > 1,
+                canGoNext = index < unlockedCount,
+            )
+        }
+    }
+
+    sealed interface ChapterReaderUiState {
+        data object Loading : ChapterReaderUiState
+        data class Ready(
+            val page: ChapterReaderPage,
+            val canGoPrevious: Boolean,
+            val canGoNext: Boolean,
+        ) : ChapterReaderUiState
+        data class Error(val message: String) : ChapterReaderUiState
+    }
+}
