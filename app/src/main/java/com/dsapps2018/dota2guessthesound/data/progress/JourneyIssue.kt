@@ -230,31 +230,51 @@ class JourneyIssue @Inject constructor(
     }
 
     /**
-     * Active Issue first, then completed Issues in completion order.
-     * Unstarted Issues are omitted — they belong only in the Issue Picker.
+     * Active Issue first, then completed (completion order), then locked unstarted
+     * Issues (catalog sort) so players can preview upcoming serials.
      */
     suspend fun libraryItems(): List<IssueLibraryItem> {
         val progress = requireProgress() ?: return emptyList()
         val locale = progress.readingLocale.takeIf { it.isNotBlank() } ?: ENGLISH
-        val items = ArrayList<IssueLibraryItem>()
+        val completed = progress.completedIssueIds.toSet()
         val activeId = progress.activeIssueId
+        val items = ArrayList<IssueLibraryItem>()
+        val catalog = issueDao.getActive()
+        val seen = HashSet<Int>()
 
         if (activeId != null) {
             libraryItem(
                 issueId = activeId,
                 locale = locale,
                 unlockedCount = progress.activeUnlocked,
-                isActive = true,
-            )?.let { items += it }
+                access = IssueLibraryAccess.Active,
+            )?.let {
+                items += it
+                seen += activeId
+            }
         }
 
         for (completedId in progress.completedIssueIds) {
-            if (completedId == activeId) continue
+            if (completedId in seen) continue
             libraryItem(
                 issueId = completedId,
                 locale = locale,
                 unlockedCount = chapterDao.countForIssue(completedId),
-                isActive = false,
+                access = IssueLibraryAccess.Completed,
+            )?.let {
+                items += it
+                seen += completedId
+            }
+        }
+
+        for (issue in catalog) {
+            if (issue.id in seen || issue.id in completed) continue
+            if (issue.id == activeId) continue
+            libraryItem(
+                issueId = issue.id,
+                locale = locale,
+                unlockedCount = 0,
+                access = IssueLibraryAccess.Locked,
             )?.let { items += it }
         }
         return items
@@ -264,14 +284,13 @@ class JourneyIssue @Inject constructor(
         issueId: Int,
         locale: String,
         unlockedCount: Int,
-        isActive: Boolean,
+        access: IssueLibraryAccess,
     ): IssueLibraryItem? {
         val issue = issueDao.getById(issueId) ?: return null
         val total = chapterDao.countForIssue(issueId)
         if (total <= 0) return null
         val unlocked = unlockedCount.coerceIn(0, total)
-        // Completed with nothing readable should not appear; Active still lists.
-        if (!isActive && unlocked <= 0) return null
+        if (access == IssueLibraryAccess.Completed && unlocked <= 0) return null
         val i18n = issueI18n(issueId, locale)
         return IssueLibraryItem(
             issueId = issueId,
@@ -280,7 +299,7 @@ class JourneyIssue @Inject constructor(
             chapterCount = total,
             unlockedCount = unlocked,
             coverFilePath = issue.coverFileLink,
-            isActive = isActive,
+            access = access,
         )
     }
 
@@ -295,16 +314,17 @@ class JourneyIssue @Inject constructor(
         val chapter = chapterDao.getByIssueAndIndex(issueId, chapterIndex) ?: return null
         val progress = requireProgress()
         val locale = progress?.readingLocale?.takeIf { it.isNotBlank() } ?: ENGLISH
-        val body = chapterBody(chapter.id, locale).orEmpty()
-        val title = issueI18n(issueId, locale)?.title.orEmpty().ifBlank { issue.slug }
+        val i18nRow = chapterI18n(chapter.id, locale)
+        val issueTitle = issueI18n(issueId, locale)?.title.orEmpty().ifBlank { issue.slug }
         return ChapterReaderPage(
             issueId = issueId,
             chapterIndex = chapterIndex,
             unlockedCount = unlockedCount.coerceAtMost(total),
             totalChapters = total,
-            body = body,
+            body = i18nRow?.body.orEmpty(),
+            chapterTitle = i18nRow?.title.orEmpty(),
             backdropFilePath = issue.backdropFileLink,
-            issueTitle = title,
+            issueTitle = issueTitle,
         )
     }
 
@@ -357,9 +377,9 @@ class JourneyIssue @Inject constructor(
         issueI18nDao.get(issueId, locale)
             ?: if (locale != ENGLISH) issueI18nDao.get(issueId, ENGLISH) else null
 
-    private suspend fun chapterBody(chapterId: Int, locale: String): String? =
-        chapterI18nDao.get(chapterId, locale)?.body
-            ?: if (locale != ENGLISH) chapterI18nDao.get(chapterId, ENGLISH)?.body else null
+    private suspend fun chapterI18n(chapterId: Int, locale: String): StoryChapterI18nEntity? =
+        chapterI18nDao.get(chapterId, locale)
+            ?: if (locale != ENGLISH) chapterI18nDao.get(chapterId, ENGLISH) else null
 
     private suspend fun catalogLocales(): List<String> {
         val preferred = auth.currentUserOrNull()?.id
@@ -459,7 +479,7 @@ class JourneyIssue @Inject constructor(
     private suspend fun syncChapterI18n(locale: String) {
         val modifiedDate = chapterI18nDao.getModifiedDate(locale) ?: getInitialModifiedDate()
         val fetched = postgrest.from(Constants.TABLE_STORY_CHAPTER_I18N)
-            .select(Columns.list("chapter_id", "locale", "body", "modified_at")) {
+            .select(Columns.list("chapter_id", "locale", "title", "body", "modified_at")) {
                 filter {
                     gt("modified_at", modifiedDate)
                     eq("locale", locale)
@@ -471,6 +491,7 @@ class JourneyIssue @Inject constructor(
                 StoryChapterI18nEntity(
                     chapterId = dto.chapterId,
                     locale = dto.locale,
+                    title = dto.title,
                     body = dto.body,
                     modifiedAt = dto.modifiedAt,
                 )

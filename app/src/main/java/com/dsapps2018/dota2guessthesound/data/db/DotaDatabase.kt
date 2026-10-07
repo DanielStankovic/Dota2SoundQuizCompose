@@ -49,6 +49,14 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
     }
 }
 
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "ALTER TABLE `StoryChapterI18n` ADD COLUMN `title` TEXT NOT NULL DEFAULT ''"
+        )
+    }
+}
+
 val MIGRATION_6_7 = object : Migration(6, 7) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(

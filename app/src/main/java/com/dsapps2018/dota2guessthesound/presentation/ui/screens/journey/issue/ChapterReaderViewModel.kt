@@ -1,6 +1,7 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import androidx.navigation.toRoute
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.progress.ChapterReaderPage
 import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
+import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.navigation.ChapterReaderDestination
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +31,7 @@ class ChapterReaderViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
     private val journeyIssue: JourneyIssue,
+    private val sharedPreferences: SharedPreferences,
     private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ViewModel() {
 
@@ -45,6 +48,11 @@ class ChapterReaderViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ChapterReaderUiState>(ChapterReaderUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    private val _musicMuted = MutableStateFlow(
+        sharedPreferences.getBoolean(Constants.PREF_STORY_MUSIC_MUTED, false)
+    )
+    val musicMuted = _musicMuted.asStateFlow()
+
     private var viewingIndex: Int = route.chapterIndex
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -56,6 +64,12 @@ class ChapterReaderViewModel @Inject constructor(
 
     init {
         load(viewingIndex)
+    }
+
+    fun toggleMusicMuted() {
+        val next = !_musicMuted.value
+        _musicMuted.value = next
+        sharedPreferences.edit().putBoolean(Constants.PREF_STORY_MUSIC_MUTED, next).apply()
     }
 
     fun previousChapter() {

@@ -9,6 +9,8 @@ data class StoryChapterI18nDto(
     val chapterId: Int,
     @SerialName("locale")
     val locale: String,
+    @SerialName("title")
+    val title: String = "",
     @SerialName("body")
     val body: String,
     @SerialName("modified_at")

@@ -31,7 +31,14 @@ data class IssuePickerItem(
     val coverFilePath: String,
 )
 
-/** Active Issue and completed Issues for the Issue Library (not unstarted). */
+enum class IssueLibraryAccess {
+    Active,
+    Completed,
+    /** Unstarted — cover/synopsis teaser only; cannot open the reader. */
+    Locked,
+}
+
+/** Active, completed, and locked (unstarted) Issues for the Issue Library. */
 data class IssueLibraryItem(
     val issueId: Int,
     val title: String,
@@ -39,11 +46,14 @@ data class IssueLibraryItem(
     val chapterCount: Int,
     val unlockedCount: Int,
     val coverFilePath: String,
-    val isActive: Boolean,
+    val access: IssueLibraryAccess,
 ) {
     /** Chapter to open: newest unlocked for Active, last Chapter when completed. */
     val openChapterIndex: Int
         get() = unlockedCount.coerceIn(1, chapterCount.coerceAtLeast(1))
+
+    val canOpenReader: Boolean
+        get() = access != IssueLibraryAccess.Locked && unlockedCount > 0
 }
 
 data class ChapterReaderPage(
@@ -52,6 +62,7 @@ data class ChapterReaderPage(
     val unlockedCount: Int,
     val totalChapters: Int,
     val body: String,
+    val chapterTitle: String,
     val backdropFilePath: String,
     val issueTitle: String,
 )

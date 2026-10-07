@@ -75,7 +75,7 @@ def check() -> int:
     return 1 if missing or bad else 0
 
 
-def load_unit(path: Path, locale: str, slug: str) -> tuple[str, str, list[tuple[int, str]]]:
+def load_unit(path: Path, locale: str, slug: str) -> tuple[str, str, list[tuple[int, str, str]]]:
     text = path.read_text(encoding="utf-8")
     title, file_locale, file_slug, synopsis = parse_i18n(text)
     if file_locale != locale or file_slug != slug:
@@ -84,9 +84,11 @@ def load_unit(path: Path, locale: str, slug: str) -> tuple[str, str, list[tuple[
     english = parse_parts((ROOT / "docs" / "story" / SLUGS[slug]["file"]).read_text(encoding="utf-8"))
     if [p[0] for p in parts] != [p[0] for p in english]:
         raise ValueError(f"chapter indexes { [p[0] for p in parts] } != English { [p[0] for p in english] }")
-    for index, body in parts:
+    for index, part_title, body in parts:
         if not body:
             raise ValueError(f"empty body for part {index}")
+        if not part_title:
+            raise ValueError(f"empty title for part {index}")
     return title, synopsis, parts
 
 
@@ -121,20 +123,22 @@ def sql_for(locale: str, slug: str | None) -> str:
             "  modified_at = now();",
             "",
         ]
-        for index, body in parts:
+        for index, title, body in parts:
             lines += [
-                "INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)",
+                "INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)",
                 "SELECT ch.id,",
                 f"  {dollar_quote(locale)},",
+                f"  {dollar_quote(title)},",
                 f"  {dollar_quote(body)}",
                 "FROM public.story_chapter ch",
                 "JOIN public.story_issue i ON i.id = ch.issue_id",
                 f"WHERE i.slug = {dollar_quote(item)} AND ch.chapter_index = {index}",
                 "ON CONFLICT (chapter_id, locale) DO UPDATE SET",
+                "  title = EXCLUDED.title,",
                 "  body = EXCLUDED.body,",
                 "  modified_at = now();",
                 "",
-            ]
+            }
     lines += ["COMMIT;", ""]
     return "\n".join(lines)
 

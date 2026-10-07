@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 STORY_DIR = ROOT / "docs" / "story"
 OUT = Path(__file__).resolve().parent / "seed.sql"
 
-PART_RE = re.compile(r"^## Part (\d+) — ", re.MULTILINE)
+PART_RE = re.compile(r"^## Part (\d+) — (.+)$", re.MULTILINE)
 
 ISSUES = [
     {
@@ -115,13 +115,15 @@ ISSUES = [
 ]
 
 
-def parse_parts(markdown: str) -> list[tuple[int, str]]:
+def parse_parts(markdown: str) -> list[tuple[int, str, str]]:
+    """Return (chapter_index, chapter_title, body) for each ## Part N — Title."""
     matches = list(PART_RE.finditer(markdown))
     if not matches:
         raise SystemExit("no ## Part N headings")
-    parts: list[tuple[int, str]] = []
+    parts: list[tuple[int, str, str]] = []
     for i, match in enumerate(matches):
         index = int(match.group(1))
+        title = match.group(2).strip()
         start = match.end()
         eol = markdown.find("\n", start)
         start = eol + 1 if eol != -1 else start
@@ -133,7 +135,7 @@ def parse_parts(markdown: str) -> list[tuple[int, str]]:
         body = body.strip()
         if body.endswith("---"):
             body = body[:-3].strip()
-        parts.append((index, body))
+        parts.append((index, title, body))
     return parts
 
 
@@ -184,7 +186,7 @@ def main() -> None:
             f"WHERE i.slug = {dollar_quote(issue['slug'])};",
             "",
         ]
-        for index, body in parts:
+        for index, chapter_title, body in parts:
             lines += [
                 "INSERT INTO public.story_chapter (issue_id, chapter_index)",
                 "SELECT i.id,",
@@ -192,8 +194,9 @@ def main() -> None:
                 "FROM public.story_issue i",
                 f"WHERE i.slug = {dollar_quote(issue['slug'])};",
                 "",
-                "INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)",
+                "INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)",
                 "SELECT ch.id, 'en',",
+                f"  {dollar_quote(chapter_title)},",
                 f"  {dollar_quote(body)}",
                 "FROM public.story_chapter ch",
                 "JOIN public.story_issue i ON i.id = ch.issue_id",

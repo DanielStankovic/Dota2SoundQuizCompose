@@ -8,6 +8,7 @@ import com.dsapps2018.dota2guessthesound.data.util.DateTypeConverter
 data class StoryChapterI18nEntity(
     val chapterId: Int,
     val locale: String,
+    val title: String = "",
     val body: String,
     @field:TypeConverters(DateTypeConverter::class)
     val modifiedAt: String,

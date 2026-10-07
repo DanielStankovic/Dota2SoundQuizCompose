@@ -155,19 +155,25 @@
     <string name="issue_library_chip">Stories</string>
     <string name="issue_library_chip_hint">Clear a level to start</string>
     <string name="issue_library_title">Stories</string>
-    <string name="issue_library_subtitle">Your active serial and finished stories.</string>
+    <string name="issue_library_subtitle">Your serials — and a peek at what\'s waiting.</string>
     <string name="issue_library_empty">No stories yet.\n\nClear a Journey level to begin.</string>
     <string name="issue_library_error">Couldn\'t load stories.\n\nTry again…</string>
     <string name="issue_library_badge_reading">In progress · %1$d / %2$d</string>
     <string name="issue_library_badge_complete">Complete</string>
+    <string name="issue_library_badge_locked">Coming soon</string>
     <string name="issue_library_cd_book">Story book</string>
+    <string name="issue_library_cd_locked">Locked story</string>
     <string name="issue_library_cd_back">Back</string>
+    <string name="issue_synopsis_more">Read synopsis</string>
+    <string name="issue_synopsis_less">Hide synopsis</string>
     <string name="chapter_reader_progress">%1$d / %2$d</string>
     <string name="chapter_reader_previous">Previous</string>
     <string name="chapter_reader_next">Next</string>
     <string name="chapter_reader_continue">Continue</string>
     <string name="chapter_reader_close">Close</string>
     <string name="chapter_reader_error">Couldn\'t load this chapter.</string>
+    <string name="chapter_reader_mute">Mute music</string>
+    <string name="chapter_reader_unmute">Unmute music</string>
 
 
 </resources>

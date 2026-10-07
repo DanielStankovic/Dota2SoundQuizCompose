@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -47,6 +49,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -72,12 +75,13 @@ fun ChapterReaderScreen(
     onClose: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val musicMuted by viewModel.musicMuted.collectAsStateWithLifecycle()
     val mode = viewModel.mode
     val isLibrary = mode is ChapterReaderMode.Library
 
     BackHandler(enabled = isLibrary, onBack = onClose)
 
-    ChapterReaderMusicBed()
+    ChapterReaderMusicBed(muted = musicMuted)
 
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
@@ -127,10 +131,13 @@ fun ChapterReaderScreen(
                         canGoPrevious = state.canGoPrevious,
                         canGoNext = state.canGoNext,
                         showContinue = !isLibrary,
+                        musicMuted = musicMuted,
+                        onToggleMute = viewModel::toggleMusicMuted,
                         onPrevious = viewModel::previousChapter,
                         onNext = viewModel::nextChapter,
                         onContinue = {
-                            val firstClear = mode as? ChapterReaderMode.FirstClear ?: return@ChapterReaderContent
+                            val firstClear = mode as? ChapterReaderMode.FirstClear
+                                ?: return@ChapterReaderContent
                             onContinue(firstClear.level, firstClear.clearTimeMs)
                         },
                         onClose = onClose,
@@ -147,6 +154,8 @@ private fun ChapterReaderContent(
     canGoPrevious: Boolean,
     canGoNext: Boolean,
     showContinue: Boolean,
+    musicMuted: Boolean,
+    onToggleMute: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onContinue: () -> Unit,
@@ -199,19 +208,44 @@ private fun ChapterReaderContent(
         ) {
             Row(
                 Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = stringResource(
-                        R.string.chapter_reader_progress,
-                        page.chapterIndex,
-                        page.totalChapters,
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(
+                            R.string.chapter_reader_progress,
+                            page.chapterIndex,
+                            page.totalChapters,
+                        ),
+                        color = JourneyTimeAccent,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 1.sp,
+                    )
+                    if (page.chapterTitle.isNotBlank()) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = page.chapterTitle,
+                            color = Color.White.copy(alpha = 0.92f),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 2,
+                        )
+                    }
+                }
+                Image(
+                    painter = painterResource(
+                        if (musicMuted) R.drawable.ic_story_music_off
+                        else R.drawable.ic_story_music_on
                     ),
-                    color = JourneyTimeAccent,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 1.sp,
+                    contentDescription = stringResource(
+                        if (musicMuted) R.string.chapter_reader_unmute
+                        else R.string.chapter_reader_mute
+                    ),
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable(onClick = onToggleMute)
+                        .padding(8.dp),
                 )
                 if (!showContinue) {
                     TextButton(onClick = onClose) {
@@ -222,7 +256,7 @@ private fun ChapterReaderContent(
                     }
                 }
             }
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(16.dp))
             ChapterBodyReveal(
                 body = page.body,
                 chapterKey = page.issueId to page.chapterIndex,

@@ -113,7 +113,7 @@ The scene behind Chapter prose in the Chapter reader. One per Issue, not per Cha
 _Avoid_: background, chapter art, cover (when you mean the reader scene)
 
 **Chapter**:
-One beat of an Issue: prose over that Issue’s backdrop, shown fullscreen after a first-clear. No Chapter title; chrome is `n / total`. Distinct from Journey Round briefing and from Mode Result coins / Level Clear Time.
+One beat of an Issue: prose over that Issue’s backdrop, shown fullscreen after a first-clear. Has a short Chapter title plus chrome `n / total`. Distinct from Journey Round briefing and from Mode Result coins / Level Clear Time.
 _Avoid_: page, scene, lore entry
 
 **Protagonist**:
@@ -129,7 +129,7 @@ The mandatory choice among uncompleted Issues when the player has no Active Issu
 _Avoid_: story select, campaign picker
 
 **Issue Library**:
-The Journey level-list entry into the Active Issue and completed Issues. Distinct from the Issue Picker (Issues not yet started).
+The Journey level-list entry into the Active Issue, completed Issues, and locked unstarted Issues (cover and synopsis teasers only). Distinct from the Issue Picker (where the player picks the next Active Issue).
 _Avoid_: story archive, comic rack
 
 **Reading Locale**:
@@ -159,13 +159,13 @@ Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side 
 
 ## Journey Issues
 
-- One **Issue** = one **Protagonist**, one **Issue cover**, one **Issue backdrop**, and an authored Chapter count (10, 15, 20, …). Board Heroes / Affixes do not choose the Issue. Chapters have no titles. Title and synopsis are catalog copy (translatable with the Chapters).
+- One **Issue** = one **Protagonist**, one **Issue cover**, one **Issue backdrop**, and an authored Chapter count (10, 15, 20, …). Board Heroes / Affixes do not choose the Issue. Each Chapter has a short title (translatable with the body). Issue title and synopsis are catalog copy (translatable with the Chapters).
 - **Catalog invariant:** every playable Journey level has a Chapter grant behind it. Count only **active** Issues. Do not author more Journey levels than that sum; author toward **equal** counts. Do not unpublish an Issue if that would make active Chapter capacity smaller than the Journey level count.
 - Players start with **no Active Issue**. Hero’s Journey is unpublished at this feature’s launch, so every player starts Issue Progress from scratch (no fill-from-existing-`journey level`; staging testers included).
 - A first-clear with no Active Issue opens the **Issue Picker** (Issue cover, title, short synopsis, Chapter count). Completed Issues are omitted. The player **must pick** in-session (Back does not dismiss the Picker). Process death or force-quit without a pick leaves owed grants — no auto-pick. The next first-clear shows the Picker again, then unlocks one Chapter per owed first-clear (e.g. pick after two first-clears → two Chapters). If applying owed **completes** that Issue and owed remains, the Picker opens **again in the same session** (no Chapter reader between picks) until owed is 0 or nothing is left to pick. If they complete an Issue with owed already 0, the next Picker waits until the **next** first-clear.
 - While an Issue is Active, the player cannot start another.
-- First-clear path: drain owed via Picker(s) if needed → **one** Chapter reader on the **newest** Chapter just granted (if that grant completed the Issue, still show its last Chapter this once; previous/next only inside that Issue) → **Continue** (always enabled, even on an older Chapter) → existing Mode Result (coins / time / LCT). Reader: one bundled music bed, repeating zoom, prose revealed line-by-line (tap shows the rest), scroll if needed, `n / total`. Earlier Issues completed in a picker chain are in the Library only.
-- **Issue Library** on the Journey level list re-opens the Active Issue and completed Issues (close/back only — no Continue to Mode Result). The post-clear reader does not switch Issues.
+- First-clear path: drain owed via Picker(s) if needed → **one** Chapter reader on the **newest** Chapter just granted (if that grant completed the Issue, still show its last Chapter this once; previous/next only inside that Issue) → **Continue** (always enabled, even on an older Chapter) → existing Mode Result (coins / time / LCT). Reader: one bundled music bed (local mute preference), repeating zoom, prose revealed line-by-line (tap shows the rest), scroll if needed, Chapter title plus `n / total`. Earlier Issues completed in a picker chain are in the Library only.
+- **Issue Library** on the Journey level list re-opens the Active Issue and completed Issues (close/back only — no Continue to Mode Result), and shows locked unstarted Issues as cover/synopsis teasers. The post-clear reader does not switch Issues.
 - English catalog (Issues, Chapters, titles, synopses, bodies, Issue cover, Issue backdrop) syncs at boot. **Reading Locale** is stored locally and on the server. Boot also pulls existing rows for that locale when present. Opening a locale uses local Room first, then the server catalog, and fetches the **whole Issue** (not one Chapter). If that locale is still missing, a server function translates the whole Issue (title, synopsis, and bodies), stores it, and syncs it down. Missing locale falls back to English until that finishes. Device language does not pick Reading Locale. The first-visit Reading Locale choice is a later gate, not boot.
 
 ## Journey Round hearts (baseline)

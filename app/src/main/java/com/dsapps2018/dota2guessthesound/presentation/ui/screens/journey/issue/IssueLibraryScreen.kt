@@ -31,6 +31,9 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -43,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.progress.IssueLibraryAccess
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 
 @Composable
@@ -52,6 +56,7 @@ fun IssueLibraryScreen(
     onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var expandedIssueId by remember { mutableStateOf<Int?>(null) }
 
     BackHandler(onBack = onBack)
 
@@ -134,15 +139,16 @@ fun IssueLibraryScreen(
                             contentPadding = PaddingValues(bottom = 24.dp),
                         ) {
                             items(state.items, key = { it.issueId }) { item ->
-                                val canOpen = item.unlockedCount > 0
-                                val badge = if (item.isActive) {
-                                    stringResource(
+                                val badge = when (item.access) {
+                                    IssueLibraryAccess.Active -> stringResource(
                                         R.string.issue_library_badge_reading,
                                         item.unlockedCount,
                                         item.chapterCount,
                                     )
-                                } else {
-                                    stringResource(R.string.issue_library_badge_complete)
+                                    IssueLibraryAccess.Completed ->
+                                        stringResource(R.string.issue_library_badge_complete)
+                                    IssueLibraryAccess.Locked ->
+                                        stringResource(R.string.issue_library_badge_locked)
                                 }
                                 IssueStoryCard(
                                     title = item.title,
@@ -153,9 +159,15 @@ fun IssueLibraryScreen(
                                         item.chapterCount,
                                     ),
                                     badge = badge,
-                                    enabled = canOpen,
+                                    locked = item.access == IssueLibraryAccess.Locked,
+                                    enabled = item.canOpenReader,
+                                    expanded = expandedIssueId == item.issueId,
+                                    onToggleSynopsis = {
+                                        expandedIssueId =
+                                            if (expandedIssueId == item.issueId) null else item.issueId
+                                    },
                                     onClick = {
-                                        if (!canOpen) return@IssueStoryCard
+                                        if (!item.canOpenReader) return@IssueStoryCard
                                         onOpenReader(
                                             item.issueId,
                                             item.openChapterIndex,

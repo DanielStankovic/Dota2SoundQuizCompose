@@ -5,6 +5,9 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -14,26 +17,31 @@ import com.dsapps2018.dota2guessthesound.R
 /**
  * Loops the bundled Chapter-reader music bed while this composition is active.
  * Pauses on [Lifecycle.Event.ON_STOP], resumes on [Lifecycle.Event.ON_START],
- * and always [MediaPlayer.release]s on dispose.
+ * respects [muted] without recreating the player, and [MediaPlayer.release]s on dispose.
  */
 @Composable
-fun ChapterReaderMusicBed() {
+fun ChapterReaderMusicBed(muted: Boolean) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val mutedState = rememberUpdatedState(muted)
+    val holder = remember { MusicBedHolder() }
 
     DisposableEffect(lifecycleOwner) {
-        var wantPlaying =
+        holder.lifecycleStarted =
             lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
-        val player = createLoopingBed(context) { wantPlaying }
+        val player = createLoopingBed(context) {
+            holder.lifecycleStarted && !mutedState.value
+        }
+        holder.player = player
 
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_START -> {
-                    wantPlaying = true
-                    player.safeStart()
+                    holder.lifecycleStarted = true
+                    if (!mutedState.value) player.safeStart() else player.safePause()
                 }
                 Lifecycle.Event.ON_STOP -> {
-                    wantPlaying = false
+                    holder.lifecycleStarted = false
                     player.safePause()
                 }
                 else -> Unit
@@ -43,7 +51,8 @@ fun ChapterReaderMusicBed() {
 
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
-            wantPlaying = false
+            holder.lifecycleStarted = false
+            holder.player = null
             player?.run {
                 setOnPreparedListener(null)
                 safeStop()
@@ -51,6 +60,20 @@ fun ChapterReaderMusicBed() {
             }
         }
     }
+
+    LaunchedEffect(muted) {
+        val player = holder.player
+        if (muted) {
+            player.safePause()
+        } else if (holder.lifecycleStarted) {
+            player.safeStart()
+        }
+    }
+}
+
+private class MusicBedHolder {
+    var player: MediaPlayer? = null
+    var lifecycleStarted: Boolean = false
 }
 
 private const val MUSIC_BED_VOLUME = 0.4f
