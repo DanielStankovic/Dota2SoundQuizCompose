@@ -20,6 +20,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.joke.JokeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.board.LevelClearTimeScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.JourneyGameScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.ChapterReaderScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.IssueLibraryScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.IssuePickerScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.JourneyIssueGateScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.JourneyLevelScreen
@@ -327,6 +328,23 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                         restoreState = false
                     }
                 },
+                onClose = { navController.popBackStack() },
+            )
+        }
+
+        composable<IssueLibraryDestination> {
+            IssueLibraryScreen(
+                onOpenReader = { issueId, chapterIndex, unlockedCount ->
+                    navController.navigate(
+                        ChapterReaderDestination(
+                            issueId = issueId,
+                            chapterIndex = chapterIndex,
+                            unlockedCount = unlockedCount,
+                            fromLibrary = true,
+                        )
+                    )
+                },
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -403,6 +421,9 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onBoardClicked = { levelNum ->
                     navController.navigate(LevelClearTimeDestination(levelNum))
+                },
+                onLibraryClicked = {
+                    navController.navigate(IssueLibraryDestination)
                 },
             )
         }

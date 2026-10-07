@@ -152,10 +152,21 @@
     <string name="issue_picker_chapter_count">%1$d chapters</string>
     <string name="issue_picker_empty">No stories available right now.</string>
     <string name="issue_picker_error">Couldn\'t load stories.\n\nTry again…</string>
+    <string name="issue_library_chip">Stories</string>
+    <string name="issue_library_chip_hint">Clear a level to start</string>
+    <string name="issue_library_title">Stories</string>
+    <string name="issue_library_subtitle">Your active serial and finished stories.</string>
+    <string name="issue_library_empty">No stories yet.\n\nClear a Journey level to begin.</string>
+    <string name="issue_library_error">Couldn\'t load stories.\n\nTry again…</string>
+    <string name="issue_library_badge_reading">In progress · %1$d / %2$d</string>
+    <string name="issue_library_badge_complete">Complete</string>
+    <string name="issue_library_cd_book">Story book</string>
+    <string name="issue_library_cd_back">Back</string>
     <string name="chapter_reader_progress">%1$d / %2$d</string>
     <string name="chapter_reader_previous">Previous</string>
     <string name="chapter_reader_next">Next</string>
     <string name="chapter_reader_continue">Continue</string>
+    <string name="chapter_reader_close">Close</string>
     <string name="chapter_reader_error">Couldn\'t load this chapter.</string>
 
 

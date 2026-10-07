@@ -63,14 +63,22 @@ data class IssuePickerDestination(
     val clearTimeMs: Long,
 )
 
+/**
+ * Chapter reader after a Journey first-clear (Continue → Mode Result),
+ * or from the Issue Library ([fromLibrary] = true: close/back only).
+ */
 @Serializable
 data class ChapterReaderDestination(
-    val level: Int,
-    val clearTimeMs: Long,
     val issueId: Int,
     val chapterIndex: Int,
     val unlockedCount: Int,
+    val level: Int = 0,
+    val clearTimeMs: Long = 0L,
+    val fromLibrary: Boolean = false,
 )
+
+@Serializable
+object IssueLibraryDestination
 
 @Serializable
 object OptionsDestination

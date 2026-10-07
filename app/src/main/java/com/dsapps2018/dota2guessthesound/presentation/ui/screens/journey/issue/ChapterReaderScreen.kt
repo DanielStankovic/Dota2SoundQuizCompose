@@ -1,5 +1,6 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -68,8 +69,13 @@ private const val KEN_BURNS_MAX_SCALE = 1.08f
 fun ChapterReaderScreen(
     viewModel: ChapterReaderViewModel = hiltViewModel(),
     onContinue: (level: Int, clearTimeMs: Long) -> Unit,
+    onClose: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val mode = viewModel.mode
+    val isLibrary = mode is ChapterReaderMode.Library
+
+    BackHandler(enabled = isLibrary, onBack = onClose)
 
     ChapterReaderMusicBed()
 
@@ -97,12 +103,19 @@ fun ChapterReaderScreen(
                                 modifier = Modifier
                                     .width(200.dp)
                                     .height(48.dp),
-                                text = stringResource(R.string.chapter_reader_continue),
+                                text = stringResource(
+                                    if (isLibrary) R.string.chapter_reader_close
+                                    else R.string.chapter_reader_continue
+                                ),
                                 textColor = Color.White,
                                 paddingValues = PaddingValues(),
                                 contentScale = ContentScale.Fit,
                             ) {
-                                onContinue(viewModel.level, viewModel.clearTimeMs)
+                                when (mode) {
+                                    is ChapterReaderMode.FirstClear ->
+                                        onContinue(mode.level, mode.clearTimeMs)
+                                    ChapterReaderMode.Library -> onClose()
+                                }
                             }
                         }
                     }
@@ -113,11 +126,14 @@ fun ChapterReaderScreen(
                         page = state.page,
                         canGoPrevious = state.canGoPrevious,
                         canGoNext = state.canGoNext,
+                        showContinue = !isLibrary,
                         onPrevious = viewModel::previousChapter,
                         onNext = viewModel::nextChapter,
                         onContinue = {
-                            onContinue(viewModel.level, viewModel.clearTimeMs)
+                            val firstClear = mode as? ChapterReaderMode.FirstClear ?: return@ChapterReaderContent
+                            onContinue(firstClear.level, firstClear.clearTimeMs)
                         },
+                        onClose = onClose,
                     )
                 }
             }
@@ -130,9 +146,11 @@ private fun ChapterReaderContent(
     page: ChapterReaderPage,
     canGoPrevious: Boolean,
     canGoNext: Boolean,
+    showContinue: Boolean,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onContinue: () -> Unit,
+    onClose: () -> Unit,
 ) {
     val backdrop = page.backdropFilePath.takeIf { it.isNotBlank() }?.let { File(it) }
     val kenBurns = rememberInfiniteTransition(label = "chapterBackdropZoom")
@@ -179,17 +197,31 @@ private fun ChapterReaderContent(
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(horizontal = 20.dp, vertical = 12.dp),
         ) {
-            Text(
-                text = stringResource(
-                    R.string.chapter_reader_progress,
-                    page.chapterIndex,
-                    page.totalChapters,
-                ),
-                color = JourneyTimeAccent,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 1.sp,
-            )
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.chapter_reader_progress,
+                        page.chapterIndex,
+                        page.totalChapters,
+                    ),
+                    color = JourneyTimeAccent,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 1.sp,
+                )
+                if (!showContinue) {
+                    TextButton(onClick = onClose) {
+                        Text(
+                            text = stringResource(R.string.chapter_reader_close),
+                            color = JourneyTimeAccent,
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.height(20.dp))
             ChapterBodyReveal(
                 body = page.body,
@@ -215,18 +247,20 @@ private fun ChapterReaderContent(
                     onClick = onNext,
                 )
             }
-            Spacer(Modifier.height(4.dp))
-            MenuButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .align(Alignment.CenterHorizontally),
-                text = stringResource(R.string.chapter_reader_continue),
-                textColor = Color.White,
-                paddingValues = PaddingValues(),
-                contentScale = ContentScale.FillBounds,
-                onClick = onContinue,
-            )
+            if (showContinue) {
+                Spacer(Modifier.height(4.dp))
+                MenuButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .align(Alignment.CenterHorizontally),
+                    text = stringResource(R.string.chapter_reader_continue),
+                    textColor = Color.White,
+                    paddingValues = PaddingValues(),
+                    contentScale = ContentScale.FillBounds,
+                    onClick = onContinue,
+                )
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelsState
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRound
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
+import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class JourneyLevelViewModel @Inject constructor(
     playerProgressRepository: PlayerProgressRepository,
     private val journeyRound: JourneyRound,
+    private val journeyIssue: JourneyIssue,
     levelClearTime: LevelClearTime,
 ) : ViewModel() {
 
@@ -65,10 +67,19 @@ class JourneyLevelViewModel @Inject constructor(
     private val _currentAffix: MutableStateFlow<AffixModel?> = MutableStateFlow(null)
     val currentAffix = _currentAffix.asStateFlow()
 
+    /** True when Active Issue or completed Issues exist (Library openable). */
+    private val _libraryAvailable = MutableStateFlow(false)
+    val libraryAvailable = _libraryAvailable.asStateFlow()
+
     init {
         viewModelScope.launch {
             journeyRound.loadLevels()
         }
+        refreshLibraryAvailability()
+    }
+
+    fun refreshLibraryAvailability() = viewModelScope.launch {
+        _libraryAvailable.value = journeyIssue.hasLibraryEntries()
     }
 
     fun setShowAffixBottomSheet(show: Boolean) {

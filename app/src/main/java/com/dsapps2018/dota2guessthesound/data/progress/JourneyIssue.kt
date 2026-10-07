@@ -221,6 +221,69 @@ class JourneyIssue @Inject constructor(
             }
     }
 
+    /** Whether the Issue Library has an Active Issue and/or completed Issues. */
+    suspend fun hasLibraryEntries(): Boolean {
+        val progress = requireProgress() ?: return false
+        if (progress.completedIssueIds.isNotEmpty()) return true
+        val activeId = progress.activeIssueId ?: return false
+        return issueDao.getById(activeId) != null
+    }
+
+    /**
+     * Active Issue first, then completed Issues in completion order.
+     * Unstarted Issues are omitted — they belong only in the Issue Picker.
+     */
+    suspend fun libraryItems(): List<IssueLibraryItem> {
+        val progress = requireProgress() ?: return emptyList()
+        val locale = progress.readingLocale.takeIf { it.isNotBlank() } ?: ENGLISH
+        val items = ArrayList<IssueLibraryItem>()
+        val activeId = progress.activeIssueId
+
+        if (activeId != null) {
+            libraryItem(
+                issueId = activeId,
+                locale = locale,
+                unlockedCount = progress.activeUnlocked,
+                isActive = true,
+            )?.let { items += it }
+        }
+
+        for (completedId in progress.completedIssueIds) {
+            if (completedId == activeId) continue
+            libraryItem(
+                issueId = completedId,
+                locale = locale,
+                unlockedCount = chapterDao.countForIssue(completedId),
+                isActive = false,
+            )?.let { items += it }
+        }
+        return items
+    }
+
+    private suspend fun libraryItem(
+        issueId: Int,
+        locale: String,
+        unlockedCount: Int,
+        isActive: Boolean,
+    ): IssueLibraryItem? {
+        val issue = issueDao.getById(issueId) ?: return null
+        val total = chapterDao.countForIssue(issueId)
+        if (total <= 0) return null
+        val unlocked = unlockedCount.coerceIn(0, total)
+        // Completed with nothing readable should not appear; Active still lists.
+        if (!isActive && unlocked <= 0) return null
+        val i18n = issueI18n(issueId, locale)
+        return IssueLibraryItem(
+            issueId = issueId,
+            title = i18n?.title.orEmpty().ifBlank { issue.slug },
+            synopsis = i18n?.synopsis.orEmpty(),
+            chapterCount = total,
+            unlockedCount = unlocked,
+            coverFilePath = issue.coverFileLink,
+            isActive = isActive,
+        )
+    }
+
     suspend fun chapterPage(
         issueId: Int,
         chapterIndex: Int,

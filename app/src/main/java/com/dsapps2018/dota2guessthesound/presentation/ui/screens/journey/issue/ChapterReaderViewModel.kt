@@ -18,6 +18,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** How the Chapter reader exits — first-clear Continues to Mode Result; Library only closes. */
+sealed interface ChapterReaderMode {
+    data class FirstClear(val level: Int, val clearTimeMs: Long) : ChapterReaderMode
+    data object Library : ChapterReaderMode
+}
+
 @HiltViewModel
 class ChapterReaderViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -27,10 +33,14 @@ class ChapterReaderViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<ChapterReaderDestination>()
-    val level: Int = route.level
-    val clearTimeMs: Long = route.clearTimeMs
     private val issueId: Int = route.issueId
     private val unlockedCount: Int = route.unlockedCount
+
+    val mode: ChapterReaderMode = if (route.fromLibrary) {
+        ChapterReaderMode.Library
+    } else {
+        ChapterReaderMode.FirstClear(route.level, route.clearTimeMs)
+    }
 
     private val _uiState = MutableStateFlow<ChapterReaderUiState>(ChapterReaderUiState.Loading)
     val uiState = _uiState.asStateFlow()

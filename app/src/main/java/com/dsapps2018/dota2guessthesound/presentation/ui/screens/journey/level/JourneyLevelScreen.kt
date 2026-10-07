@@ -8,6 +8,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
@@ -67,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.journey.AffixListSlot
@@ -79,6 +83,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmpt
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.board.formatLevelClearTime
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.composables.AffixInfoBottomSheet
+import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevel
 import kotlinx.coroutines.launch
@@ -90,10 +95,17 @@ fun JourneyLevelScreen(
     levelViewModel: JourneyLevelViewModel = hiltViewModel(),
     onLevelClicked: (Int) -> Unit,
     onBoardClicked: (Int) -> Unit,
+    onLibraryClicked: () -> Unit,
 ) {
 
     val journeyLevelState by levelViewModel.journeyLevelState.collectAsStateWithLifecycle()
     val journeyProgressText by levelViewModel.journeyProgressText.collectAsStateWithLifecycle()
+    val libraryAvailable by levelViewModel.libraryAvailable.collectAsStateWithLifecycle()
+
+    LifecycleResumeEffect(Unit) {
+        levelViewModel.refreshLibraryAvailability()
+        onPauseOrDispose { }
+    }
 
     // State to track banner height
     var bannerHeight by remember { mutableIntStateOf(0) }
@@ -118,6 +130,8 @@ fun JourneyLevelScreen(
                 ) {
                     JourneyLevelTitle(
                         progressText = journeyProgressText,
+                        libraryAvailable = libraryAvailable,
+                        onLibraryClicked = onLibraryClicked,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
@@ -178,6 +192,8 @@ fun JourneyLevelContent(
 @Composable
 fun JourneyLevelTitle(
     progressText: String,
+    libraryAvailable: Boolean,
+    onLibraryClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val titleShadow = Shadow(
@@ -185,25 +201,82 @@ fun JourneyLevelTitle(
         offset = Offset(0f, 2f),
         blurRadius = 10f,
     )
-    Column(
+    Row(
         modifier = modifier,
-        horizontalAlignment = Alignment.End,
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(
-            text = stringResource(R.string.hero_journey_lbl),
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.End,
-            style = TextStyle(shadow = titleShadow),
+        IssueLibraryChip(
+            enabled = libraryAvailable,
+            onClick = onLibraryClicked,
+            modifier = Modifier.padding(top = 2.dp),
         )
-        Text(
-            text = progressText,
-            color = Color.White.copy(alpha = 0.88f),
-            fontSize = 14.sp,
-            textAlign = TextAlign.End,
-            style = TextStyle(shadow = titleShadow),
-        )
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = stringResource(R.string.hero_journey_lbl),
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.End,
+                style = TextStyle(shadow = titleShadow),
+            )
+            Text(
+                text = progressText,
+                color = Color.White.copy(alpha = 0.88f),
+                fontSize = 14.sp,
+                textAlign = TextAlign.End,
+                style = TextStyle(shadow = titleShadow),
+            )
+        }
+    }
+}
+
+@Composable
+private fun IssueLibraryChip(
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(20.dp)
+    val chipAlpha = if (enabled) 1f else 0.48f
+    Column(modifier = modifier.alpha(chipAlpha)) {
+        Row(
+            Modifier
+                .clip(shape)
+                .background(JourneyButtonBackground.copy(alpha = 0.88f))
+                .border(1.dp, JourneyTimeAccent.copy(alpha = if (enabled) 0.55f else 0.28f), shape)
+                .clickable(enabled = enabled, onClick = onClick)
+                .padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_issue_library_book),
+                contentDescription = stringResource(R.string.issue_library_cd_book),
+                modifier = Modifier.size(22.dp),
+            )
+            Spacer(Modifier.size(8.dp))
+            Text(
+                text = stringResource(R.string.issue_library_chip),
+                color = JourneyTimeAccent,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+        if (!enabled) {
+            Text(
+                text = stringResource(R.string.issue_library_chip_hint),
+                color = Color.White.copy(alpha = 0.55f),
+                fontSize = 11.sp,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp),
+                style = TextStyle(
+                    shadow = Shadow(
+                        color = Color.Black.copy(alpha = 0.85f),
+                        offset = Offset(0f, 1f),
+                        blurRadius = 6f,
+                    )
+                ),
+            )
+        }
     }
 }
 
