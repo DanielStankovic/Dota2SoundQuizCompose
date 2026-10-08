@@ -1,6 +1,7 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -38,19 +39,22 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,9 +66,12 @@ import com.dsapps2018.dota2guessthesound.data.progress.ChapterReaderPage
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 import java.io.File
-import kotlinx.coroutines.delay
+import kotlin.math.roundToInt
 
-private const val LINE_REVEAL_MS = 500L
+/** Continuous wipe speed (px / sec). Longer chapters take longer, clamped below. */
+private const val REVEAL_PX_PER_SEC = 140f
+private const val REVEAL_MIN_MS = 2_500
+private const val REVEAL_MAX_MS = 14_000
 private const val KEN_BURNS_HALF_CYCLE_MS = 13_000
 private const val KEN_BURNS_MAX_SCALE = 1.08f
 
@@ -333,36 +340,33 @@ private fun ChapterBodyReveal(
     chapterKey: Pair<Int, Int>,
     modifier: Modifier = Modifier,
 ) {
-    val lines = remember(chapterKey, body) { body.lines() }
-    var revealedCount by remember(chapterKey) { mutableIntStateOf(0) }
+    var textHeightPx by remember(chapterKey) { mutableFloatStateOf(0f) }
     var skipReveal by remember(chapterKey) { mutableStateOf(false) }
+    val revealHeight = remember(chapterKey) { Animatable(0f) }
+    val clipBottom = revealHeight.value
     val scrollState = rememberScrollState()
     val tapSource = remember { MutableInteractionSource() }
+    val fullyRevealed = textHeightPx > 0f && clipBottom >= textHeightPx - 0.5f
 
-    LaunchedEffect(chapterKey, skipReveal) {
-        if (skipReveal || lines.isEmpty()) {
-            revealedCount = lines.size
+    LaunchedEffect(chapterKey, textHeightPx, skipReveal) {
+        if (textHeightPx <= 0f) return@LaunchedEffect
+        if (skipReveal) {
+            revealHeight.snapTo(textHeightPx)
             return@LaunchedEffect
         }
-        revealedCount = 0
-        for (count in 1..lines.size) {
-            delay(LINE_REVEAL_MS)
-            revealedCount = count
-        }
+        revealHeight.snapTo(0f)
+        val durationMs = ((textHeightPx / REVEAL_PX_PER_SEC) * 1_000f)
+            .roundToInt()
+            .coerceIn(REVEAL_MIN_MS, REVEAL_MAX_MS)
+        revealHeight.animateTo(
+            targetValue = textHeightPx,
+            animationSpec = tween(durationMillis = durationMs, easing = LinearEasing),
+        )
     }
 
-    val visibleBody = remember(lines, revealedCount) {
-        lines.take(revealedCount).joinToString("\n")
-    }
-    val fullyRevealed = revealedCount >= lines.size
-
-    Text(
-        text = visibleBody,
-        color = Color(0xFFF4F1EB),
-        fontSize = 18.sp,
-        lineHeight = 28.sp,
-        fontWeight = FontWeight.Normal,
-        modifier = modifier
+    Box(
+        modifier
+            .fillMaxWidth()
             .verticalScroll(scrollState)
             .clickable(
                 interactionSource = tapSource,
@@ -370,7 +374,34 @@ private fun ChapterBodyReveal(
                 enabled = !fullyRevealed,
             ) {
                 skipReveal = true
-            }
-            .padding(vertical = 4.dp),
-    )
+            },
+    ) {
+        Text(
+            text = body,
+            color = Color(0xFFF4F1EB),
+            fontSize = 18.sp,
+            lineHeight = 28.sp,
+            fontWeight = FontWeight.Normal,
+            onTextLayout = { layout: TextLayoutResult ->
+                val height = layout.size.height.toFloat()
+                if (kotlin.math.abs(height - textHeightPx) > 0.5f) {
+                    textHeightPx = height
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .drawWithContent {
+                    val drawFullContent = this::drawContent
+                    clipRect(
+                        left = 0f,
+                        top = 0f,
+                        right = size.width,
+                        bottom = clipBottom.coerceIn(0f, size.height),
+                    ) {
+                        drawFullContent()
+                    }
+                },
+        )
+    }
 }
