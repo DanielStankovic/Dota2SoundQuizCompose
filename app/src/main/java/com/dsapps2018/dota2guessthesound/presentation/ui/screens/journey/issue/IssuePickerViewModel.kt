@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.progress.IssuePickerItem
+import com.dsapps2018.dota2guessthesound.data.progress.IssueRating
 import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.dsapps2018.dota2guessthesound.data.progress.PickOutcome
 import com.dsapps2018.dota2guessthesound.presentation.navigation.IssuePickerDestination
@@ -24,6 +25,7 @@ class IssuePickerViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
     private val journeyIssue: JourneyIssue,
+    private val issueRating: IssueRating,
     private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ViewModel() {
 
@@ -53,6 +55,7 @@ class IssuePickerViewModel @Inject constructor(
 
     fun refresh() = viewModelScope.launch(exceptionHandler) {
         _uiState.value = IssuePickerUiState.Loading
+        issueRating.refreshScores()
         val items = journeyIssue.pickerItems()
         if (items.isEmpty()) {
             _uiState.value = IssuePickerUiState.Empty

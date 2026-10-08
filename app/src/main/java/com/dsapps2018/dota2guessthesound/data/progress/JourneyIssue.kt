@@ -249,6 +249,7 @@ class JourneyIssue @Inject constructor(
                     synopsis = i18n?.synopsis.orEmpty(),
                     chapterCount = chapterDao.countForIssue(issue.id),
                     coverFilePath = issue.coverFileLink,
+                    score = IssueScore.from(issue.ratingSum, issue.ratingCount),
                 )
             }
     }
@@ -332,6 +333,7 @@ class JourneyIssue @Inject constructor(
             unlockedCount = unlocked,
             coverFilePath = issue.coverFileLink,
             access = access,
+            score = IssueScore.from(issue.ratingSum, issue.ratingCount),
         )
     }
 
@@ -457,6 +459,7 @@ class JourneyIssue @Inject constructor(
             }
             .decodeList<StoryIssueDto>()
             .map { dto ->
+                val prior = issueDao.getById(dto.id)
                 StoryIssueEntity(
                     id = dto.id,
                     slug = dto.slug,
@@ -468,6 +471,9 @@ class JourneyIssue @Inject constructor(
                     backdropFileLink = "",
                     modifiedAt = dto.modifiedAt,
                     isActive = dto.isActive,
+                    // Preserve local Issue Score until refreshScores runs (or if it fails).
+                    ratingSum = prior?.ratingSum ?: 0L,
+                    ratingCount = prior?.ratingCount ?: 0,
                 )
             }
         if (fetched.isEmpty()) return

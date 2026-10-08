@@ -27,6 +27,11 @@ interface StoryIssueDao {
     @Delete
     suspend fun deleteAll(list: List<StoryIssueEntity>)
 
+    @Query(
+        "UPDATE StoryIssue SET ratingSum = :ratingSum, ratingCount = :ratingCount WHERE id = :id"
+    )
+    suspend fun updateScore(id: Int, ratingSum: Long, ratingCount: Int)
+
     @Query("DELETE FROM StoryIssue")
     suspend fun truncateTable()
 }

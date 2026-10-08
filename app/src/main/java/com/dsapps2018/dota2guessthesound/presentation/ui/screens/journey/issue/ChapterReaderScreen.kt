@@ -131,10 +131,13 @@ fun ChapterReaderScreen(
                         canGoPrevious = state.canGoPrevious,
                         canGoNext = state.canGoNext,
                         showContinue = !isLibrary,
+                        showRating = state.showRating,
+                        myStars = state.myStars,
                         musicMuted = musicMuted,
                         onToggleMute = viewModel::toggleMusicMuted,
                         onPrevious = viewModel::previousChapter,
                         onNext = viewModel::nextChapter,
+                        onRate = viewModel::rateIssue,
                         onContinue = {
                             val firstClear = mode as? ChapterReaderMode.FirstClear
                                 ?: return@ChapterReaderContent
@@ -154,10 +157,13 @@ private fun ChapterReaderContent(
     canGoPrevious: Boolean,
     canGoNext: Boolean,
     showContinue: Boolean,
+    showRating: Boolean,
+    myStars: Int?,
     musicMuted: Boolean,
     onToggleMute: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onRate: (Int) -> Unit,
     onContinue: () -> Unit,
     onClose: () -> Unit,
 ) {
@@ -264,6 +270,14 @@ private fun ChapterReaderContent(
                     .weight(1f)
                     .fillMaxWidth(),
             )
+            if (showRating) {
+                Spacer(Modifier.height(10.dp))
+                IssueRatingBar(
+                    stars = myStars,
+                    onRate = onRate,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             Spacer(Modifier.height(12.dp))
             Row(
                 Modifier.fillMaxWidth(),

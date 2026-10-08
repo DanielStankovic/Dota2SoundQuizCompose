@@ -1,10 +1,6 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +12,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -27,8 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,12 +32,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.progress.IssueScore
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 import java.io.File
 
 /**
  * Shared cover row for Issue Picker and Issue Library.
- * Synopsis collapses to 3 lines; expand/collapse is separate from [onClick].
+ * Issue Score sits under the title/meta; full synopsis is always visible below.
  */
 @Composable
 fun IssueStoryCard(
@@ -50,9 +46,8 @@ fun IssueStoryCard(
     synopsis: String,
     coverFilePath: String,
     metaLine: String,
+    score: IssueScore,
     onClick: () -> Unit,
-    expanded: Boolean,
-    onToggleSynopsis: () -> Unit,
     modifier: Modifier = Modifier,
     badge: String? = null,
     enabled: Boolean = true,
@@ -81,12 +76,12 @@ fun IssueStoryCard(
                     else -> 0.18f
                 }),
                 shape,
-            ),
+            )
+            .clickable(enabled = canOpen, onClick = onClick),
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .clickable(enabled = canOpen, onClick = onClick)
                 .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 8.dp),
             verticalAlignment = Alignment.Top,
         ) {
@@ -156,45 +151,21 @@ fun IssueStoryCard(
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                 )
-                if (synopsis.isNotBlank() && !expanded) {
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = synopsis,
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 13.sp,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis,
-                        lineHeight = 18.sp,
-                    )
-                }
+                Spacer(Modifier.height(8.dp))
+                IssueScoreLabel(score = score)
             }
         }
 
         if (synopsis.isNotBlank()) {
-            AnimatedVisibility(
-                visible = expanded,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut(),
-            ) {
-                Text(
-                    text = synopsis,
-                    color = Color.White.copy(alpha = 0.78f),
-                    fontSize = 14.sp,
-                    lineHeight = 20.sp,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp),
-                )
-            }
             Text(
-                text = stringResource(
-                    if (expanded) R.string.issue_synopsis_less else R.string.issue_synopsis_more
-                ),
-                color = JourneyTimeAccent.copy(alpha = 0.95f),
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .padding(start = 14.dp, end = 14.dp, bottom = 12.dp, top = 2.dp)
-                    .clickable(onClick = onToggleSynopsis),
+                text = synopsis,
+                color = Color.White.copy(alpha = 0.78f),
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
+                modifier = Modifier.padding(start = 14.dp, end = 14.dp, bottom = 12.dp, top = 2.dp),
             )
+        } else {
+            Spacer(Modifier.height(4.dp))
         }
     }
 }

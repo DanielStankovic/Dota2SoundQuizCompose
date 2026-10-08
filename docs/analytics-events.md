@@ -65,6 +65,9 @@ Home — Invoker card (enough coins) → explanation → confirm entry
 Home — Invoker rewarded-ad grant (+200 coins)
   earn_virtual_currency  source=invoker_ad_grant  value=200
 
+Chapter reader — last Chapter, star tap (1–5, different from current)
+  issue_rate  issue_id  issue_slug  stars  is_rerate
+
 Profile — Google sign-in
   sign_up  (only first cloud game_data row)
   login  method=Google
@@ -224,6 +227,17 @@ Dev flavor (`applicationIdSuffix` `.dev`):
 ```
 adb shell setprop debug.firebase.analytics.app com.dsapps2018.dota2guessthesound.dev
 ```
+
+### `issue_rate` (custom)
+
+Fired when the player sets or overwrites an **Issue Rating** on the last Chapter (same-star tap is a no-op and is not logged).
+
+| Param | Type | Notes |
+| --- | --- | --- |
+| `issue_id` | number | Catalog Issue id |
+| `issue_slug` | string | Issue slug (truncated to 100) |
+| `stars` | number | 1–5 |
+| `is_rerate` | string | `"true"` if overwriting a previous Rating; `"false"` on first Rating |
 
 ## Not logged (intentional)
 

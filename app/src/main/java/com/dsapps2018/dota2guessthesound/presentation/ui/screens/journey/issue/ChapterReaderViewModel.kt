@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.progress.ChapterReaderPage
+import com.dsapps2018.dota2guessthesound.data.progress.IssueRating
 import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.navigation.ChapterReaderDestination
@@ -17,6 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,6 +33,7 @@ class ChapterReaderViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
     private val journeyIssue: JourneyIssue,
+    private val issueRating: IssueRating,
     private val sharedPreferences: SharedPreferences,
     private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ViewModel() {
@@ -82,6 +85,19 @@ class ChapterReaderViewModel @Inject constructor(
         load(viewingIndex + 1)
     }
 
+    fun rateIssue(stars: Int) {
+        val ready = _uiState.value as? ChapterReaderUiState.Ready ?: return
+        if (!ready.showRating) return
+        if (ready.myStars == stars) return
+        viewModelScope.launch(exceptionHandler) {
+            val changed = issueRating.rate(issueId, stars)
+            if (!changed) return@launch
+            _uiState.update { state ->
+                (state as? ChapterReaderUiState.Ready)?.copy(myStars = stars) ?: state
+            }
+        }
+    }
+
     private fun load(index: Int) = viewModelScope.launch(exceptionHandler) {
         // Keep the current page painted while swapping Chapters — only the first open shows Loading.
         if (_uiState.value !is ChapterReaderUiState.Ready) {
@@ -92,10 +108,13 @@ class ChapterReaderViewModel @Inject constructor(
         _uiState.value = if (page == null) {
             ChapterReaderUiState.Error(context.getString(R.string.chapter_reader_error))
         } else {
+            val isLast = index == page.totalChapters
             ChapterReaderUiState.Ready(
                 page = page,
                 canGoPrevious = index > 1,
                 canGoNext = index < unlockedCount,
+                showRating = isLast,
+                myStars = if (isLast) issueRating.myStars(issueId) else null,
             )
         }
     }
@@ -106,6 +125,8 @@ class ChapterReaderViewModel @Inject constructor(
             val page: ChapterReaderPage,
             val canGoPrevious: Boolean,
             val canGoNext: Boolean,
+            val showRating: Boolean,
+            val myStars: Int?,
         ) : ChapterReaderUiState
         data class Error(val message: String) : ChapterReaderUiState
     }

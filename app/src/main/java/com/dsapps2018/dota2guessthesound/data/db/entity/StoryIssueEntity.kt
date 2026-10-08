@@ -19,4 +19,8 @@ data class StoryIssueEntity(
     @field:TypeConverters(DateTypeConverter::class)
     val modifiedAt: String,
     val isActive: Boolean,
+    /** Sum of all Issue Ratings for this Issue (Issue Score numerator). */
+    val ratingSum: Long = 0L,
+    /** Vote count backing [ratingSum] (Issue Score denominator). */
+    val ratingCount: Int = 0,
 )

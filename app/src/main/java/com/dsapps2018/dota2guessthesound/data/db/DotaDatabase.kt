@@ -18,6 +18,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.StoryChapterDao
 import com.dsapps2018.dota2guessthesound.data.dao.StoryChapterI18nDao
 import com.dsapps2018.dota2guessthesound.data.dao.StoryIssueDao
 import com.dsapps2018.dota2guessthesound.data.dao.StoryIssueI18nDao
+import com.dsapps2018.dota2guessthesound.data.dao.StoryIssueRatingDao
 import com.dsapps2018.dota2guessthesound.data.dao.StoryProgressDao
 import com.dsapps2018.dota2guessthesound.data.dao.UserDataDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.AffixEntity
@@ -33,6 +34,7 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.StoryChapterEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.StoryChapterI18nEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.StoryIssueEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.StoryIssueI18nEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.StoryIssueRatingEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.StoryProgressEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.UserDataEntity
 import com.dsapps2018.dota2guessthesound.data.util.Constants
@@ -53,6 +55,25 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
             "ALTER TABLE `StoryChapterI18n` ADD COLUMN `title` TEXT NOT NULL DEFAULT ''"
+        )
+    }
+}
+
+/** Issue Score columns on StoryIssue + local Issue Rating outbox. */
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "ALTER TABLE `StoryIssue` ADD COLUMN `ratingSum` INTEGER NOT NULL DEFAULT 0"
+        )
+        db.execSQL(
+            "ALTER TABLE `StoryIssue` ADD COLUMN `ratingCount` INTEGER NOT NULL DEFAULT 0"
+        )
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `StoryIssueRating` (" +
+                "`issueId` INTEGER NOT NULL, " +
+                "`stars` INTEGER NOT NULL, " +
+                "`isSent` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`issueId`))"
         )
     }
 }
@@ -155,6 +176,7 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         StoryIssueI18nEntity::class,
         StoryChapterI18nEntity::class,
         StoryProgressEntity::class,
+        StoryIssueRatingEntity::class,
     ],
     version = Constants.DATABASE_VERSION,
     autoMigrations = [
@@ -196,5 +218,7 @@ abstract class DotaDatabase : RoomDatabase() {
     abstract fun storyChapterI18nDao(): StoryChapterI18nDao
 
     abstract fun storyProgressDao(): StoryProgressDao
+
+    abstract fun storyIssueRatingDao(): StoryIssueRatingDao
 
 }

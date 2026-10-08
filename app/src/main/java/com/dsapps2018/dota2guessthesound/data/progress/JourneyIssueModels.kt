@@ -23,12 +23,31 @@ sealed interface PickOutcome {
     ) : PickOutcome
 }
 
+/** Public Issue Score for cards: average (one decimal) + vote count. */
+data class IssueScore(
+    val average: Float,
+    val voteCount: Int,
+) {
+    companion object {
+        val Empty = IssueScore(average = 0f, voteCount = 0)
+
+        fun from(ratingSum: Long, ratingCount: Int): IssueScore {
+            if (ratingCount <= 0) return Empty
+            return IssueScore(
+                average = ratingSum.toFloat() / ratingCount.toFloat(),
+                voteCount = ratingCount,
+            )
+        }
+    }
+}
+
 data class IssuePickerItem(
     val issueId: Int,
     val title: String,
     val synopsis: String,
     val chapterCount: Int,
     val coverFilePath: String,
+    val score: IssueScore = IssueScore.Empty,
 )
 
 enum class IssueLibraryAccess {
@@ -47,6 +66,7 @@ data class IssueLibraryItem(
     val unlockedCount: Int,
     val coverFilePath: String,
     val access: IssueLibraryAccess,
+    val score: IssueScore = IssueScore.Empty,
 ) {
     /** Chapter to open: newest unlocked for Active, last Chapter when completed. */
     val openChapterIndex: Int

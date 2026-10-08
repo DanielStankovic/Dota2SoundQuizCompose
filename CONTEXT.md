@@ -140,6 +140,14 @@ _Avoid_: story language (domain term — UI may say it), app language (when you 
 The player's completed Issues, Active Issue (or none), Chapters unlocked in the Active Issue, owed Chapter grants, and Reading Locale. Persistent game state; not a currency; not journey level.
 _Avoid_: XP, story level, album, sticker book
 
+**Issue Rating**:
+One signed-in player's 1–5 star judgment of one Issue. At most one per player per Issue; a new value overwrites the previous. Distinct from Issue Score.
+_Avoid_: story rating, review, stars (as the domain name)
+
+**Issue Score**:
+The public aggregate for an Issue: average of all Issue Ratings plus the vote count those averages are based on. Shown on Issue Picker and Issue Library cards. Distinct from the player's own Issue Rating.
+_Avoid_: story rating, average rating (as the domain name), review count
+
 ## Journey progression (spine)
 
 Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side modes.
@@ -166,6 +174,7 @@ Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side 
 - While an Issue is Active, the player cannot start another.
 - First-clear path: drain owed via Picker(s) if needed → **one** Chapter reader on the **newest** Chapter just granted (if that grant completed the Issue, still show its last Chapter this once; previous/next only inside that Issue) → **Continue** (always enabled, even on an older Chapter) → existing Mode Result (coins / time / LCT). Reader: one bundled music bed (local mute preference), repeating zoom, prose revealed line-by-line (tap shows the rest), scroll if needed, Chapter title plus `n / total`. Earlier Issues completed in a picker chain are in the Library only.
 - **Issue Library** on the Journey level list re-opens the Active Issue and completed Issues (close/back only — no Continue to Mode Result), and shows locked unstarted Issues as cover/synopsis teasers. The post-clear reader does not switch Issues.
+- On the **last Chapter** (First-clear or Library), the player can set or overwrite an **Issue Rating** (1–5 stars, no separate submit). **Issue Score** (average + vote count) shows on Issue Picker and Issue Library cards; empty is `0.0` with 0 votes. Full synopsis is always visible on those cards (no expand/collapse).
 - English catalog (Issues, Chapters, titles, synopses, bodies, Issue cover, Issue backdrop) syncs at boot. **Reading Locale** is stored locally and on the server (`null` until chosen). The first visit into Hero's Journey requires a Reading Locale pick (English pre-selected); Options can change it later. Confirming a locale downloads that locale's full i18n catalog when it is not already complete locally; boot still applies `modified_at` incremental updates for English plus the preferred locale. Missing locale falls back to English. Device language does not pick Reading Locale. Curated locales are pre-translated in the catalog; on-demand server translation is out of scope for the client.
 
 ## Journey Round hearts (baseline)
@@ -310,4 +319,4 @@ Four Affixes share the Soundquake timer/reshuffle loop. Interval seconds come fr
 
 ## Decisions
 
-Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0020). ADR-0002–0014 and ADR-0016 include **Revert** sections where those deepens need to be rolled back. Journey progression spine: [ADR-0015](docs/adr/0015-journey-progression-spine.md). Level Clear Time module: [ADR-0016](docs/adr/0016-level-clear-time.md). Journey Issue catalog + Issue Progress: [ADR-0019](docs/adr/0019-journey-issue.md). Journey level catalog pacing: [ADR-0020](docs/adr/0020-journey-level-catalog.md).
+Architecture decisions that affect these terms live in `docs/adr/` (ADR-0001 through ADR-0021). ADR-0002–0014 and ADR-0016 include **Revert** sections where those deepens need to be rolled back. Journey progression spine: [ADR-0015](docs/adr/0015-journey-progression-spine.md). Level Clear Time module: [ADR-0016](docs/adr/0016-level-clear-time.md). Journey Issue catalog + Issue Progress: [ADR-0019](docs/adr/0019-journey-issue.md). Journey level catalog pacing: [ADR-0020](docs/adr/0020-journey-level-catalog.md). Issue Rating + Issue Score: [ADR-0021](docs/adr/0021-issue-rating.md).

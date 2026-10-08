@@ -32,6 +32,7 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.FaqEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.getInitialUserData
+import com.dsapps2018.dota2guessthesound.data.progress.IssueRating
 import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.ConfigRepository
@@ -82,6 +83,7 @@ class SyncSession @Inject constructor(
     private val leaderboardRepository: LeaderboardRepository,
     private val levelClearTime: LevelClearTime,
     private val journeyIssue: JourneyIssue,
+    private val issueRating: IssueRating,
 ) {
 
     companion object {
@@ -166,6 +168,9 @@ class SyncSession @Inject constructor(
             sendNextStep()
             journeyIssue.hydrateProgress()
             journeyIssue.syncCatalog()
+            issueRating.sendUnsent()
+            issueRating.hydrateMine()
+            issueRating.refreshScores()
 
             sendNextStep()
             leaderboardRepository.sendUnsentDetails()

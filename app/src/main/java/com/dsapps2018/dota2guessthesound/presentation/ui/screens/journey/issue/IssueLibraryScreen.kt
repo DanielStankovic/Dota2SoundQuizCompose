@@ -31,9 +31,6 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -56,7 +53,6 @@ fun IssueLibraryScreen(
     onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var expandedIssueId by remember { mutableStateOf<Int?>(null) }
 
     BackHandler(onBack = onBack)
 
@@ -158,14 +154,10 @@ fun IssueLibraryScreen(
                                         R.string.issue_picker_chapter_count,
                                         item.chapterCount,
                                     ),
+                                    score = item.score,
                                     badge = badge,
                                     locked = item.access == IssueLibraryAccess.Locked,
                                     enabled = item.canOpenReader,
-                                    expanded = expandedIssueId == item.issueId,
-                                    onToggleSynopsis = {
-                                        expandedIssueId =
-                                            if (expandedIssueId == item.issueId) null else item.issueId
-                                    },
                                     onClick = {
                                         if (!item.canOpenReader) return@IssueStoryCard
                                         onOpenReader(

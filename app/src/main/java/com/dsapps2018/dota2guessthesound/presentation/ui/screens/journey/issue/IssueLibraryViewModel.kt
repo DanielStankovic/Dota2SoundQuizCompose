@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.progress.IssueLibraryItem
+import com.dsapps2018.dota2guessthesound.data.progress.IssueRating
 import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class IssueLibraryViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val journeyIssue: JourneyIssue,
+    private val issueRating: IssueRating,
     private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ViewModel() {
 
@@ -38,6 +40,7 @@ class IssueLibraryViewModel @Inject constructor(
 
     fun refresh() = viewModelScope.launch(exceptionHandler) {
         _uiState.value = IssueLibraryUiState.Loading
+        issueRating.refreshScores()
         val items = journeyIssue.libraryItems()
         _uiState.value = if (items.isEmpty()) {
             IssueLibraryUiState.Empty

@@ -3,7 +3,7 @@ package com.dsapps2018.dota2guessthesound.data.util
 object Constants {
 
     const val DATABASE_NAME = "dota_database"
-    const val DATABASE_VERSION = 9
+    const val DATABASE_VERSION = 10
 
     /** Local mute for Chapter reader music bed (persists across Issues / Chapters). */
     const val PREF_STORY_MUSIC_MUTED = "story_music_muted"
@@ -28,6 +28,7 @@ object Constants {
     const val TABLE_STORY_ISSUE_I18N = "story_issue_i18n"
     const val TABLE_STORY_CHAPTER_I18N = "story_chapter_i18n"
     const val TABLE_STORY_PROGRESS = "story_progress"
+    const val TABLE_STORY_ISSUE_RATING = "story_issue_rating"
 
     const val DISCORD_INV_LINK = "https://discord.gg/2aH27NKEdA"
     const val DISCORD_PACKAGE_NAME = "com.discord"

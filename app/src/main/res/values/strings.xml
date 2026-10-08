@@ -172,8 +172,10 @@
     <string name="issue_library_cd_book">Story book</string>
     <string name="issue_library_cd_locked">Locked story</string>
     <string name="issue_library_cd_back">Back</string>
-    <string name="issue_synopsis_more">Read synopsis</string>
-    <string name="issue_synopsis_less">Hide synopsis</string>
+    <string name="issue_score_votes">(%1$d)</string>
+    <string name="issue_rating_prompt">Tap a star to rate</string>
+    <string name="issue_rating_thanks">Thanks for rating</string>
+    <string name="issue_rating_star_cd">%1$d stars</string>
     <string name="chapter_reader_progress">%1$d / %2$d</string>
     <string name="chapter_reader_previous">Previous</string>
     <string name="chapter_reader_next">Next</string>

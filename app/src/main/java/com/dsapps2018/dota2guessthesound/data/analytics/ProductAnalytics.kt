@@ -153,6 +153,20 @@ class ProductAnalytics @Inject constructor(
         firebaseAnalytics.setUserProperty(USER_JOURNEY_LEVEL, level.toString())
     }
 
+    fun issueRate(
+        issueId: Int,
+        issueSlug: String,
+        stars: Int,
+        isRerate: Boolean,
+    ) {
+        firebaseAnalytics.logEvent(EVENT_ISSUE_RATE) {
+            param(PARAM_ISSUE_ID, issueId.toLong())
+            param(PARAM_ISSUE_SLUG, issueSlug.take(MAX_PARAM_VALUE))
+            param(PARAM_STARS, stars.toLong())
+            param(PARAM_IS_RERATE, boolParam(isRerate))
+        }
+    }
+
     private fun logExtraLife(
         event: String,
         mode: AnalyticsMode,
@@ -180,6 +194,7 @@ class ProductAnalytics @Inject constructor(
         const val EVENT_EXTRA_LIFE_OFFER = "extra_life_offer"
         const val EVENT_EXTRA_LIFE_RECOVER = "extra_life_recover"
         const val EVENT_EXTRA_LIFE_DECLINE = "extra_life_decline"
+        const val EVENT_ISSUE_RATE = "issue_rate"
 
         const val PARAM_CONTENT_ID = "content_id"
         const val PARAM_MODE = "mode"
@@ -193,6 +208,10 @@ class ProductAnalytics @Inject constructor(
         const val PARAM_GATE_OFFER = "gate_offer"
         const val PARAM_CLEAR_TIME_MS = "clear_time_ms"
         const val PARAM_SOURCE = "source"
+        const val PARAM_ISSUE_ID = "issue_id"
+        const val PARAM_ISSUE_SLUG = "issue_slug"
+        const val PARAM_STARS = "stars"
+        const val PARAM_IS_RERATE = "is_rerate"
 
         const val FAIL_HEARTS = "hearts"
         const val FAIL_RACE_TIMEOUT = "race_timeout"
