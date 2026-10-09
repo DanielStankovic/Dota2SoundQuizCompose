@@ -220,12 +220,12 @@ fun HomeScreen(
             if (showCoinInfoDialog) {
                 CoinInfoDialog(
                     onDismiss = { showCoinInfoDialog = false },
-                    coinAdGrantStatus = viewModel.coinAdGrantStatus(),
+                    coinAdGrantStatus = homeViewModel.coinAdGrantStatus(),
                     onWatchAdForCoins = {
                         if (isRewardedReady) {
                             showRewardedAd(
                                 context,
-                                onRewarded = { viewModel.grantCoinsFromAd() },
+                                onRewarded = { homeViewModel.grantCoinsFromAd() },
                                 onAdDismissed = { },
                             )
                         } else {

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 11,
-    "identityHash": "c8b93b2fdb2eb53e6fe6b368b089e106",
+    "identityHash": "034a621151c4a4c11ee85d9448e800ba",
     "entities": [
       {
         "tableName": "CasterType",
@@ -545,8 +545,44 @@
         }
       },
       {
+        "tableName": "JourneyAssistUnlock",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`level` INTEGER NOT NULL, `countUnlocked` INTEGER NOT NULL, `primerUnlocked` INTEGER NOT NULL, `isSent` INTEGER NOT NULL, PRIMARY KEY(`level`))",
+        "fields": [
+          {
+            "fieldPath": "level",
+            "columnName": "level",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countUnlocked",
+            "columnName": "countUnlocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "primerUnlocked",
+            "columnName": "primerUnlocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSent",
+            "columnName": "isSent",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "level"
+          ]
+        }
+      },
+      {
         "tableName": "StoryIssue",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `slug` TEXT NOT NULL, `protagonistCasterId` INTEGER NOT NULL, `sort` INTEGER NOT NULL, `coverPath` TEXT NOT NULL, `backdropPath` TEXT NOT NULL, `coverFileLink` TEXT NOT NULL, `backdropFileLink` TEXT NOT NULL, `modifiedAt` TEXT NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `slug` TEXT NOT NULL, `protagonistCasterId` INTEGER NOT NULL, `sort` INTEGER NOT NULL, `coverPath` TEXT NOT NULL, `backdropPath` TEXT NOT NULL, `coverFileLink` TEXT NOT NULL, `backdropFileLink` TEXT NOT NULL, `modifiedAt` TEXT NOT NULL, `isActive` INTEGER NOT NULL, `ratingSum` INTEGER NOT NULL, `ratingCount` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -612,15 +648,13 @@
             "fieldPath": "ratingSum",
             "columnName": "ratingSum",
             "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
+            "notNull": true
           },
           {
             "fieldPath": "ratingCount",
             "columnName": "ratingCount",
             "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -832,52 +866,12 @@
           "columnNames": [
             "issueId"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "JourneyAssistUnlock",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`level` INTEGER NOT NULL, `countUnlocked` INTEGER NOT NULL, `primerUnlocked` INTEGER NOT NULL, `isSent` INTEGER NOT NULL, PRIMARY KEY(`level`))",
-        "fields": [
-          {
-            "fieldPath": "level",
-            "columnName": "level",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "countUnlocked",
-            "columnName": "countUnlocked",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "primerUnlocked",
-            "columnName": "primerUnlocked",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isSent",
-            "columnName": "isSent",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "level"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c8b93b2fdb2eb53e6fe6b368b089e106')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '034a621151c4a4c11ee85d9448e800ba')"
     ]
   }
 }
