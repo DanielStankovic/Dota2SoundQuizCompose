@@ -71,6 +71,7 @@ import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
 import com.dsapps2018.dota2guessthesound.data.admob.loadRewardedAd
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.FeatureFlags
 import com.dsapps2018.dota2guessthesound.data.util.findActivity
 import com.dsapps2018.dota2guessthesound.data.util.openDiscordInviteLink
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
@@ -299,17 +300,14 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(painter = painterResource(if (authState is SessionStatus.Authenticated) R.drawable.leaderboard else R.drawable.leaderboard_disabled),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clickable {
-                                    if (authState is SessionStatus.Authenticated) {
-                                        onLeaderboardClicked()
-                                    } else {
-                                        authViewModel.onErrorEvent(context.getString(R.string.leaderboard_login_required))
-                                    }
-                                })
+                        ArcadeLeaderboardHomeButton(
+                            enabled = FeatureFlags.ARCADE_LEADERBOARD_ENABLED,
+                            isAuthenticated = authState is SessionStatus.Authenticated,
+                            onLeaderboardClicked = onLeaderboardClicked,
+                            onLoginRequired = { message ->
+                                authViewModel.onErrorEvent(message)
+                            },
+                        )
                         Spacer(Modifier.weight(1f))
                         Text(
                             progress.coinValue.toString(),
@@ -559,6 +557,32 @@ fun HomeScreen(
 
 }
 
+
+@Composable
+private fun ArcadeLeaderboardHomeButton(
+    enabled: Boolean,
+    isAuthenticated: Boolean,
+    onLeaderboardClicked: () -> Unit,
+    onLoginRequired: (String) -> Unit,
+) {
+    if (!enabled) return
+    val loginRequiredMessage = stringResource(R.string.leaderboard_login_required)
+    Image(
+        painter = painterResource(
+            if (isAuthenticated) R.drawable.leaderboard else R.drawable.leaderboard_disabled
+        ),
+        contentDescription = null,
+        modifier = Modifier
+            .size(40.dp)
+            .clickable {
+                if (isAuthenticated) {
+                    onLeaderboardClicked()
+                } else {
+                    onLoginRequired(loginRequiredMessage)
+                }
+            },
+    )
+}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)

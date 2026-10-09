@@ -8,6 +8,7 @@ import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.data.util.FeatureFlags
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.IDToken
@@ -69,7 +70,9 @@ class AuthSession @Inject constructor(
             productAnalytics.setJourneyLevel(
                 playerProgressRepository.progress.first().journeyLevel
             )
-            leaderboardRepository.updateUserIdAndSendData(id)
+            if (FeatureFlags.ARCADE_LEADERBOARD_ENABLED) {
+                leaderboardRepository.updateUserIdAndSendData(id)
+            }
             levelClearTime.sendUnsent()
             levelClearTime.hydratePersonalBests()
             journeyAssistUnlocks.sendUnsent()

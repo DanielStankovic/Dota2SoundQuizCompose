@@ -6,6 +6,7 @@ import com.dsapps2018.dota2guessthesound.data.enums.GameModeEnum
 import com.dsapps2018.dota2guessthesound.data.model.JourneyProgressWrite
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
+import com.dsapps2018.dota2guessthesound.data.util.FeatureFlags
 import javax.inject.Inject
 
 data class JourneyWinResult(
@@ -32,7 +33,7 @@ class ModeResult @Inject constructor(
         playerProgressRepository.recordQuizResult(score)
         productAnalytics.postScore(AnalyticsMode.Quiz, score.toDouble())
         productAnalytics.earnCoins(score.toLong(), ProductAnalytics.SOURCE_QUIZ)
-        if (score > 0) {
+        if (FeatureFlags.ARCADE_LEADERBOARD_ENABLED && score > 0) {
             leaderboardRepository.updateLeaderboard(
                 score.toDouble(),
                 GameModeEnum.QUIZ.gameCode,
@@ -43,7 +44,7 @@ class ModeResult @Inject constructor(
     suspend fun submitInvoker(score: Int) {
         playerProgressRepository.recordInvokerResult(score)
         productAnalytics.postScore(AnalyticsMode.Invoker, score.toDouble())
-        if (score > 0) {
+        if (FeatureFlags.ARCADE_LEADERBOARD_ENABLED && score > 0) {
             leaderboardRepository.updateLeaderboard(
                 score.toDouble(),
                 GameModeEnum.INVOKER.gameCode,
@@ -60,7 +61,7 @@ class ModeResult @Inject constructor(
             playerProgressRepository.fastFingerCoinsGranted(currentScore, time).toLong(),
             ProductAnalytics.fastFingerCoinSource(time),
         )
-        if (currentScore > 0.0) {
+        if (FeatureFlags.ARCADE_LEADERBOARD_ENABLED && currentScore > 0.0) {
             leaderboardRepository.updateLeaderboard(
                 currentScore,
                 gameModeFromTime(time).gameCode,

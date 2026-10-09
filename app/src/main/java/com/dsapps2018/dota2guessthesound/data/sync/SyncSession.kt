@@ -41,6 +41,7 @@ import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.Constants.FORCED_VERSION_TAG
+import com.dsapps2018.dota2guessthesound.data.util.FeatureFlags
 import com.dsapps2018.dota2guessthesound.data.util.getInitialModifiedDate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.postgrest.Postgrest
@@ -175,7 +176,9 @@ class SyncSession @Inject constructor(
             issueRating.refreshScores()
 
             sendNextStep()
-            leaderboardRepository.sendUnsentDetails()
+            if (FeatureFlags.ARCADE_LEADERBOARD_ENABLED) {
+                leaderboardRepository.sendUnsentDetails()
+            }
             levelClearTime.sendUnsent()
             levelClearTime.hydratePersonalBests()
             journeyAssistUnlocks.sendUnsent()

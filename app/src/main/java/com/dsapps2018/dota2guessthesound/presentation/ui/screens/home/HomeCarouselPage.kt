@@ -1,19 +1,22 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.home
 
 enum class HomeCarouselPage {
+    Journey,
     HeroCatalog,
     Quiz,
     FastFinger,
-    Journey,
     Invoker,
     Joke,
 }
 
+/**
+ * Home carousel order: Journey first, then staging-only Hero Catalog, then arcade modes.
+ */
 fun homeCarouselPages(includeHeroCatalog: Boolean): List<HomeCarouselPage> = buildList {
+    add(HomeCarouselPage.Journey)
     if (includeHeroCatalog) add(HomeCarouselPage.HeroCatalog)
     add(HomeCarouselPage.Quiz)
     add(HomeCarouselPage.FastFinger)
-    add(HomeCarouselPage.Journey)
     add(HomeCarouselPage.Invoker)
     add(HomeCarouselPage.Joke)
 }
