@@ -17,6 +17,7 @@ If you change any of the following on **staging** (or in app logic that depends 
 - Scalar Journey authoring (`timer_seconds`, `timer_extension_seconds`, `echo_limit_offset`, …)
 - **Issue / Chapter catalog** (`story_issue`, `story_chapter`, `story_*_i18n`, Storage `story_art`) — remap via Issue `slug` + `chapter_index` + `locale`; remap `protagonist_caster_id` like other caster FKs; copy `cover_path` / `backdrop_path` by slug (re-upload art or copy by path). Do not copy staging numeric Issue ids into prod `story_progress.completed_issue_ids` or `active_issue_id`. Player columns to remap/copy by user: `active_unlocked`, `owed_grants`, `reading_locale` (nullable; `null` = unset — apply the same nullability on prod; do not assume `NOT NULL DEFAULT 'en'`).
 - **Issue Rating / Issue Score** (`story_issue_rating`; `story_issue.rating_sum` / `rating_count`; RPC `upsert_issue_rating`) — schema-only promote (defaults 0). Do **not** copy staging player ratings or staging aggregate counts into prod; prod aggregates start at 0 (or recompute from prod ratings only). Remap is N/A for aggregates.
+- **Journey Assist unlocks** (`journey_assist_unlock`; RPC `upsert_journey_assist_unlock`) — schema-only promote. Do **not** copy staging player unlock rows into prod. Remap is N/A (keyed by `user_id` + Journey `level`).
 - Catalog rows whose **numeric ids** differ between environments
 
 ## Full transfer (when the owner is ready)

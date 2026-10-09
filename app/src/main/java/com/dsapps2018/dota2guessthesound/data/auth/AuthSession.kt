@@ -2,6 +2,7 @@ package com.dsapps2018.dota2guessthesound.data.auth
 
 import com.dsapps2018.dota2guessthesound.data.analytics.ProductAnalytics
 import com.dsapps2018.dota2guessthesound.data.progress.IssueRating
+import com.dsapps2018.dota2guessthesound.data.progress.JourneyAssistUnlocks
 import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.LeaderboardRepository
@@ -30,6 +31,7 @@ class AuthSession @Inject constructor(
     private val playerProgressRepository: PlayerProgressRepository,
     private val leaderboardRepository: LeaderboardRepository,
     private val levelClearTime: LevelClearTime,
+    private val journeyAssistUnlocks: JourneyAssistUnlocks,
     private val journeyIssue: JourneyIssue,
     private val issueRating: IssueRating,
     private val productAnalytics: ProductAnalytics,
@@ -70,6 +72,8 @@ class AuthSession @Inject constructor(
             leaderboardRepository.updateUserIdAndSendData(id)
             levelClearTime.sendUnsent()
             levelClearTime.hydratePersonalBests()
+            journeyAssistUnlocks.sendUnsent()
+            journeyAssistUnlocks.hydrate()
             journeyIssue.hydrateProgress()
             journeyIssue.syncCatalog()
             issueRating.sendUnsent()
@@ -84,6 +88,7 @@ class AuthSession @Inject constructor(
         auth.signOut()
         playerProgressRepository.resetLocalUserData()
         levelClearTime.clearLocal()
+        journeyAssistUnlocks.clearLocal()
         issueRating.clearLocal()
         journeyIssue.clearLocalProgress()
         productAnalytics.setSignedIn(false)

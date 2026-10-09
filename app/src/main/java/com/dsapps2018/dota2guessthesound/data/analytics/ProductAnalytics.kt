@@ -229,8 +229,10 @@ class ProductAnalytics @Inject constructor(
         const val SOURCE_FF_60 = "ff_60"
         const val SOURCE_FF_90 = "ff_90"
         const val SOURCE_INVOKER_AD_GRANT = "invoker_ad_grant"
+        const val SOURCE_COIN_AD_GRANT = "coin_ad_grant"
 
         const val ITEM_INVOKER_ENTRY = "invoker_entry"
+        const val ITEM_SOUND_COUNT_REVEAL = "sound_count_reveal"
 
         const val USER_SIGNED_IN = "signed_in"
         const val USER_JOURNEY_LEVEL = "journey_level"

@@ -3,10 +3,15 @@ package com.dsapps2018.dota2guessthesound.data.util
 object Constants {
 
     const val DATABASE_NAME = "dota_database"
-    const val DATABASE_VERSION = 10
+    const val DATABASE_VERSION = 11
 
     /** Local mute for Chapter reader music bed (persists across Issues / Chapters). */
     const val PREF_STORY_MUSIC_MUTED = "story_music_muted"
+
+    /** Coin Ad Grant anti-farm (UTC day + cooldown). Local only. */
+    const val PREF_COIN_AD_GRANT_LAST_MS = "coin_ad_grant_last_ms"
+    const val PREF_COIN_AD_GRANT_DAY_KEY = "coin_ad_grant_day_key"
+    const val PREF_COIN_AD_GRANT_DAY_COUNT = "coin_ad_grant_day_count"
 
     const val TABLE_CASTER_TYPE = "caster_type"
     const val TABLE_CASTERS = "casters"
@@ -21,6 +26,7 @@ object Constants {
     const val TABLE_REWARDS = "rewards"
     const val TABLE_JOURNEY = "journey"
     const val TABLE_LEVEL_CLEAR_TIME = "level_clear_time"
+    const val TABLE_JOURNEY_ASSIST_UNLOCK = "journey_assist_unlock"
     const val TABLE_FAQ = "faq"
     const val TABLE_AFFIXES = "affixes"
     const val TABLE_STORY_ISSUE = "story_issue"
@@ -38,6 +44,10 @@ object Constants {
     const val FF_90_SCORE_MIN = 18.0
     const val JOKE_COIN_COST = 1
     const val JOURNEY_FIRST_CLEAR_COINS = 20
+    const val SOUND_COUNT_REVEAL_COST = 60
+    const val COIN_AD_GRANT_AMOUNT = 40
+    const val COIN_AD_GRANT_COOLDOWN_MS = 5 * 60 * 1000L
+    const val COIN_AD_GRANT_DAILY_CAP = 5
 
     const val LAST_SYNC_KEY = "last_sync"
 

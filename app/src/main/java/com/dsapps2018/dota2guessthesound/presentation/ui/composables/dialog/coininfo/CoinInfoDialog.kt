@@ -1,12 +1,15 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.coininfo
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,21 +22,28 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.Modifier.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.progress.CoinAdGrantStatus
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.DialogBackground
+import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinInfoDialog(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    coinAdGrantStatus: CoinAdGrantStatus? = null,
+    onWatchAdForCoins: (() -> Unit)? = null,
 ) {
 
     BasicAlertDialog(
@@ -110,6 +120,54 @@ fun CoinInfoDialog(
                 ),
                 R.drawable.coin_unknown
             )
+
+            if (coinAdGrantStatus != null && onWatchAdForCoins != null) {
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = stringResource(
+                        R.string.coin_ad_grant_info,
+                        coinAdGrantStatus.grantAmount,
+                        Constants.COIN_AD_GRANT_DAILY_CAP,
+                    ),
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    color = Color.White.copy(alpha = 0.85f),
+                    fontSize = 13.sp,
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                val cooldownSec = (coinAdGrantStatus.cooldownRemainingMs / 1000L).toInt()
+                val label = when {
+                    coinAdGrantStatus.remainingToday <= 0 ->
+                        stringResource(R.string.assist_coin_ad_daily_cap)
+                    cooldownSec > 0 ->
+                        stringResource(R.string.assist_coin_ad_cooldown, cooldownSec)
+                    else ->
+                        stringResource(
+                            R.string.assist_watch_ad_coins,
+                            coinAdGrantStatus.grantAmount,
+                        )
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xFF1E2A38))
+                        .alpha(if (coinAdGrantStatus.canGrant) 1f else 0.45f)
+                        .clickable(
+                            enabled = coinAdGrantStatus.canGrant,
+                            onClick = onWatchAdForCoins,
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = label,
+                        color = JourneyTimeAccent,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
         }
     }
 }

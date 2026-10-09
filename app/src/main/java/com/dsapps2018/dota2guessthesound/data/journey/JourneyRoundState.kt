@@ -26,6 +26,7 @@ sealed interface JourneyRoundState {
         val affixes: List<AffixModel> = emptyList(),
         /** True during Journey Round briefing — clocks have not started. */
         val awaitingBegin: Boolean = false,
+        val assist: JourneyAssistUiState = JourneyAssistUiState(),
     ) : JourneyRoundState
 
     data class Error(val message: String) : JourneyRoundState

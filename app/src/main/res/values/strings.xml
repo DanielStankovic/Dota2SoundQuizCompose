@@ -140,6 +140,29 @@
     <string name="journey_round_begin">Begin</string>
     <string name="journey_submit">Submit</string>
 
+    <string name="assist_tray_title">Assists</string>
+    <string name="assist_tray_cd">Assists</string>
+    <string name="assist_tray_coins">Coins: %1$d</string>
+    <string name="assist_count_title">Sound Count Reveal</string>
+    <string name="assist_count_body">Show how many correct sounds each visible hero has on the board.</string>
+    <string name="assist_primer_title">Hero Sound Primer</string>
+    <string name="assist_primer_body">Tap a hero portrait to listen to that hero\'s sounds. Timer keeps running.</string>
+    <string name="assist_primer_overlay_hint">Timer is still running. Learn the sounds, then mark the board.</string>
+    <string name="assist_primer_badge_cd">Open hero sound primer</string>
+    <string name="assist_primer_close_cd">Close primer</string>
+    <string name="assist_unlocked">Unlocked</string>
+    <string name="assist_buy_coins">Buy for %1$d coins</string>
+    <string name="assist_need_coins">Need %1$d coins</string>
+    <string name="assist_watch_ad_unlock">Watch ad to unlock</string>
+    <string name="assist_coin_ad_title">Get coins</string>
+    <string name="assist_coin_ad_body">Watch an ad for +%1$d coins. %2$d left today.</string>
+    <string name="assist_watch_ad_coins">Watch ad (+%1$d)</string>
+    <string name="assist_coin_ad_cooldown">Wait %1$ds</string>
+    <string name="assist_coin_ad_daily_cap">Daily limit reached</string>
+    <string name="assist_disabled_among_heroes">Unavailable: Among Heroes hides identity. Assists stay off so the Affix still works.</string>
+    <string name="assist_disabled_unknown_count">Unavailable: Unknown Count hides the board total. Count Reveal would reveal it.</string>
+    <string name="coin_ad_grant_info">Watch an ad for +%1$d coins (5 min cooldown, %2$d/day).</string>
+
     <string name="level_clear_time_title">Level %1$d times</string>
     <string name="level_clear_time_board_btn">Times</string>
     <string name="level_clear_time_you">You</string>

@@ -14,10 +14,14 @@ import com.dsapps2018.dota2guessthesound.data.dao.AffixDao
 import com.dsapps2018.dota2guessthesound.data.dao.CasterDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.db.entity.AffixEntity
+import com.dsapps2018.dota2guessthesound.data.herocatalog.HeroCatalog
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyGameModel
 import com.dsapps2018.dota2guessthesound.data.model.JourneyLevelModel
 import com.dsapps2018.dota2guessthesound.data.model.SoundModel
+import com.dsapps2018.dota2guessthesound.data.progress.CoinAdGrant
+import com.dsapps2018.dota2guessthesound.data.progress.JourneyAssistUnlockFlags
+import com.dsapps2018.dota2guessthesound.data.progress.JourneyAssistUnlocks
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.SoundPlayback
@@ -28,6 +32,7 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +60,9 @@ class JourneyRound @Inject constructor(
     private val firebaseCrashlytics: FirebaseCrashlytics,
     private val playerProgressRepository: PlayerProgressRepository,
     private val productAnalytics: ProductAnalytics,
+    private val journeyAssistUnlocks: JourneyAssistUnlocks,
+    private val coinAdGrant: CoinAdGrant,
+    private val heroCatalog: HeroCatalog,
 ) {
 
     private val _levelCatalog =
@@ -88,6 +96,11 @@ class JourneyRound @Inject constructor(
     private var extraLifeGateAllowed = true
     private var extraLifeGateUsed = false
     private var pendingContinueOffer: ExtraLifeContinueOffer? = null
+    private var assistSoundCountsByHeroId: Map<Int, Int> = emptyMap()
+    private var assistCasterNameById: Map<Int, String> = emptyMap()
+    private var assistCountDisabled: AssistDisableReason? = null
+    private var assistPrimerDisabled: AssistDisableReason? = null
+    private var assistObserveJob: Job? = null
 
     private var roundScope: CoroutineScope? = null
     private var analyticsAttemptOpen = false
@@ -214,6 +227,24 @@ class JourneyRound @Inject constructor(
                 packageName = context.packageName,
             )
 
+            val (countDisabled, primerDisabled) =
+                JourneyAssistPolicy.disableReasons(currentAffixes)
+            assistCountDisabled = countDisabled
+            assistPrimerDisabled = primerDisabled
+            assistCasterNameById = casterNameById
+            val portraitHeroIds =
+                (portraits.radiant + portraits.dire).map { it.heroId }.distinct()
+            val correctIdsOnBoard = correctSounds.map { it.soundModel.id }.toSet()
+            assistSoundCountsByHeroId = portraitHeroIds.associateWith { heroId ->
+                soundDao.getSoundsForCaster(heroId).count { it.id in correctIdsOnBoard }
+            }
+            val unlockFlags = journeyAssistUnlocks.flags(levelNum)
+            val coinBalance = playerProgressRepository.progress.first().coinValue
+            val assist = buildAssistUi(
+                flags = unlockFlags,
+                coinBalance = coinBalance,
+            )
+
             val selectedMarks = soundList.associate { it.soundModel.id to false }
             val game = JourneyGameModel(
                 level = levelNum,
@@ -239,7 +270,9 @@ class JourneyRound @Inject constructor(
                 continueOffer = null,
                 affixes = currentAffixes,
                 awaitingBegin = awaitingBegin,
+                assist = assist,
             )
+            observeAssist(levelNum)
 
             val resolved = engine.resolveTimer(levelContext)
             resolved?.let {
@@ -449,12 +482,179 @@ class JourneyRound @Inject constructor(
         resumeClearClockIfPlayable()
     }
 
+    /** Refresh Coin Ad Grant cooldown / remaining for Assist tray UI. */
+    fun refreshAssistGrantStatus() {
+        updateReady { ready ->
+            ready.copy(
+                assist = ready.assist.copy(coinAdGrant = coinAdGrant.status()),
+            )
+        }
+    }
+
+    fun clearAssistTrayRequest() {
+        updateReady { ready ->
+            ready.copy(assist = ready.assist.copy(requestOpenTrayForPrimer = false))
+        }
+    }
+
+    /**
+     * Portrait / Primer badge tap. Unlocked → overlay. Locked → open Assist tray to Primer.
+     */
+    fun onPortraitAssistTap(heroId: Int) {
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (ready.assist.primerDisabledReason != null) return
+        if (ready.assist.primerUnlocked) {
+            openPrimer(heroId)
+        } else {
+            updateReady {
+                it.copy(assist = it.assist.copy(requestOpenTrayForPrimer = true))
+            }
+        }
+    }
+
+    fun openPrimer(heroId: Int) {
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (!ready.assist.primerUnlocked || ready.assist.primerDisabledReason != null) return
+        val scope = roundScope ?: return
+        scope.launch {
+            val sounds = heroCatalog.sounds(heroId)
+            updateReady {
+                it.copy(
+                    assist = it.assist.copy(
+                        primerHeroId = heroId,
+                        primerHeroName = assistCasterNameById[heroId],
+                        primerSounds = sounds,
+                        requestOpenTrayForPrimer = false,
+                    )
+                )
+            }
+        }
+    }
+
+    fun closePrimer() {
+        heroCatalog.stop()
+        updateReady {
+            it.copy(
+                assist = it.assist.copy(
+                    primerHeroId = null,
+                    primerHeroName = null,
+                    primerSounds = emptyList(),
+                )
+            )
+        }
+    }
+
+    /** Primer overlay listen — does not consume Echo Limit. */
+    fun playPrimerSound(sound: SoundModel) {
+        heroCatalog.play(sound)
+    }
+
+    fun purchaseCountReveal() {
+        val scope = roundScope ?: return
+        scope.launch {
+            val ready = _roundState.value as? JourneyRoundState.Ready ?: return@launch
+            if (!ready.assist.countPurchaseAvailable) return@launch
+            val cost = ready.assist.countCost
+            val coins = playerProgressRepository.progress.first().coinValue
+            if (coins < cost) return@launch
+            playerProgressRepository.adjustCoins(-cost)
+            productAnalytics.spendCoins(
+                cost.toLong(),
+                ProductAnalytics.ITEM_SOUND_COUNT_REVEAL,
+            )
+            journeyAssistUnlocks.unlockCount(ready.level)
+        }
+    }
+
+    fun unlockPrimerWithAd(
+        runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,
+    ) {
+        val ready = _roundState.value as? JourneyRoundState.Ready ?: return
+        if (!ready.assist.primerPurchaseAvailable) return
+        onGameplaySurfaceObscured()
+        runRewardedAd(
+            {
+                roundScope?.launch {
+                    val level = (_roundState.value as? JourneyRoundState.Ready)?.level ?: return@launch
+                    journeyAssistUnlocks.unlockPrimer(level)
+                }
+            },
+            { onGameplaySurfaceClear() },
+        )
+    }
+
+    fun grantCoinsFromAd(
+        runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,
+    ) {
+        if (!coinAdGrant.status().canGrant) return
+        onGameplaySurfaceObscured()
+        runRewardedAd(
+            {
+                roundScope?.launch {
+                    coinAdGrant.grantFromAd()
+                }
+            },
+            { onGameplaySurfaceClear() },
+        )
+    }
+
     fun clear() {
+        assistObserveJob?.cancel()
+        assistObserveJob = null
+        heroCatalog.stop()
         soundPlayback.stop()
         endAttemptIfOpen(ProductAnalytics.FAIL_QUIT)
         stopClocks()
         roundScope = null
     }
+
+    private fun observeAssist(level: Int) {
+        assistObserveJob?.cancel()
+        val scope = roundScope ?: return
+        assistObserveJob = scope.launch {
+            combine(
+                playerProgressRepository.progress,
+                journeyAssistUnlocks.observe(level),
+            ) { progress, flags ->
+                progress.coinValue to flags
+            }.collect { (coins, flags) ->
+                updateReady { ready ->
+                    ready.copy(
+                        assist = buildAssistUi(
+                            flags = flags,
+                            coinBalance = coins,
+                            primerHeroId = ready.assist.primerHeroId,
+                            primerHeroName = ready.assist.primerHeroName,
+                            primerSounds = ready.assist.primerSounds,
+                            requestOpenTrayForPrimer = ready.assist.requestOpenTrayForPrimer,
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun buildAssistUi(
+        flags: JourneyAssistUnlockFlags,
+        coinBalance: Int,
+        primerHeroId: Int? = null,
+        primerHeroName: String? = null,
+        primerSounds: List<SoundModel> = emptyList(),
+        requestOpenTrayForPrimer: Boolean = false,
+    ): JourneyAssistUiState =
+        JourneyAssistUiState(
+            countUnlocked = flags.countUnlocked,
+            primerUnlocked = flags.primerUnlocked,
+            countDisabledReason = assistCountDisabled,
+            primerDisabledReason = assistPrimerDisabled,
+            soundCountsByHeroId = assistSoundCountsByHeroId,
+            coinBalance = coinBalance,
+            coinAdGrant = coinAdGrant.status(),
+            primerHeroId = primerHeroId,
+            primerHeroName = primerHeroName,
+            primerSounds = primerSounds,
+            requestOpenTrayForPrimer = requestOpenTrayForPrimer,
+        )
 
     private fun stopClocks() {
         timer.clear()

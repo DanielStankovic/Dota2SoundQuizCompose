@@ -8,6 +8,8 @@ import com.dsapps2018.dota2guessthesound.data.affix.AffixUIState
  * One Hero slot in the Journey portrait row after Affix + level membership resolve.
  */
 data class HeroPortraitSlot(
+    /** Catalog Hero id for this slot (including masked `?` slots). */
+    val heroId: Int,
     val imageResId: Int,
     /** Compose blur radius in dp; `0` means no blur. */
     val blurRadiusDp: Float = 0f,
@@ -76,7 +78,11 @@ internal object HeroPortraitPolicy {
             } else {
                 0f
             }
-            return HeroPortraitSlot(imageResId = imageResId, blurRadiusDp = blur)
+            return HeroPortraitSlot(
+                heroId = heroId,
+                imageResId = imageResId,
+                blurRadiusDp = blur,
+            )
         }
 
         return HeroPortraitRows(

@@ -160,7 +160,9 @@ Arcade Mode Result submit only (not Journey).
 | | Quiz result coins (= score) | `source` = `quiz` |
 | | Fast Finger threshold grant (= 30/60/90) | `source` = `ff_30` / `ff_60` / `ff_90` |
 | | Invoker entry ad grant **200** | `source` = `invoker_ad_grant` |
+| | Coin Ad Grant **40** (Assist tray / Home) | `source` = `coin_ad_grant` |
 | `spend_virtual_currency` | Invoker entry **200** | `item_name` = `invoker_entry` |
+| | Sound Count Reveal **60** | `item_name` = `sound_count_reveal` |
 
 ### `extra_life_offer` / `extra_life_recover` / `extra_life_decline` (custom)
 

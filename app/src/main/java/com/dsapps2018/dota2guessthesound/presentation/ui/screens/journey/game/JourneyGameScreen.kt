@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.ui.draw.blur
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -78,6 +77,10 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingCont
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.dialog.WatchAdContinueDialog
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.AffixTrayHandle
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.AffixTrayPanel
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.AssistTrayHandle
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.AssistTrayPanel
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.HeroPortraitWithAssists
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.HeroSoundPrimerOverlay
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.SoundquakeFxRequest
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.TimerDisplay
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.rememberSoundquakeFxState
@@ -228,6 +231,7 @@ fun JourneyGameData(
     viewModel: JourneyGameViewModel,
     soundquakeFx: SoundquakeFxRequest? = null,
 ) {
+    val context = LocalContext.current
     val journeyState = ready.game
     val radiantPortraits = journeyState.radiantHeroPortraits
     val currentScreenWidth = LocalConfiguration.current.screenWidthDp
@@ -241,11 +245,23 @@ fun JourneyGameData(
     val showTimer = hud.showTimer && timerState != null
     val quakeFx = rememberSoundquakeFxState(soundquakeFx)
     val affixes = ready.affixes
-    var trayOpen by remember { mutableStateOf(ready.awaitingBegin) }
+    val assist = ready.assist
+    val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
+    var affixTrayOpen by remember { mutableStateOf(ready.awaitingBegin) }
+    var assistTrayOpen by remember { mutableStateOf(false) }
     var selectedAffix by remember { mutableStateOf<AffixModel?>(null) }
 
     LaunchedEffect(ready.awaitingBegin) {
-        if (ready.awaitingBegin) trayOpen = true
+        if (ready.awaitingBegin) affixTrayOpen = true
+    }
+
+    LaunchedEffect(assist.requestOpenTrayForPrimer) {
+        if (assist.requestOpenTrayForPrimer) {
+            assistTrayOpen = true
+            affixTrayOpen = false
+            viewModel.refreshAssistGrantStatus()
+            viewModel.clearAssistTrayRequest()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -258,7 +274,6 @@ fun JourneyGameData(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // One Affix status band: timer chip (when active) + hearts/counters/plays
         StatusInfoRow(
             hearts = ready.hearts,
             selectedMarks = ready.selectedMarks,
@@ -278,49 +293,58 @@ fun JourneyGameData(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
+            val showCount =
+                assist.countUnlocked && assist.countDisabledReason == null
+            val showPrimer =
+                assist.primerUnlocked && assist.primerDisabledReason == null
             radiantPortraits.forEach { slot ->
-                val imageModifier = if (slot.blurRadiusDp > 0f) {
-                    Modifier
-                        .size(imageSize.dp)
-                        .blur(radius = slot.blurRadiusDp.dp)
-                } else {
-                    Modifier.size(imageSize.dp)
-                }
-
-                Image(
-                    painterResource(slot.imageResId),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = imageModifier,
+                HeroPortraitWithAssists(
+                    slot = slot,
+                    imageSize = imageSize.dp,
+                    showCount = showCount,
+                    soundCount = assist.soundCountsByHeroId[slot.heroId],
+                    showPrimerBadge = showPrimer,
+                    onPortraitClick = { viewModel.onPortraitAssistTap(slot.heroId) },
+                    onPrimerBadgeClick = { viewModel.onPortraitAssistTap(slot.heroId) },
                 )
             }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(
-                    if (affixes.isNotEmpty()) {
-                        // AffixTrayHandle is 56.dp tall; keep this row from collapsing when the tab hides.
-                        Modifier.height(56.dp)
-                    } else {
-                        Modifier
-                    }
-                ),
+                .height(56.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Spacer(Modifier.weight(1f))
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                if (!assistTrayOpen) {
+                    AssistTrayHandle(
+                        expanded = false,
+                        onClick = {
+                            assistTrayOpen = true
+                            affixTrayOpen = false
+                            viewModel.refreshAssistGrantStatus()
+                        },
+                    )
+                }
+            }
             SubmitAnswerButton(onClick = viewModel::submitAnswer)
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.CenterEnd,
             ) {
-                if (affixes.isNotEmpty() && !trayOpen) {
+                if (affixes.isNotEmpty() && !affixTrayOpen) {
                     AffixTrayHandle(
                         expanded = false,
-                        onClick = { trayOpen = true },
+                        onClick = {
+                            affixTrayOpen = true
+                            assistTrayOpen = false
+                        },
                     )
                 }
             }
@@ -362,7 +386,47 @@ fun JourneyGameData(
         }
 
         AnimatedVisibility(
-            visible = trayOpen && affixes.isNotEmpty(),
+            visible = assistTrayOpen,
+            enter = fadeIn() + slideInHorizontally { -it },
+            exit = fadeOut() + slideOutHorizontally { -it },
+        ) {
+            AssistTrayPanel(
+                assist = assist,
+                highlightPrimer = false,
+                onDismiss = { assistTrayOpen = false },
+                onBuyCount = viewModel::purchaseCountReveal,
+                onUnlockPrimerAd = {
+                    if (isRewardedReady) {
+                        viewModel.unlockPrimerWithAd { onRewarded, onAdDismissed ->
+                            showRewardedAd(
+                                context,
+                                onRewarded = onRewarded,
+                                onAdDismissed = onAdDismissed,
+                            )
+                        }
+                    } else {
+                        loadRewardedAd(context)
+                    }
+                },
+                onWatchAdForCoins = {
+                    if (isRewardedReady) {
+                        viewModel.grantCoinsFromAd { onRewarded, onAdDismissed ->
+                            showRewardedAd(
+                                context,
+                                onRewarded = onRewarded,
+                                onAdDismissed = onAdDismissed,
+                            )
+                        }
+                    } else {
+                        loadRewardedAd(context)
+                    }
+                },
+                onRefreshGrantStatus = viewModel::refreshAssistGrantStatus,
+            )
+        }
+
+        AnimatedVisibility(
+            visible = affixTrayOpen && affixes.isNotEmpty(),
             enter = fadeIn() + slideInHorizontally { it },
             exit = fadeOut() + slideOutHorizontally { it },
         ) {
@@ -372,9 +436,9 @@ fun JourneyGameData(
                 onAffixClick = { selectedAffix = it },
                 onBegin = {
                     viewModel.beginRound()
-                    trayOpen = false
+                    affixTrayOpen = false
                 },
-                onDismiss = { trayOpen = false },
+                onDismiss = { affixTrayOpen = false },
             )
         }
 
@@ -383,6 +447,15 @@ fun JourneyGameData(
                 affixName = affix.affix,
                 affixDescription = affix.description,
                 onDismiss = { selectedAffix = null },
+            )
+        }
+
+        if (assist.primerHeroId != null) {
+            HeroSoundPrimerOverlay(
+                heroName = assist.primerHeroName.orEmpty(),
+                sounds = assist.primerSounds,
+                onPlay = viewModel::playPrimerSound,
+                onDismiss = viewModel::closePrimer,
             )
         }
     }

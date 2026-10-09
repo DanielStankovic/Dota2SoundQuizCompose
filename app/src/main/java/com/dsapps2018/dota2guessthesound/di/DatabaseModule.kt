@@ -9,6 +9,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.FaqDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDetailsDao
+import com.dsapps2018.dota2guessthesound.data.dao.JourneyAssistUnlockDao
 import com.dsapps2018.dota2guessthesound.data.dao.LevelClearTimeDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.StoryChapterDao
@@ -24,6 +25,7 @@ import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_6_7
 import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_7_8
 import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_8_9
 import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_9_10
+import com.dsapps2018.dota2guessthesound.data.db.MIGRATION_10_11
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -46,6 +48,7 @@ object DatabaseModule {
                 MIGRATION_7_8,
                 MIGRATION_8_9,
                 MIGRATION_9_10,
+                MIGRATION_10_11,
             )
             .build()
 
@@ -107,6 +110,12 @@ object DatabaseModule {
     @Provides
     fun provideLevelClearTimeDao(database: DotaDatabase): LevelClearTimeDao {
         return database.levelClearTimeDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideJourneyAssistUnlockDao(database: DotaDatabase): JourneyAssistUnlockDao {
+        return database.journeyAssistUnlockDao()
     }
 
     @Singleton

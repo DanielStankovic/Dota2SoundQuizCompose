@@ -62,6 +62,28 @@ class JourneyGameViewModel @Inject constructor(
 
     fun onHostResumed() = journeyRound.onHostResumed()
 
+    fun onPortraitAssistTap(heroId: Int) = journeyRound.onPortraitAssistTap(heroId)
+
+    fun openPrimer(heroId: Int) = journeyRound.openPrimer(heroId)
+
+    fun closePrimer() = journeyRound.closePrimer()
+
+    fun playPrimerSound(sound: SoundModel) = journeyRound.playPrimerSound(sound)
+
+    fun purchaseCountReveal() = journeyRound.purchaseCountReveal()
+
+    fun unlockPrimerWithAd(
+        runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,
+    ) = journeyRound.unlockPrimerWithAd(runRewardedAd)
+
+    fun grantCoinsFromAd(
+        runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,
+    ) = journeyRound.grantCoinsFromAd(runRewardedAd)
+
+    fun refreshAssistGrantStatus() = journeyRound.refreshAssistGrantStatus()
+
+    fun clearAssistTrayRequest() = journeyRound.clearAssistTrayRequest()
+
     override fun onCleared() {
         super.onCleared()
         journeyRound.clear()

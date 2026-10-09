@@ -12,6 +12,7 @@ import com.dsapps2018.dota2guessthesound.data.dao.ChangelogDao
 import com.dsapps2018.dota2guessthesound.data.dao.FaqDao
 import com.dsapps2018.dota2guessthesound.data.dao.GameModeDao
 import com.dsapps2018.dota2guessthesound.data.dao.LeaderboardDetailsDao
+import com.dsapps2018.dota2guessthesound.data.dao.JourneyAssistUnlockDao
 import com.dsapps2018.dota2guessthesound.data.dao.LevelClearTimeDao
 import com.dsapps2018.dota2guessthesound.data.dao.SoundDao
 import com.dsapps2018.dota2guessthesound.data.dao.StoryChapterDao
@@ -28,6 +29,7 @@ import com.dsapps2018.dota2guessthesound.data.db.entity.ChangelogEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.FaqEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.GameModeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.LeaderboardDetailsEntity
+import com.dsapps2018.dota2guessthesound.data.db.entity.JourneyAssistUnlockEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.LevelClearTimeEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.SoundEntity
 import com.dsapps2018.dota2guessthesound.data.db.entity.StoryChapterEntity
@@ -55,6 +57,20 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
             "ALTER TABLE `StoryChapterI18n` ADD COLUMN `title` TEXT NOT NULL DEFAULT ''"
+        )
+    }
+}
+
+/** Per-level Journey Assist unlocks (Count Reveal / Hero Sound Primer). */
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `JourneyAssistUnlock` (" +
+                "`level` INTEGER NOT NULL, " +
+                "`countUnlocked` INTEGER NOT NULL, " +
+                "`primerUnlocked` INTEGER NOT NULL, " +
+                "`isSent` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`level`))"
         )
     }
 }
@@ -171,6 +187,7 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         FaqEntity::class,
         AffixEntity::class,
         LevelClearTimeEntity::class,
+        JourneyAssistUnlockEntity::class,
         StoryIssueEntity::class,
         StoryChapterEntity::class,
         StoryIssueI18nEntity::class,
@@ -208,6 +225,8 @@ abstract class DotaDatabase : RoomDatabase() {
     abstract fun affixDao(): AffixDao
 
     abstract fun levelClearTimeDao(): LevelClearTimeDao
+
+    abstract fun journeyAssistUnlockDao(): JourneyAssistUnlockDao
 
     abstract fun storyIssueDao(): StoryIssueDao
 
