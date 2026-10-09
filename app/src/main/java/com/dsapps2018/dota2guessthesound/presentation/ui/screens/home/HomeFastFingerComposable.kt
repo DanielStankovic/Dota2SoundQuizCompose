@@ -21,6 +21,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.util.FeatureFlags
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.SpeechBubble
 
@@ -46,15 +47,17 @@ fun HomeFastFingerComposable(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) {
-            SpeechBubble(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp),
-                rowHeight = maxHeight,
-                text = "Psst!\nWanna hear a Cringe Joke?\n" +
-                        "Click here!",
-                res = R.drawable.kotl
-            ) {
-                onMoveToJokeScreen()
+            if (FeatureFlags.DAILY_JOKE_ENABLED) {
+                SpeechBubble(
+                    modifier = Modifier
+                        .padding(top = 16.dp, bottom = 16.dp),
+                    rowHeight = maxHeight,
+                    text = "Psst!\nWanna hear a Cringe Joke?\n" +
+                            "Click here!",
+                    res = R.drawable.kotl
+                ) {
+                    onMoveToJokeScreen()
+                }
             }
         }
 

@@ -7,22 +7,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -31,7 +26,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.admob.loadRewardedAd
 import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
+import com.dsapps2018.dota2guessthesound.data.progress.CoinAdGrantStatus
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.CoinAdGrantCard
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.CoinAdGrantCardStyle
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.MenuButton
 
 @Composable
@@ -41,15 +40,15 @@ fun HomeInvokerComposable(
     animatedRotationY: Float,
     isRewardedReady: Boolean,
     canEnterInvoker: Boolean,
-    scale: Float,
-    alpha: Float,
+    coinAdGrant: CoinAdGrantStatus,
     setShouldAnimate: (Boolean) -> Unit,
     setIsFlippingForward: (Boolean) -> Unit,
     setShowCoinInfoDialog: (Boolean) -> Unit,
     onMoveLeft: () -> Unit,
     onMoveRight: () -> Unit,
     onInvokerClicked: () -> Unit,
-    onGrantInvokerEntryFromAd: () -> Unit,
+    onGrantCoinsFromAd: () -> Unit,
+    onRefreshCoinAdGrant: () -> Unit,
 ) {
     val context = LocalContext.current
     Column(
@@ -58,25 +57,27 @@ fun HomeInvokerComposable(
         verticalArrangement = Arrangement.Center
     ) {
         Box(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            if (isRewardedReady) {
-                Image(painter = painterResource(R.drawable.watch_video_btn),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clickable {
-                            showRewardedAd(context, onRewarded = {
-                                onGrantInvokerEntryFromAd()
-                            }, onAdDismissed = {})
-                        }
-                        .height(90.dp)
-                        .width(200.dp)
-                        .scale(scale)
-                        .alpha(alpha))
-            } else {
-                Spacer(modifier = Modifier.height(90.dp))
-            }
+            CoinAdGrantCard(
+                grant = coinAdGrant,
+                onWatchAdForCoins = {
+                    if (isRewardedReady) {
+                        showRewardedAd(
+                            context,
+                            onRewarded = onGrantCoinsFromAd,
+                            onAdDismissed = {},
+                        )
+                    } else {
+                        loadRewardedAd(context)
+                    }
+                },
+                onRefreshGrantStatus = onRefreshCoinAdGrant,
+                style = CoinAdGrantCardStyle.HomeOverlay,
+            )
         }
 
         Row(
@@ -96,13 +97,14 @@ fun HomeInvokerComposable(
                     .weight(1f)
                     .wrapContentHeight()
             ) {
-                MenuButton(modifier = Modifier
-                    .wrapContentHeight()
-                    .graphicsLayer {
-                        rotationY = animatedRotationY
-                        cameraDistance = 30f
-                    }
-                    .align(Alignment.Center),
+                MenuButton(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .graphicsLayer {
+                            rotationY = animatedRotationY
+                            cameraDistance = 30f
+                        }
+                        .align(Alignment.Center),
                     paddingValues = PaddingValues(
                         horizontal = 30.dp
                     ),
@@ -110,10 +112,12 @@ fun HomeInvokerComposable(
                     maxLines = 1,
                     text = stringResource(R.string.invoker_lbl),
                     textColor = Color.White,
-                    contentScale = ContentScale.Fit) {
+                    contentScale = ContentScale.Fit,
+                ) {
                     onInvokerClicked()
                 }
-                Image(painter = painterResource(R.drawable.coin_200),
+                Image(
+                    painter = painterResource(R.drawable.coin_40),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 25.dp)
@@ -124,7 +128,6 @@ fun HomeInvokerComposable(
                             setShowCoinInfoDialog(true)
                         }
                         .align(Alignment.TopStart)
-
                 )
             }
             ArrowButton(true, currentIndex, lastPageIndex) {

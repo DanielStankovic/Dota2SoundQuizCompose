@@ -8,10 +8,21 @@ object Constants {
     /** Local mute for Chapter reader music bed (persists across Issues / Chapters). */
     const val PREF_STORY_MUSIC_MUTED = "story_music_muted"
 
+    /** Shared wall/elapsed anchors for local daily-cap clock skew checks. */
+    const val PREF_LOCAL_CAP_ANCHOR_WALL_MS = "local_cap_anchor_wall_ms"
+    const val PREF_LOCAL_CAP_ANCHOR_ELAPSED_MS = "local_cap_anchor_elapsed_ms"
+
     /** Coin Ad Grant anti-farm (UTC day + cooldown). Local only. */
-    const val PREF_COIN_AD_GRANT_LAST_MS = "coin_ad_grant_last_ms"
+    const val PREF_COIN_AD_GRANT_LAST_ELAPSED_MS = "coin_ad_grant_last_elapsed_ms"
     const val PREF_COIN_AD_GRANT_DAY_KEY = "coin_ad_grant_day_key"
     const val PREF_COIN_AD_GRANT_DAY_COUNT = "coin_ad_grant_day_count"
+
+    /**
+     * Sound Sampler ad unlocks per UTC day. Local only.
+     * Pref values keep legacy `primer_ad_unlock_*` keys so daily counts survive the rename.
+     */
+    const val PREF_SOUND_SAMPLER_AD_UNLOCK_DAY_KEY = "primer_ad_unlock_day_key"
+    const val PREF_SOUND_SAMPLER_AD_UNLOCK_DAY_COUNT = "primer_ad_unlock_day_count"
 
     const val TABLE_CASTER_TYPE = "caster_type"
     const val TABLE_CASTERS = "casters"
@@ -48,6 +59,7 @@ object Constants {
     const val COIN_AD_GRANT_AMOUNT = 40
     const val COIN_AD_GRANT_COOLDOWN_MS = 5 * 60 * 1000L
     const val COIN_AD_GRANT_DAILY_CAP = 5
+    const val SOUND_SAMPLER_AD_UNLOCK_DAILY_CAP = 3
 
     const val LAST_SYNC_KEY = "last_sync"
 

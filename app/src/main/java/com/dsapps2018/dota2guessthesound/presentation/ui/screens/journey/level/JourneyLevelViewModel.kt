@@ -2,6 +2,7 @@ package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dsapps2018.dota2guessthesound.data.auth.AuthSession
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelsState
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRound
 import com.dsapps2018.dota2guessthesound.data.model.AffixModel
@@ -9,6 +10,7 @@ import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,7 @@ class JourneyLevelViewModel @Inject constructor(
     playerProgressRepository: PlayerProgressRepository,
     private val journeyRound: JourneyRound,
     private val journeyIssue: JourneyIssue,
+    private val authSession: AuthSession,
     levelClearTime: LevelClearTime,
 ) : ViewModel() {
 
@@ -75,11 +78,36 @@ class JourneyLevelViewModel @Inject constructor(
         viewModelScope.launch {
             journeyRound.loadLevels()
         }
-        refreshLibraryAvailability()
+        viewModelScope.launch {
+            authSession.sessionStatus.collect { status ->
+                when (status) {
+                    is SessionStatus.Authenticated -> {
+                        _libraryAvailable.value = journeyIssue.hasLibraryEntries()
+                    }
+                    is SessionStatus.NotAuthenticated -> {
+                        _libraryAvailable.value = false
+                    }
+                    // Initializing / RefreshFailure: keep last known value (resume race).
+                    else -> Unit
+                }
+            }
+        }
     }
 
+    /**
+     * Re-check Library chip after returning to this screen (e.g. first-clear grant).
+     * Skips when Auth has no user yet so a mid-resume token refresh cannot disable the chip.
+     */
     fun refreshLibraryAvailability() = viewModelScope.launch {
-        _libraryAvailable.value = journeyIssue.hasLibraryEntries()
+        when (authSession.sessionStatus.value) {
+            is SessionStatus.Authenticated -> {
+                _libraryAvailable.value = journeyIssue.hasLibraryEntries()
+            }
+            is SessionStatus.NotAuthenticated -> {
+                _libraryAvailable.value = false
+            }
+            else -> Unit
+        }
     }
 
     fun setShowAffixBottomSheet(show: Boolean) {

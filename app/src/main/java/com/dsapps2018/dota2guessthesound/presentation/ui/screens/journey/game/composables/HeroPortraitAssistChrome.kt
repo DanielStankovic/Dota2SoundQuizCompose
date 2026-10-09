@@ -33,9 +33,9 @@ fun HeroPortraitWithAssists(
     imageSize: Dp,
     showCount: Boolean,
     soundCount: Int?,
-    showPrimerBadge: Boolean,
+    showSoundSamplerBadge: Boolean,
     onPortraitClick: () -> Unit,
-    onPrimerBadgeClick: () -> Unit,
+    onSoundSamplerBadgeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val imageModifier = if (slot.blurRadiusDp > 0f) {
@@ -75,10 +75,10 @@ fun HeroPortraitWithAssists(
                 )
             }
         }
-        if (showPrimerBadge) {
+        if (showSoundSamplerBadge) {
             Image(
                 painter = painterResource(R.drawable.ic_story_music_on),
-                contentDescription = stringResource(R.string.assist_primer_badge_cd),
+                contentDescription = stringResource(R.string.assist_sound_sampler_badge_cd),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -87,7 +87,7 @@ fun HeroPortraitWithAssists(
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.72f))
                     .padding(3.dp)
-                    .clickable(onClick = onPrimerBadgeClick),
+                    .clickable(onClick = onSoundSamplerBadgeClick),
             )
         }
     }

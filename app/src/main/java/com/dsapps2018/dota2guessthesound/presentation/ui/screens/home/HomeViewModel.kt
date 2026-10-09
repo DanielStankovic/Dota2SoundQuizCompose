@@ -126,17 +126,17 @@ class HomeViewModel @Inject constructor(
 
     fun canEnterInvoker(coinValue: Int): Boolean = invokerEntry.canEnter(coinValue)
 
-    fun grantInvokerEntryFromAd() {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            invokerEntry.grantFromAd()
-        }
-    }
+    private val _coinAdGrantStatus = MutableStateFlow(coinAdGrant.status())
+    val coinAdGrantStatus: StateFlow<CoinAdGrantStatus> = _coinAdGrantStatus.asStateFlow()
 
-    fun coinAdGrantStatus(): CoinAdGrantStatus = coinAdGrant.status()
+    fun refreshCoinAdGrantStatus() {
+        _coinAdGrantStatus.value = coinAdGrant.status()
+    }
 
     fun grantCoinsFromAd() {
         viewModelScope.launch(coroutineExceptionHandler) {
             coinAdGrant.grantFromAd()
+            refreshCoinAdGrantStatus()
         }
     }
 

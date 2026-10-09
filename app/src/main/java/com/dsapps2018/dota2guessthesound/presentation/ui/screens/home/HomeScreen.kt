@@ -68,8 +68,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.admob.isAdReady
-import com.dsapps2018.dota2guessthesound.data.admob.loadRewardedAd
-import com.dsapps2018.dota2guessthesound.data.admob.showRewardedAd
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import com.dsapps2018.dota2guessthesound.data.util.FeatureFlags
 import com.dsapps2018.dota2guessthesound.data.util.findActivity
@@ -119,6 +117,7 @@ fun HomeScreen(
     val lastPageIndex = homeViewModel.lastPageIndex
     val isRewardedReady by isAdReady.collectAsStateWithLifecycle()
     val updateRequiredStatus by homeViewModel.updateRequiredStatus.collectAsStateWithLifecycle()
+    val coinAdGrantStatus by homeViewModel.coinAdGrantStatus.collectAsStateWithLifecycle()
     var targetRotation by remember { mutableFloatStateOf(0f) }
     var isFlippingForward by remember { mutableStateOf(true) }
     var shouldAnimate by remember { mutableStateOf(false) }
@@ -221,18 +220,6 @@ fun HomeScreen(
             if (showCoinInfoDialog) {
                 CoinInfoDialog(
                     onDismiss = { showCoinInfoDialog = false },
-                    coinAdGrantStatus = homeViewModel.coinAdGrantStatus(),
-                    onWatchAdForCoins = {
-                        if (isRewardedReady) {
-                            showRewardedAd(
-                                context,
-                                onRewarded = { homeViewModel.grantCoinsFromAd() },
-                                onAdDismissed = { },
-                            )
-                        } else {
-                            loadRewardedAd(context)
-                        }
-                    },
                 )
             }
             Box(
@@ -433,13 +420,16 @@ fun HomeScreen(
                             }
 
                             HomeCarouselPage.Invoker -> {
-                                HomeInvokerComposable(currentIndex = currentIndex,
+                                LaunchedEffect(Unit) {
+                                    homeViewModel.refreshCoinAdGrantStatus()
+                                }
+                                HomeInvokerComposable(
+                                    currentIndex = currentIndex,
                                     lastPageIndex = lastPageIndex,
                                     animatedRotationY = animatedRotationY,
                                     isRewardedReady = isRewardedReady,
                                     canEnterInvoker = homeViewModel.canEnterInvoker(progress.coinValue),
-                                    scale = scale,
-                                    alpha = alpha,
+                                    coinAdGrant = coinAdGrantStatus,
                                     setShouldAnimate = { boolValue ->
                                         shouldAnimate = boolValue
                                     },
@@ -458,10 +448,12 @@ fun HomeScreen(
                                     onInvokerClicked = {
                                         onInvokerClicked()
                                     },
-                                    onGrantInvokerEntryFromAd = {
-                                        homeViewModel.grantInvokerEntryFromAd()
-                                    }
-
+                                    onGrantCoinsFromAd = {
+                                        homeViewModel.grantCoinsFromAd()
+                                    },
+                                    onRefreshCoinAdGrant = {
+                                        homeViewModel.refreshCoinAdGrantStatus()
+                                    },
                                 )
                             }
 
@@ -509,15 +501,19 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(painter = painterResource(R.drawable.ic_question),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier
-                                .padding(start = 20.dp)
-                                .size(40.dp)
-                                .clickable {
-                                    onQuestionClicked()
-                                })
+                        if (FeatureFlags.ARCADE_LEADERBOARD_ENABLED) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_question),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .padding(start = 20.dp)
+                                    .size(40.dp)
+                                    .clickable {
+                                        onQuestionClicked()
+                                    },
+                            )
+                        }
                         Spacer(Modifier.weight(1f))
                         Column(
                             modifier = Modifier

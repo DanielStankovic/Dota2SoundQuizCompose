@@ -47,6 +47,15 @@ Home — Journey card, signed in
       [Extra Life Gate]
         extra_life_offer  gate_offer=heart|time
         extra_life_recover | extra_life_decline
+      [Assist tray]
+        Sound Count Reveal buy (60 coins):
+          spend_virtual_currency  item_name=sound_count_reveal
+          assist_action  assist=sound_count_reveal  method=coins
+        Sound Sampler unlock (rewarded ad completes):
+          assist_action  assist=sound_sampler  method=rewarded_ad
+        Coin Ad Grant (+40, rewarded ad completes):
+          earn_virtual_currency  source=coin_ad_grant
+          assist_action  assist=coin_ad_grant  method=rewarded_ad
       Win:
         level_end  success=1  clear_time_ms  extra_life_used  gate_offer
         earn_virtual_currency  source=journey_first_clear  value=20  (first clear only)
@@ -55,15 +64,15 @@ Home — Journey card, signed in
         level_end  success=0  fail_reason=hearts|race_timeout|sudden_death|gate_declined|quit
 
 Home — Invoker card (enough coins) → explanation → confirm entry
-  spend_virtual_currency  item_name=invoker_entry  value=200
+  spend_virtual_currency  item_name=invoker_entry  value=40
   select_content  content_id=invoker
   → Invoker round
       mode_start  mode=invoker
       → Play again
           post_score  mode=invoker  score=<points>
 
-Home — Invoker rewarded-ad grant (+200 coins)
-  earn_virtual_currency  source=invoker_ad_grant  value=200
+Home — Invoker Coin Ad Grant (+40; shared 5 min / 5 per UTC day)
+  earn_virtual_currency  source=coin_ad_grant  value=40
 
 Chapter reader — last Chapter, star tap (1–5, different from current)
   issue_rate  issue_id  issue_slug  stars  is_rerate
@@ -159,10 +168,22 @@ Arcade Mode Result submit only (not Journey).
 | `earn_virtual_currency` | Journey first-clear **20** | `source` = `journey_first_clear` |
 | | Quiz result coins (= score) | `source` = `quiz` |
 | | Fast Finger threshold grant (= 30/60/90) | `source` = `ff_30` / `ff_60` / `ff_90` |
-| | Invoker entry ad grant **200** | `source` = `invoker_ad_grant` |
-| | Coin Ad Grant **40** (Assist tray / Home) | `source` = `coin_ad_grant` |
-| `spend_virtual_currency` | Invoker entry **200** | `item_name` = `invoker_entry` |
+| | Coin Ad Grant **40** (Assist tray / Home Invoker) | `source` = `coin_ad_grant` |
+| `spend_virtual_currency` | Invoker entry **40** | `item_name` = `invoker_entry` |
 | | Sound Count Reveal **60** | `item_name` = `sound_count_reveal` |
+
+### `assist_action` (custom)
+
+Fired when a Journey Assist is successfully obtained (not on tray open / disabled taps).
+
+| Param | Values |
+| --- | --- |
+| `assist` | `sound_count_reveal` / `sound_sampler` / `coin_ad_grant` |
+| `method` | `coins` / `rewarded_ad` |
+| `mode` | `journey` |
+| `journey_level` | catalog level number |
+
+Count Reveal also logs `spend_virtual_currency`. Coin Ad Grant also logs `earn_virtual_currency`. Sound Sampler unlock has no currency event — `assist_action` is the signal.
 
 ### `extra_life_offer` / `extra_life_recover` / `extra_life_decline` (custom)
 
@@ -199,7 +220,8 @@ GA4 **Admin → Data display → Custom definitions**. Paste **Description** int
 | Fail reason | `fail_reason` | Why a Journey attempt ended without a win. Only on `level_end` with success=0: hearts, race_timeout, sudden_death, gate_declined, quit (left the screen mid-round). |
 | Extra life used | `extra_life_used` | Whether Extra Life Gate recovered this Journey attempt. Set on `level_end`. `"true"` / `"false"`. |
 | Gate offer | `gate_offer` | Extra Life Gate type. On Journey/Quiz `extra_life_*` events: heart or time. On Journey `level_end`: last offer this attempt, or none. |
-| Coin source | `source` | Why coins were granted. Only on `earn_virtual_currency`: journey_first_clear (win, 20 coins), quiz (result = score), ff_30/ff_60/ff_90 (threshold grant), invoker_ad_grant (+200). |
+| Coin source | `source` | Why coins were granted. Only on `earn_virtual_currency`: journey_first_clear (win, 20 coins), quiz (result = score), ff_30/ff_60/ff_90 (threshold grant), coin_ad_grant (+40 Assist tray / Home Invoker). |
+| Assist | `assist` | Which Journey Assist succeeded. Only on `assist_action`: sound_count_reveal, sound_sampler, coin_ad_grant. |
 
 ### Event-scoped metrics
 

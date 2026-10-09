@@ -64,17 +64,17 @@ class JourneyGameViewModel @Inject constructor(
 
     fun onPortraitAssistTap(heroId: Int) = journeyRound.onPortraitAssistTap(heroId)
 
-    fun openPrimer(heroId: Int) = journeyRound.openPrimer(heroId)
+    fun openSoundSampler(heroId: Int) = journeyRound.openSoundSampler(heroId)
 
-    fun closePrimer() = journeyRound.closePrimer()
+    fun closeSoundSampler() = journeyRound.closeSoundSampler()
 
-    fun playPrimerSound(sound: SoundModel) = journeyRound.playPrimerSound(sound)
+    fun playSoundSamplerSound(sound: SoundModel) = journeyRound.playSoundSamplerSound(sound)
 
     fun purchaseCountReveal() = journeyRound.purchaseCountReveal()
 
-    fun unlockPrimerWithAd(
+    fun unlockSoundSamplerWithAd(
         runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,
-    ) = journeyRound.unlockPrimerWithAd(runRewardedAd)
+    ) = journeyRound.unlockSoundSamplerWithAd(runRewardedAd)
 
     fun grantCoinsFromAd(
         runRewardedAd: (onRewarded: () -> Unit, onAdDismissed: () -> Unit) -> Unit,

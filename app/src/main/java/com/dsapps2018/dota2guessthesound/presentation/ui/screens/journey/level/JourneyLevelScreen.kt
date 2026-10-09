@@ -238,13 +238,13 @@ private fun IssueLibraryChip(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(20.dp)
-    val chipAlpha = if (enabled) 1f else 0.48f
-    Column(modifier = modifier.alpha(chipAlpha)) {
+    Column(modifier = modifier) {
         Row(
             Modifier
                 .clip(shape)
                 .background(JourneyButtonBackground.copy(alpha = 0.88f))
                 .border(1.dp, JourneyTimeAccent.copy(alpha = if (enabled) 0.55f else 0.28f), shape)
+                .alpha(if (enabled) 1f else 0.55f)
                 .clickable(enabled = enabled, onClick = onClick)
                 .padding(horizontal = 10.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -265,14 +265,15 @@ private fun IssueLibraryChip(
         if (!enabled) {
             Text(
                 text = stringResource(R.string.issue_library_chip_hint),
-                color = Color.White.copy(alpha = 0.55f),
-                fontSize = 11.sp,
+                color = Color.White.copy(alpha = 0.92f),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(start = 4.dp, top = 4.dp),
                 style = TextStyle(
                     shadow = Shadow(
-                        color = Color.Black.copy(alpha = 0.85f),
+                        color = Color.Black.copy(alpha = 0.9f),
                         offset = Offset(0f, 1f),
-                        blurRadius = 6f,
+                        blurRadius = 8f,
                     )
                 ),
             )

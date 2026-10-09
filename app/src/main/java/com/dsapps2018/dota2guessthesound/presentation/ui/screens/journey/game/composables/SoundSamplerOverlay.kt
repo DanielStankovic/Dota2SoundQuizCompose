@@ -34,7 +34,7 @@ import com.dsapps2018.dota2guessthesound.data.model.SoundModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 
 @Composable
-fun HeroSoundPrimerOverlay(
+fun SoundSamplerOverlay(
     heroName: String,
     sounds: List<SoundModel>,
     onPlay: (SoundModel) -> Unit,
@@ -63,7 +63,7 @@ fun HeroSoundPrimerOverlay(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = heroName.ifBlank { stringResource(R.string.assist_primer_title) },
+                    text = heroName.ifBlank { stringResource(R.string.assist_sound_sampler_title) },
                     color = JourneyTimeAccent,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -72,13 +72,13 @@ fun HeroSoundPrimerOverlay(
                 IconButton(onClick = onDismiss) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
-                        contentDescription = stringResource(R.string.assist_primer_close_cd),
+                        contentDescription = stringResource(R.string.assist_sound_sampler_close_cd),
                         tint = Color.White,
                     )
                 }
             }
             Text(
-                text = stringResource(R.string.assist_primer_overlay_hint),
+                text = stringResource(R.string.assist_sound_sampler_overlay_hint),
                 color = Color.White.copy(alpha = 0.75f),
                 fontSize = 12.sp,
             )

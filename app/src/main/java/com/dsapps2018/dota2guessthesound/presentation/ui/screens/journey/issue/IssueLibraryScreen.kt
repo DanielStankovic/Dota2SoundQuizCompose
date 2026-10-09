@@ -31,6 +31,9 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -44,6 +47,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.progress.IssueLibraryAccess
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.BannerView
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 
 @Composable
@@ -53,6 +57,7 @@ fun IssueLibraryScreen(
     onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var bannerHeight by remember { mutableIntStateOf(0) }
 
     BackHandler(onBack = onBack)
 
@@ -132,7 +137,7 @@ fun IssueLibraryScreen(
                     is IssueLibraryViewModel.IssueLibraryUiState.Ready -> {
                         LazyColumn(
                             verticalArrangement = Arrangement.spacedBy(14.dp),
-                            contentPadding = PaddingValues(bottom = 24.dp),
+                            contentPadding = PaddingValues(bottom = (bannerHeight + 16).dp),
                         ) {
                             items(state.items, key = { it.issueId }) { item ->
                                 val badge = when (item.access) {
@@ -172,6 +177,12 @@ fun IssueLibraryScreen(
                     }
                 }
             }
+            BannerView(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                onHeightMeasured = { height ->
+                    bannerHeight = height
+                },
+            )
         }
     }
 }

@@ -9,5 +9,5 @@ data class JourneyAssistUnlockDto(
     @SerialName("count_unlocked")
     val countUnlocked: Boolean = false,
     @SerialName("primer_unlocked")
-    val primerUnlocked: Boolean = false,
+    val soundSamplerUnlocked: Boolean = false,
 )

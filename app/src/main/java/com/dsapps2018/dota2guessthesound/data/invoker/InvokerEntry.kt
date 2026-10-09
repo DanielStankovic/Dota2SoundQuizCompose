@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 /**
- * Deep in-process module for Invoker entry (paid mode start and matching ad grant).
- * See docs/adr/0009-invoker-entry.md and ADR-0001 for sync-on-spend.
+ * Deep in-process module for Invoker entry (paid mode start).
+ * Coin Ad Grant for broke players is the shared faucet ([com.dsapps2018.dota2guessthesound.data.progress.CoinAdGrant]),
+ * not a matching +cost Invoker grant. See docs/adr/0009-invoker-entry.md and ADR-0001.
  */
 class InvokerEntry @Inject constructor(
     private val playerProgressRepository: PlayerProgressRepository,
@@ -30,16 +31,7 @@ class InvokerEntry @Inject constructor(
         return true
     }
 
-    /** Grants [COIN_COST] after a rewarded ad (same adjustCoins sync policy). */
-    suspend fun grantFromAd() {
-        playerProgressRepository.adjustCoins(COIN_COST)
-        productAnalytics.earnCoins(
-            COIN_COST.toLong(),
-            ProductAnalytics.SOURCE_INVOKER_AD_GRANT,
-        )
-    }
-
     companion object {
-        const val COIN_COST = 200
+        const val COIN_COST = 40
     }
 }

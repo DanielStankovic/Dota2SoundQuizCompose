@@ -118,6 +118,23 @@ class ProductAnalytics @Inject constructor(
         }
     }
 
+    /**
+     * Journey Assist successfully obtained (Count Reveal purchase, Sound Sampler ad unlock,
+     * or Coin Ad Grant). Complements spend/earn currency events where those apply.
+     */
+    fun assistAction(
+        assist: String,
+        method: String,
+        journeyLevel: Int,
+    ) {
+        firebaseAnalytics.logEvent(EVENT_ASSIST_ACTION) {
+            param(PARAM_ASSIST, assist)
+            param(FirebaseAnalytics.Param.METHOD, method)
+            param(PARAM_MODE, AnalyticsMode.Journey.id)
+            param(PARAM_JOURNEY_LEVEL, journeyLevel.toLong())
+        }
+    }
+
     fun extraLifeOffer(
         mode: AnalyticsMode,
         gateOffer: String,
@@ -195,6 +212,7 @@ class ProductAnalytics @Inject constructor(
         const val EVENT_EXTRA_LIFE_RECOVER = "extra_life_recover"
         const val EVENT_EXTRA_LIFE_DECLINE = "extra_life_decline"
         const val EVENT_ISSUE_RATE = "issue_rate"
+        const val EVENT_ASSIST_ACTION = "assist_action"
 
         const val PARAM_CONTENT_ID = "content_id"
         const val PARAM_MODE = "mode"
@@ -208,10 +226,18 @@ class ProductAnalytics @Inject constructor(
         const val PARAM_GATE_OFFER = "gate_offer"
         const val PARAM_CLEAR_TIME_MS = "clear_time_ms"
         const val PARAM_SOURCE = "source"
+        const val PARAM_ASSIST = "assist"
         const val PARAM_ISSUE_ID = "issue_id"
         const val PARAM_ISSUE_SLUG = "issue_slug"
         const val PARAM_STARS = "stars"
         const val PARAM_IS_RERATE = "is_rerate"
+
+        const val ASSIST_SOUND_COUNT_REVEAL = "sound_count_reveal"
+        const val ASSIST_SOUND_SAMPLER = "sound_sampler"
+        const val ASSIST_COIN_AD_GRANT = "coin_ad_grant"
+
+        const val METHOD_COINS = "coins"
+        const val METHOD_REWARDED_AD = "rewarded_ad"
 
         const val FAIL_HEARTS = "hearts"
         const val FAIL_RACE_TIMEOUT = "race_timeout"
@@ -228,7 +254,6 @@ class ProductAnalytics @Inject constructor(
         const val SOURCE_FF_30 = "ff_30"
         const val SOURCE_FF_60 = "ff_60"
         const val SOURCE_FF_90 = "ff_90"
-        const val SOURCE_INVOKER_AD_GRANT = "invoker_ad_grant"
         const val SOURCE_COIN_AD_GRANT = "coin_ad_grant"
 
         const val ITEM_INVOKER_ENTRY = "invoker_entry"

@@ -17,7 +17,7 @@ import javax.inject.Singleton
 
 data class JourneyAssistUnlockFlags(
     val countUnlocked: Boolean = false,
-    val primerUnlocked: Boolean = false,
+    val soundSamplerUnlocked: Boolean = false,
 )
 
 /**
@@ -38,18 +38,18 @@ class JourneyAssistUnlocks @Inject constructor(
         dao.get(level).toFlags()
 
     /** OR-merge local unlock; flush when signed in. */
-    suspend fun unlockCount(level: Int) = unlock(level, count = true, primer = false)
+    suspend fun unlockCount(level: Int) = unlock(level, count = true, soundSampler = false)
 
-    suspend fun unlockPrimer(level: Int) = unlock(level, count = false, primer = true)
+    suspend fun unlockSoundSampler(level: Int) = unlock(level, count = false, soundSampler = true)
 
-    private suspend fun unlock(level: Int, count: Boolean, primer: Boolean) {
+    private suspend fun unlock(level: Int, count: Boolean, soundSampler: Boolean) {
         if (level < 1) return
         val existing = dao.get(level)
         val nextCount = (existing?.countUnlocked == true) || count
-        val nextPrimer = (existing?.primerUnlocked == true) || primer
+        val nextSoundSampler = (existing?.soundSamplerUnlocked == true) || soundSampler
         if (existing != null &&
             existing.countUnlocked == nextCount &&
-            existing.primerUnlocked == nextPrimer
+            existing.soundSamplerUnlocked == nextSoundSampler
         ) {
             return
         }
@@ -57,7 +57,7 @@ class JourneyAssistUnlocks @Inject constructor(
             JourneyAssistUnlockEntity(
                 level = level,
                 countUnlocked = nextCount,
-                primerUnlocked = nextPrimer,
+                soundSamplerUnlocked = nextSoundSampler,
                 isSent = false,
             )
         )
@@ -75,7 +75,7 @@ class JourneyAssistUnlocks @Inject constructor(
                     parameters = buildJsonObject {
                         put("p_level", row.level)
                         put("p_count_unlocked", row.countUnlocked)
-                        put("p_primer_unlocked", row.primerUnlocked)
+                        put("p_primer_unlocked", row.soundSamplerUnlocked)
                     }
                 )
                 dao.markSent(row.level)
@@ -109,14 +109,14 @@ class JourneyAssistUnlocks @Inject constructor(
 
     private suspend fun mergeRemote(row: JourneyAssistUnlockDto) {
         if (row.level < 1) return
-        if (!row.countUnlocked && !row.primerUnlocked) return
+        if (!row.countUnlocked && !row.soundSamplerUnlocked) return
         val local = dao.get(row.level)
         val nextCount = (local?.countUnlocked == true) || row.countUnlocked
-        val nextPrimer = (local?.primerUnlocked == true) || row.primerUnlocked
+        val nextSoundSampler = (local?.soundSamplerUnlocked == true) || row.soundSamplerUnlocked
         val dirty = local?.isSent == false
         if (local != null &&
             local.countUnlocked == nextCount &&
-            local.primerUnlocked == nextPrimer &&
+            local.soundSamplerUnlocked == nextSoundSampler &&
             !dirty
         ) {
             return
@@ -125,7 +125,7 @@ class JourneyAssistUnlocks @Inject constructor(
             JourneyAssistUnlockEntity(
                 level = row.level,
                 countUnlocked = nextCount,
-                primerUnlocked = nextPrimer,
+                soundSamplerUnlocked = nextSoundSampler,
                 isSent = !dirty,
             )
         )
@@ -133,6 +133,6 @@ class JourneyAssistUnlocks @Inject constructor(
 
     private fun JourneyAssistUnlockEntity?.toFlags() = JourneyAssistUnlockFlags(
         countUnlocked = this?.countUnlocked == true,
-        primerUnlocked = this?.primerUnlocked == true,
+        soundSamplerUnlocked = this?.soundSamplerUnlocked == true,
     )
 }

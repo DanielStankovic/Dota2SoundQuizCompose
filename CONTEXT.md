@@ -93,15 +93,15 @@ The one-shot rewarded-ad continue in a Quiz or Journey Round. On Journey, one re
 _Avoid_: continue dialog (the UI), additional life flag (as the domain name)
 
 **Journey Assist**:
-An optional mid-round knowledge buy on a Journey Round (Sound Count Reveal or Hero Sound Primer). Permanent per Journey level once unlocked. Distinct from Extra Life Gate (fail-recover) and from Affixes.
+An optional mid-round knowledge buy on a Journey Round (Sound Count Reveal or Sound Sampler). Permanent per Journey level once unlocked. Distinct from Extra Life Gate (fail-recover) and from Affixes.
 _Avoid_: hint, help, booster, power-up (when you mean this)
 
 **Sound Count Reveal**:
 The Journey Assist that shows how many correct Sounds each visible Hero portrait has on the board. Coin-priced. Affix policy may disable it (Among Heroes, Unknown Count).
 _Avoid_: sound counter (the HUD marked/total), count badge (the UI chrome alone)
 
-**Hero Sound Primer**:
-The Journey Assist that opens an in-round listen overlay of one Hero’s catalog Sounds from a portrait. Unlocked by rewarded ad for the whole level. Distinct from Hero Catalog (out-of-round inspection).
+**Sound Sampler**:
+The Journey Assist that opens an in-round listen overlay of one Hero’s catalog Sounds from a portrait. Unlocked by rewarded ad for the whole level. New unlocks capped at **3** per UTC day (local); already-unlocked levels stay unlocked. Distinct from Hero Catalog (out-of-round inspection).
 _Avoid_: hero catalog overlay, sound cheat sheet
 
 **Assist tray**:
@@ -109,7 +109,7 @@ On-demand panel of Journey Assists for the current Journey Round, opened from th
 _Avoid_: help drawer, assist slider
 
 **Coin Ad Grant**:
-A rate-limited rewarded-ad grant of coins (cooldown + daily cap), offered from the Assist tray and Home coin-info. Distinct from Invoker entry’s matching ad grant and from Extra Life Gate.
+A rate-limited rewarded-ad grant of coins (cooldown + daily cap), offered from the Assist tray and Home Invoker. Shared faucet for the whole app. Distinct from Extra Life Gate. Daily cap uses UTC calendar day, cross-checked with device uptime so casual date changes do not reset it (not cheat-proof; server caps if hard enforcement is needed).
 _Avoid_: free coins button, coin farm
 
 **Mode Result**:
@@ -174,15 +174,15 @@ Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side 
 
 - Advance **journey level** only via Mode Result on a win: `max(current, cleared)` — never regress on replay.
 - First clear of a level grants **20** coins via Mode Result, and the next **Chapter** of the **Active Issue** (or the **Issue Picker** when there is none). Replay grants **0** coins and no Chapter.
-- Fail → free retry. No post-fail assist beyond the **Extra Life Gate**. Mid-round **Journey Assists** (Sound Count Reveal / Hero Sound Primer) may be unlocked with coins or a rewarded ad; see [ADR-0022](docs/adr/0022-journey-assists.md). If an Affix disables the Gate, the level stays as authored for all players. Fail does not grant or revoke a Chapter.
+- Fail → free retry. No post-fail assist beyond the **Extra Life Gate**. Mid-round **Journey Assists** (Sound Count Reveal / Sound Sampler) may be unlocked with coins or a rewarded ad; see [ADR-0022](docs/adr/0022-journey-assists.md). If an Affix disables the Gate, the level stays as authored for all players. Fail does not grant or revoke a Chapter.
 - Affix / Hero difficulty: introduce **one** new cognitive load per band (more Heroes, or a new Affix family, or a stack — not all at once). Mix those axes inside the current set, including **Decoy** density (`max_sounds` minus the roster’s correct-sound count). A hard level is a **guest**, not a new floor (later levels may drop that Affix and raise Hero count or Decoy density).
 - **Familiar** roster: a mid or hard Affix (identity puzzles, inverted submit, timer/quake families, Sudden Death, stacks) only lands on Heroes the player has already heard on an earlier Journey level — the in-catalog spell set, not the Dota kit. Easy Affix teach still includes at least one familiar Hero. Teach each Affix **solo** before it appears in a stack.
 - Launch catalog length and remix peak: [ADR-0020](docs/adr/0020-journey-level-catalog.md).
 - **Affix fog** on the Journey level list: Affix identity is visible through the next 3 locked levels after the playable one; farther cards show mystery tokens only (count, not names). The Journey Round still reveals Affixes at play time.
 - Do **not** add a second currency or XP system for Journey progress. **Issue Progress** is a checklist of Chapters, not XP.
 - An Issue's Protagonist and Chapters are catalog. They are **not** authored on the Journey level row (board Heroes / Affixes do not pick the Issue).
-- Invoker entry cost remains **200** coins unless economy is revisited after Journey first-clear coins ship.
-- **Sound Count Reveal** costs **60** coins. **Coin Ad Grant** is **+40** coins with a **5**-minute cooldown and **5** grants per UTC day. **Hero Sound Primer** unlocks via rewarded ad (whole level).
+- Invoker entry costs **40** coins (one Coin Ad Grant). Broke players use the shared **Coin Ad Grant** on Home Invoker / Assist tray — not a matching Invoker-only ad payout.
+- **Sound Count Reveal** costs **60** coins. **Coin Ad Grant** is **+40** coins with a **5**-minute cooldown and **5** grants per UTC day. **Sound Sampler** unlocks via rewarded ad (whole level), max **3** new unlocks per UTC day.
 - Near-term competition: per-level **Level Clear Time** boards (Auth) — top 10, plus the current player's standing appended last when outside the top 10. Weekly Affix gauntlet and reward arcade leaderboards are out of scope for this spine decision (see ADR-0015).
 - Implementation: [ADR-0015](docs/adr/0015-journey-progression-spine.md) (spine), [ADR-0016](docs/adr/0016-level-clear-time.md) (`LevelClearTime` module), [ADR-0019](docs/adr/0019-journey-issue.md) (`JourneyIssue` catalog + Issue Progress), [ADR-0020](docs/adr/0020-journey-level-catalog.md) (150-level catalog).
 

@@ -9,7 +9,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +34,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -257,7 +257,7 @@ private fun ChapterReaderContent(
                         )
                     }
                 }
-                Image(
+                Icon(
                     painter = painterResource(
                         if (musicMuted) R.drawable.ic_story_music_off
                         else R.drawable.ic_story_music_on
@@ -266,6 +266,7 @@ private fun ChapterReaderContent(
                         if (musicMuted) R.string.chapter_reader_unmute
                         else R.string.chapter_reader_mute
                     ),
+                    tint = Color.Unspecified,
                     modifier = Modifier
                         .size(40.dp)
                         .clickable(onClick = onToggleMute)

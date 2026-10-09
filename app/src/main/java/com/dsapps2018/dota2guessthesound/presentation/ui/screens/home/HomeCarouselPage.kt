@@ -1,5 +1,7 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.home
 
+import com.dsapps2018.dota2guessthesound.data.util.FeatureFlags
+
 enum class HomeCarouselPage {
     Journey,
     HeroCatalog,
@@ -18,5 +20,5 @@ fun homeCarouselPages(includeHeroCatalog: Boolean): List<HomeCarouselPage> = bui
     add(HomeCarouselPage.Quiz)
     add(HomeCarouselPage.FastFinger)
     add(HomeCarouselPage.Invoker)
-    add(HomeCarouselPage.Joke)
+    if (FeatureFlags.DAILY_JOKE_ENABLED) add(HomeCarouselPage.Joke)
 }

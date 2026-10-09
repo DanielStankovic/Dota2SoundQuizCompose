@@ -61,14 +61,14 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
     }
 }
 
-/** Per-level Journey Assist unlocks (Count Reveal / Hero Sound Primer). */
+/** Per-level Journey Assist unlocks (Count Reveal / Sound Sampler; column `primerUnlocked`). */
 val MIGRATION_10_11 = object : Migration(10, 11) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
             "CREATE TABLE IF NOT EXISTS `JourneyAssistUnlock` (" +
                 "`level` INTEGER NOT NULL, " +
                 "`countUnlocked` INTEGER NOT NULL, " +
-                "`primerUnlocked` INTEGER NOT NULL, " +
+                "`soundSamplerUnlocked` INTEGER NOT NULL, " +
                 "`isSent` INTEGER NOT NULL, " +
                 "PRIMARY KEY(`level`))"
         )

@@ -80,7 +80,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.co
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.AssistTrayHandle
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.AssistTrayPanel
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.HeroPortraitWithAssists
-import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.HeroSoundPrimerOverlay
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.SoundSamplerOverlay
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.SoundquakeFxRequest
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.TimerDisplay
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.game.composables.rememberSoundquakeFxState
@@ -255,8 +255,8 @@ fun JourneyGameData(
         if (ready.awaitingBegin) affixTrayOpen = true
     }
 
-    LaunchedEffect(assist.requestOpenTrayForPrimer) {
-        if (assist.requestOpenTrayForPrimer) {
+    LaunchedEffect(assist.requestOpenTrayForSoundSampler) {
+        if (assist.requestOpenTrayForSoundSampler) {
             assistTrayOpen = true
             affixTrayOpen = false
             viewModel.refreshAssistGrantStatus()
@@ -295,17 +295,17 @@ fun JourneyGameData(
         ) {
             val showCount =
                 assist.countUnlocked && assist.countDisabledReason == null
-            val showPrimer =
-                assist.primerUnlocked && assist.primerDisabledReason == null
+            val showSoundSampler =
+                assist.soundSamplerUnlocked && assist.soundSamplerDisabledReason == null
             radiantPortraits.forEach { slot ->
                 HeroPortraitWithAssists(
                     slot = slot,
                     imageSize = imageSize.dp,
                     showCount = showCount,
                     soundCount = assist.soundCountsByHeroId[slot.heroId],
-                    showPrimerBadge = showPrimer,
+                    showSoundSamplerBadge = showSoundSampler,
                     onPortraitClick = { viewModel.onPortraitAssistTap(slot.heroId) },
-                    onPrimerBadgeClick = { viewModel.onPortraitAssistTap(slot.heroId) },
+                    onSoundSamplerBadgeClick = { viewModel.onPortraitAssistTap(slot.heroId) },
                 )
             }
         }
@@ -392,12 +392,12 @@ fun JourneyGameData(
         ) {
             AssistTrayPanel(
                 assist = assist,
-                highlightPrimer = false,
+                highlightSoundSampler = false,
                 onDismiss = { assistTrayOpen = false },
                 onBuyCount = viewModel::purchaseCountReveal,
-                onUnlockPrimerAd = {
+                onUnlockSoundSamplerAd = {
                     if (isRewardedReady) {
-                        viewModel.unlockPrimerWithAd { onRewarded, onAdDismissed ->
+                        viewModel.unlockSoundSamplerWithAd { onRewarded, onAdDismissed ->
                             showRewardedAd(
                                 context,
                                 onRewarded = onRewarded,
@@ -450,12 +450,12 @@ fun JourneyGameData(
             )
         }
 
-        if (assist.primerHeroId != null) {
-            HeroSoundPrimerOverlay(
-                heroName = assist.primerHeroName.orEmpty(),
-                sounds = assist.primerSounds,
-                onPlay = viewModel::playPrimerSound,
-                onDismiss = viewModel::closePrimer,
+        if (assist.soundSamplerHeroId != null) {
+            SoundSamplerOverlay(
+                heroName = assist.soundSamplerHeroName.orEmpty(),
+                sounds = assist.soundSamplerSounds,
+                onPlay = viewModel::playSoundSamplerSound,
+                onDismiss = viewModel::closeSoundSampler,
             )
         }
     }

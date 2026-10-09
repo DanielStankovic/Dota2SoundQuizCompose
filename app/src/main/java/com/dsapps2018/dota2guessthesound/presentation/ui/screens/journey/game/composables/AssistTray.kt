@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -42,6 +44,10 @@ import androidx.compose.ui.unit.sp
 import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.journey.AssistDisableReason
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyAssistUiState
+import com.dsapps2018.dota2guessthesound.data.progress.msUntilNextUtcMidnight
+import com.dsapps2018.dota2guessthesound.data.util.Constants
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.CoinAdGrantCard
+import com.dsapps2018.dota2guessthesound.presentation.ui.composables.formatDailyReset
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 import kotlinx.coroutines.delay
 
@@ -72,17 +78,24 @@ fun AssistTrayHandle(
 @Composable
 fun AssistTrayPanel(
     assist: JourneyAssistUiState,
-    highlightPrimer: Boolean,
+    highlightSoundSampler: Boolean,
     onDismiss: () -> Unit,
     onBuyCount: () -> Unit,
-    onUnlockPrimerAd: () -> Unit,
+    onUnlockSoundSamplerAd: () -> Unit,
     onWatchAdForCoins: () -> Unit,
     onRefreshGrantStatus: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(assist.coinAdGrant.cooldownRemainingMs) {
-        if (assist.coinAdGrant.cooldownRemainingMs > 0L) {
+    val soundSamplerAtDailyCap =
+        !assist.soundSamplerUnlocked &&
+            assist.soundSamplerDisabledReason == null &&
+            !assist.soundSamplerAdUnlock.canUnlock
+    var nowMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(soundSamplerAtDailyCap) {
+        if (!soundSamplerAtDailyCap) return@LaunchedEffect
+        while (true) {
             delay(1_000L)
+            nowMs = System.currentTimeMillis()
             onRefreshGrantStatus()
         }
     }
@@ -168,26 +181,57 @@ fun AssistTrayPanel(
 
                     Spacer(Modifier.height(10.dp))
 
+                    val soundSamplerUsedToday =
+                        (Constants.SOUND_SAMPLER_AD_UNLOCK_DAILY_CAP - assist.soundSamplerAdUnlock.remainingToday)
+                            .coerceIn(0, Constants.SOUND_SAMPLER_AD_UNLOCK_DAILY_CAP)
+                    val soundSamplerFooter = if (
+                        !assist.soundSamplerUnlocked && assist.soundSamplerDisabledReason == null
+                    ) {
+                        buildString {
+                            append(
+                                stringResource(
+                                    R.string.assist_sound_sampler_daily_progress,
+                                    soundSamplerUsedToday,
+                                    Constants.SOUND_SAMPLER_AD_UNLOCK_DAILY_CAP,
+                                )
+                            )
+                            if (soundSamplerAtDailyCap) {
+                                append('\n')
+                                append(
+                                    stringResource(
+                                        R.string.assist_daily_limit_resets,
+                                        formatDailyReset(msUntilNextUtcMidnight(nowMs)),
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        null
+                    }
                     AssistOfferCard(
-                        title = stringResource(R.string.assist_primer_title),
-                        body = stringResource(R.string.assist_primer_body),
-                        unlocked = assist.primerUnlocked,
-                        disabledReason = assist.primerDisabledReason,
-                        highlight = highlightPrimer,
+                        title = stringResource(R.string.assist_sound_sampler_title),
+                        body = stringResource(R.string.assist_sound_sampler_body),
+                        unlocked = assist.soundSamplerUnlocked,
+                        disabledReason = assist.soundSamplerDisabledReason,
+                        highlight = highlightSoundSampler,
                         primaryLabel = when {
-                            assist.primerUnlocked -> stringResource(R.string.assist_unlocked)
-                            assist.primerDisabledReason != null -> null
+                            assist.soundSamplerUnlocked -> stringResource(R.string.assist_unlocked)
+                            assist.soundSamplerDisabledReason != null -> null
+                            !assist.soundSamplerAdUnlock.canUnlock ->
+                                stringResource(R.string.assist_coin_ad_daily_cap)
                             else -> stringResource(R.string.assist_watch_ad_unlock)
                         },
-                        primaryEnabled = assist.primerPurchaseAvailable,
-                        onPrimary = onUnlockPrimerAd,
+                        primaryEnabled = assist.soundSamplerPurchaseAvailable,
+                        onPrimary = onUnlockSoundSamplerAd,
+                        footer = soundSamplerFooter,
                     )
 
                     if (assist.coinBalance < assist.countCost) {
                         Spacer(Modifier.height(12.dp))
-                        CoinAdGrantSection(
-                            assist = assist,
+                        CoinAdGrantCard(
+                            grant = assist.coinAdGrant,
                             onWatchAdForCoins = onWatchAdForCoins,
+                            onRefreshGrantStatus = onRefreshGrantStatus,
                         )
                     }
                 }
@@ -210,6 +254,7 @@ private fun AssistOfferCard(
     primaryLabel: String?,
     primaryEnabled: Boolean,
     onPrimary: () -> Unit,
+    footer: String? = null,
 ) {
     val locked = disabledReason != null
     Column(
@@ -256,50 +301,16 @@ private fun AssistOfferCard(
                 onClick = onPrimary,
             )
         }
-    }
-}
-
-@Composable
-private fun CoinAdGrantSection(
-    assist: JourneyAssistUiState,
-    onWatchAdForCoins: () -> Unit,
-) {
-    val grant = assist.coinAdGrant
-    val cooldownSec = (grant.cooldownRemainingMs / 1000L).toInt()
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xFF1A2430))
-            .padding(10.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.assist_coin_ad_title),
-            color = JourneyTimeAccent,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-        )
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = stringResource(
-                R.string.assist_coin_ad_body,
-                grant.grantAmount,
-                grant.remainingToday,
-            ),
-            color = Color.White.copy(alpha = 0.9f),
-            fontSize = 12.sp,
-        )
-        Spacer(Modifier.height(8.dp))
-        val label = when {
-            grant.remainingToday <= 0 -> stringResource(R.string.assist_coin_ad_daily_cap)
-            cooldownSec > 0 -> stringResource(R.string.assist_coin_ad_cooldown, cooldownSec)
-            else -> stringResource(R.string.assist_watch_ad_coins, grant.grantAmount)
+        if (footer != null) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = footer,
+                color = Color.White.copy(alpha = 0.75f),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+            )
         }
-        AssistActionButton(
-            label = label,
-            enabled = grant.canGrant,
-            onClick = onWatchAdForCoins,
-        )
     }
 }
 
