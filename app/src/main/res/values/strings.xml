@@ -207,6 +207,7 @@
     <string name="chapter_reader_error">Couldn\'t load this chapter.</string>
     <string name="chapter_reader_mute">Mute music</string>
     <string name="chapter_reader_unmute">Unmute music</string>
+    <string name="chapter_reader_scroll_cd">Chapter text scroll</string>
 
 
 </resources>

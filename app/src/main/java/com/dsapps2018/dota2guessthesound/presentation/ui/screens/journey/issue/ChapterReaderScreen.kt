@@ -8,7 +8,9 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,13 +50,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -217,7 +227,8 @@ private fun ChapterReaderContent(
             Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp, vertical = 12.dp),
+                // End padding is tighter so the chapter scrollbar can sit in that gutter.
+                .padding(start = 20.dp, end = 10.dp, top = 12.dp, bottom = 12.dp),
         ) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -347,6 +358,7 @@ private fun ChapterBodyReveal(
     val scrollState = rememberScrollState()
     val tapSource = remember { MutableInteractionSource() }
     val fullyRevealed = textHeightPx > 0f && clipBottom >= textHeightPx - 0.5f
+    val scrollDescription = stringResource(R.string.chapter_reader_scroll_cd)
 
     LaunchedEffect(chapterKey, textHeightPx, skipReveal) {
         if (textHeightPx <= 0f) return@LaunchedEffect
@@ -364,44 +376,104 @@ private fun ChapterBodyReveal(
         )
     }
 
-    Box(
-        modifier
-            .fillMaxWidth()
-            .verticalScroll(scrollState)
-            .clickable(
-                interactionSource = tapSource,
-                indication = null,
-                enabled = !fullyRevealed,
-            ) {
-                skipReveal = true
-            },
-    ) {
-        Text(
-            text = body,
-            color = Color(0xFFF4F1EB),
-            fontSize = 18.sp,
-            lineHeight = 28.sp,
-            fontWeight = FontWeight.Normal,
-            onTextLayout = { layout: TextLayoutResult ->
-                val height = layout.size.height.toFloat()
-                if (kotlin.math.abs(height - textHeightPx) > 0.5f) {
-                    textHeightPx = height
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp)
-                .drawWithContent {
-                    val drawFullContent = this::drawContent
-                    clipRect(
-                        left = 0f,
-                        top = 0f,
-                        right = size.width,
-                        bottom = clipBottom.coerceIn(0f, size.height),
-                    ) {
-                        drawFullContent()
+    Box(modifier.fillMaxWidth()) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(end = CHAPTER_SCROLLBAR_GUTTER)
+                .verticalScroll(scrollState)
+                .clickable(
+                    interactionSource = tapSource,
+                    indication = null,
+                    enabled = !fullyRevealed,
+                ) {
+                    skipReveal = true
+                },
+        ) {
+            Text(
+                text = body,
+                color = Color(0xFFF4F1EB),
+                fontSize = 18.sp,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.Normal,
+                onTextLayout = { layout: TextLayoutResult ->
+                    val height = layout.size.height.toFloat()
+                    if (kotlin.math.abs(height - textHeightPx) > 0.5f) {
+                        textHeightPx = height
                     }
                 },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .drawWithContent {
+                        val drawFullContent = this::drawContent
+                        clipRect(
+                            left = 0f,
+                            top = 0f,
+                            right = size.width,
+                            bottom = clipBottom.coerceIn(0f, size.height),
+                        ) {
+                            drawFullContent()
+                        }
+                    },
+            )
+        }
+        ChapterScrollBar(
+            scrollState = scrollState,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight()
+                .width(CHAPTER_SCROLLBAR_GUTTER)
+                .semantics { contentDescription = scrollDescription },
         )
     }
 }
+
+/** Tiny always-visible scrollbar when chapter prose overflows the viewport. */
+@Composable
+private fun ChapterScrollBar(
+    scrollState: ScrollState,
+    modifier: Modifier = Modifier,
+) {
+    val density = LocalDensity.current
+    var viewportHeightPx by remember { mutableFloatStateOf(0f) }
+    val minThumbPx = with(density) { 20.dp.toPx() }
+    val trackInsetPx = with(density) { 4.dp.toPx() }
+    val thumbWidthPx = with(density) { 3.dp.toPx() }
+
+    Canvas(
+        modifier
+            .padding(vertical = 4.dp)
+            .onSizeChanged { viewportHeightPx = it.height.toFloat() },
+    ) {
+        // Read inside draw so scroll updates redraw without full recomposition.
+        val scrollMax = scrollState.maxValue
+        val scrollValue = scrollState.value
+        if (scrollMax <= 0 || viewportHeightPx <= 0f) return@Canvas
+        val trackHeight = (size.height - trackInsetPx * 2f).coerceAtLeast(0f)
+        if (trackHeight <= 0f) return@Canvas
+
+        val contentHeight = viewportHeightPx + scrollMax
+        val thumbHeight = (trackHeight * (viewportHeightPx / contentHeight))
+            .coerceIn(minThumbPx, trackHeight)
+        val travel = (trackHeight - thumbHeight).coerceAtLeast(0f)
+        val thumbTop = trackInsetPx + (scrollValue.toFloat() / scrollMax.toFloat()) * travel
+        val thumbLeft = (size.width - thumbWidthPx) / 2f
+        val corner = CornerRadius(thumbWidthPx / 2f, thumbWidthPx / 2f)
+
+        drawRoundRect(
+            color = Color.White.copy(alpha = 0.14f),
+            topLeft = Offset(thumbLeft, trackInsetPx),
+            size = Size(thumbWidthPx, trackHeight),
+            cornerRadius = corner,
+        )
+        drawRoundRect(
+            color = JourneyTimeAccent.copy(alpha = 0.9f),
+            topLeft = Offset(thumbLeft, thumbTop),
+            size = Size(thumbWidthPx, thumbHeight),
+            cornerRadius = corner,
+        )
+    }
+}
+
+private val CHAPTER_SCROLLBAR_GUTTER = 10.dp
