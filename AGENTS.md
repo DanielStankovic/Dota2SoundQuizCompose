@@ -2,6 +2,10 @@
 
 `AGENTS.md` is always-loaded guidance for agents in this repo: short pointers to where work lives and which conventions apply. Prefer editing the linked docs over bloating this file.
 
+## Git base branch
+
+Ongoing app work branches from **`hero_journey`** (not `main`). Create new `feat/` / `improve/` / `fix/` branches from an up-to-date `hero_journey`. See `.cursor/skills/git-branch-naming/SKILL.md`.
+
 ## Agent skills
 
 ### Issue tracker

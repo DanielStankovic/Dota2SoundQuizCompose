@@ -29,9 +29,11 @@ Examples: `feat/play-button-loading`, `fix/quiz-crash-audio-decode`, `improve/he
 
 ## Create
 
-From an up-to-date default branch (`main` / `master` as used by the repo):
+From an up-to-date **`hero_journey`** (this repo’s integration branch for ongoing app work — not `main`):
 
 ```bash
+git checkout hero_journey
+git pull   # when tracking origin/hero_journey
 git checkout -b <prefix><slug>
 ```
 
