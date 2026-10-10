@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Journey catalog seed (150 levels) — source of truth.
 
+Assist-retuned: earlier Affix teaches, earlier legal stacks (incl. 3–4),
+Echo/Race/Soundquake params used for teach ease vs later pressure.
+
 Heroes and Affixes are natural keys (casters.name, affixes.affix). apply.sql
 looks those up at run time, so the same script can load staging or prod.
 Never paste environment-specific numeric FKs.
@@ -188,25 +191,24 @@ QUAKE = (
     "Soundquake Cataclysm",
 )
 
-# First teach + next 1–2 of that family must be all-familiar (mid/hard).
-# Easy teach: ≥1 familiar. Sudden Death teach: 1 familiar, solo.
+# Assist-retuned teach windows. Hero pairs/rosters capped at 3 repeats.
 TEACH_WINDOWS: dict[str, tuple[int, ...]] = {
-    "Hidden Marks": (27, 28, 29),
-    "Blurred Vision": (39, 40, 41),
-    "Fragile Spirit": (46, 47, 48),
-    "Sudden Death": (52,),
-    "Unknown Count": (62, 63, 64),
-    "Echo Limit": (66, 67, 68),
-    "Race Against Time": (70, 71, 72),
-    "Partial Veil": (82, 83, 84),
-    "Soundquake": (91, 92, 93),
-    "The Hidden Hero": (99, 100, 101),
-    "Among Heroes": (106, 107, 108),
-    "Blurred Vision 2": (111, 112, 113),
-    "Soundquake Aftershock": (115, 116, 117),
-    "Mirror Mode": (118, 119, 120),
-    "Soundquake Fracture": (124, 125),
-    "Soundquake Cataclysm": (126, 127),
+    "Hidden Marks": (21, 22, 23),
+    "Blurred Vision": (29, 30, 31),
+    "Fragile Spirit": (36, 37, 38),
+    "Mirror Mode": (40, 41, 42),
+    "Sudden Death": (46,),
+    "Unknown Count": (50, 51, 52),
+    "Echo Limit": (56, 57, 58),
+    "Race Against Time": (62, 63, 64),
+    "Partial Veil": (70, 71, 72),
+    "Soundquake": (78, 79, 80),
+    "Soundquake Aftershock": (85, 86, 87),
+    "The Hidden Hero": (92, 93, 94),
+    "Among Heroes": (98, 99),
+    "Blurred Vision 2": (104, 105, 106),
+    "Soundquake Fracture": (121, 122),
+    "Soundquake Cataclysm": (125, 126),
 }
 
 
@@ -257,164 +259,160 @@ def L(
     )
 
 
-# Band map slices. FILL = unused Hero not yet named on an earlier level.
+# Ground-up Assist retune: Mirror ~40, varied stacks (not always HM),
+# longer Aftershock/Cataclysm intervals, wide Hero rotation.
+# FILL = unused Hero not yet named on an earlier level.
 LEVELS: list[Spec] = [
-    # --- Slice 1: 1–20 primer, no Affix, no 3-Hero ---
-    L(1, ["Shadow_Fiend"], density="light", max_sounds=8, role="primer"),
-    L(2, ["Omniknight"], density="light", max_sounds=8, role="primer"),
-    L(3, ["Crystal_Maiden"], density="medium", max_sounds=12, role="primer"),
-    L(4, ["Pudge"], density="medium", max_sounds=12, role="primer"),
-    L(5, ["Luna"], density="medium", max_sounds=12, role="primer"),
-    L(6, ["Dragon_Knight"], density="medium", max_sounds=12, role="primer"),
-    L(7, ["Axe"], density="medium", max_sounds=12, role="primer"),
-    L(8, ["Lina"], density="medium", max_sounds=12, role="primer"),
-    L(9, ["Marci"], density="medium", max_sounds=12, role="guest decoys"),
-    L(10, ["Sniper"], density="medium", max_sounds=12, role="guest decoys"),
-    L(11, ["Juggernaut", "Sven"], density="light", max_sounds=12, role="teach 2 Heroes"),
-    L(12, ["Wraith_King", "Tidehunter"], density="light", max_sounds=12, role="plateau"),
-    L(13, ["Lion", "Witch_Doctor"], density="medium", max_sounds=16, role="plateau"),
-    L(14, ["Riki", "Bounty_Hunter"], density="medium", max_sounds=16, role="plateau"),
-    L(15, ["Viper", "Shadow_Shaman"], density="medium", max_sounds=16, role="plateau"),
-    L(16, ["Ogre_Magi", "Puck"], density="medium", max_sounds=16, role="more decoys"),
-    L(17, ["Abaddon", "Huskar"], density="medium", max_sounds=16, role="plateau"),
-    L(18, ["Necrophos", "Drow_Ranger"], density="medium", max_sounds=16, role="plateau"),
-    L(19, ["Zeus", "Phantom_Assassin"], density="medium", max_sounds=16, role="fat decoys"),
-    L(20, ["Sand_King", "Kunkka"], density="medium", max_sounds=20, role="fat decoys"),
-    # --- Slice 2: 21–45 ---
-    L(21, [FILL, FILL], density="medium", role="introduce"),
-    L(22, [FILL, FILL], density="medium", role="introduce"),
-    L(23, [FILL, FILL], density="medium", role="introduce"),
-    L(24, [FILL, FILL, "Juggernaut"], density="light", role="guest 3 Heroes"),
-    L(25, [FILL, FILL], density="heavy", max_sounds=20, role="fatter decoys"),
-    L(26, [FILL, FILL], density="heavy", max_sounds=20, role="fatter decoys"),
-    L(27, ["Crystal_Maiden", "Pudge"], "Hidden Marks", density="light", role="teach Hidden Marks"),
-    L(28, ["Luna", "Dragon_Knight"], "Hidden Marks", density="light", role="Hidden Marks mini-set"),
-    L(29, ["Axe", "Lina"], "Hidden Marks", density="medium", role="Hidden Marks mini-set"),
-    L(30, [FILL, "Sniper"], "Hidden Marks", density="light", role="Hidden Marks new+familiar"),
-    L(31, [FILL, FILL], density="medium", role="rollercoaster introduce"),
-    L(32, [FILL, "Juggernaut"], "Hidden Marks", density="medium", role="Hidden Marks return"),
-    L(33, [FILL, FILL, "Axe"], density="light", role="guest 3 Heroes"),
-    L(34, [FILL, FILL], density="medium", role="introduce"),
-    L(35, [FILL, FILL], density="medium", role="introduce"),
-    L(36, [FILL, "Riki"], "Hidden Marks", density="medium", role="Hidden Marks new+familiar"),
-    L(37, [FILL, FILL], density="medium", role="introduce"),
-    L(38, [FILL, "Viper"], "Hidden Marks", density="medium", role="Hidden Marks new+familiar"),
-    L(39, ["Lion", "Witch_Doctor"], "Blurred Vision", density="medium", blurred=("Lion",), role="teach Blurred Vision"),
-    L(40, ["Ogre_Magi", "Puck"], "Blurred Vision", density="medium", blurred=("Puck",), role="Blurred Vision mini-set"),
-    L(41, ["Abaddon", "Huskar"], "Blurred Vision", density="medium", blurred=("Huskar",), role="Blurred Vision mini-set"),
-    L(42, ["Zeus", "Phantom_Assassin"], "Blurred Vision", density="medium", blurred=("Zeus",), role="Blurred Vision"),
-    L(43, [FILL, "Necrophos"], "Hidden Marks", density="medium", role="drop blur"),
-    L(44, [FILL, FILL], density="medium", role="introduce"),
-    L(45, ["Shadow_Fiend", "Omniknight"], "Hidden Marks", density="heavy", max_sounds=16, role="fat decoys Hidden Marks"),
-    # --- Slice 3: 46–75 ---
-    L(46, ["Sniper"], "Fragile Spirit", density="medium", max_sounds=12, role="teach Fragile Spirit"),
-    L(47, ["Crystal_Maiden", "Lina"], "Fragile Spirit", density="medium", role="Fragile Spirit mini-set"),
-    L(48, ["Pudge", "Luna"], "Fragile Spirit", density="medium", role="Fragile Spirit mini-set"),
-    L(49, ["Axe", "Juggernaut"], "Fragile Spirit", density="medium", role="Fragile Spirit"),
-    L(50, [FILL, FILL, FILL], density="light", role="recover introduce 3"),
-    L(51, [FILL, "Sven"], "Hidden Marks", density="medium", role="recover Hidden Marks"),
-    L(52, ["Sniper"], "Sudden Death", density="medium", max_sounds=12, role="guest Sudden Death"),
-    L(53, [FILL, FILL, FILL], density="light", role="recover introduce 3"),
-    L(54, [FILL, FILL, FILL], density="light", role="recover introduce 3"),
-    L(55, [FILL, FILL, FILL], density="light", role="introduce 3 Heroes"),
-    L(56, [FILL, FILL, "Marci"], "Hidden Marks", density="light", role="Hidden Marks new+familiar"),
-    L(57, [FILL, FILL, FILL], density="light", role="introduce 3 Heroes"),
-    L(58, ["Dragon_Knight", "Luna", "Crystal_Maiden"], density="medium", role="guest 3 Heroes familiar"),
-    L(59, ["Sniper", "Axe"], "Fragile Spirit", density="medium", role="Fragile Spirit return"),
-    L(60, [FILL, FILL, FILL], density="light", role="introduce 3 Heroes"),
-    L(61, [FILL, FILL, "Pudge"], "Hidden Marks", density="light", role="Hidden Marks new+familiar"),
-    L(62, ["Juggernaut", "Sven"], "Unknown Count", density="medium", role="teach Unknown Count"),
-    L(63, ["Wraith_King", "Tidehunter"], "Unknown Count", density="medium", role="Unknown Count mini-set"),
-    L(64, ["Lion", "Witch_Doctor"], "Unknown Count", density="medium", role="Unknown Count mini-set"),
-    L(65, [FILL, "Lina"], "Unknown Count", density="medium", role="Unknown Count new+familiar"),
-    L(66, ["Pudge", "Crystal_Maiden"], "Echo Limit", density="medium", echo=10, role="teach Echo Limit Easy"),
-    L(67, ["Luna", "Dragon_Knight"], "Echo Limit", density="medium", echo=10, role="Echo Limit Easy"),
-    L(68, ["Axe", "Sniper"], "Echo Limit", density="medium", echo=10, role="Echo Limit Easy"),
-    L(69, ["Riki", "Bounty_Hunter"], "Echo Limit", density="medium", echo=10, role="Echo Limit Easy"),
-    L(70, ["Juggernaut", "Phantom_Assassin"], "Race Against Time", density="medium", timer=120, role="teach Race"),
-    L(71, ["Sven", "Sand_King"], "Race Against Time", density="medium", timer=110, role="Race"),
-    L(72, ["Zeus", "Kunkka"], "Race Against Time", density="heavy", timer=100, role="Race"),
-    L(73, [FILL, FILL, FILL], density="light", role="no-timer 3 Heroes"),
-    L(74, ["Ogre_Magi", "Puck"], "Race Against Time", density="medium", timer=90, role="Race"),
-    L(75, ["Viper", "Shadow_Shaman"], "Race Against Time", density="medium", timer=90, role="Race"),
-    # --- Slice 4: 76–105 ---
-    L(76, [FILL, FILL, FILL], density="light", role="introduce 3 Heroes"),
-    L(77, [FILL, FILL, "Tidehunter"], "Hidden Marks", density="light", role="Hidden Marks new+familiar"),
-    L(78, ["Lina"], "Fragile Spirit", density="medium", max_sounds=12, role="guest Fragile Spirit"),
-    L(79, [FILL, FILL, "Sven"], density="medium", role="guest 3 Heroes"),
-    L(80, ["Axe", "Sniper"], "Echo Limit", density="medium", echo=10, role="Echo Limit Easy"),
-    L(81, ["Marci"], "Sudden Death", density="medium", max_sounds=12, role="guest Sudden Death"),
-    L(82, ["Juggernaut", "Sven"], "Partial Veil", density="medium", masked=("Sven",), role="teach Partial Veil"),
-    L(83, ["Wraith_King", "Tidehunter"], "Partial Veil", density="medium", masked=("Wraith_King",), role="Partial Veil mini-set"),
-    L(84, ["Lion", "Witch_Doctor"], "Partial Veil", density="medium", masked=("Witch_Doctor",), role="Partial Veil mini-set"),
-    L(85, ["Axe", "Lina", "Sniper"], "Partial Veil", density="medium", masked=("Lina",), role="Partial Veil 3 Heroes"),
-    L(86, [FILL, FILL, FILL], density="light", role="introduce 3 Heroes"),
-    L(87, ["Pudge", "Crystal_Maiden"], "Partial Veil", density="medium", masked=("Pudge",), role="Partial Veil"),
-    L(88, ["Riki", "Bounty_Hunter"], "Partial Veil", density="medium", masked=("Riki",), role="Partial Veil"),
-    L(89, ["Drow_Ranger", "Phantom_Assassin"], "Partial Veil", density="light", masked=("Drow_Ranger",), role="Partial Veil"),
-    L(90, ["Ogre_Magi", "Zeus"], "Partial Veil", density="medium", masked=("Zeus",), role="Partial Veil"),
-    L(91, ["Juggernaut", "Sven"], "Soundquake", density="medium", timer=25, role="teach Soundquake"),
-    L(92, ["Wraith_King", "Tidehunter"], "Soundquake", density="medium", timer=22, role="Soundquake mini-set"),
-    L(93, ["Lion", "Witch_Doctor"], "Soundquake", density="medium", timer=20, role="Soundquake mini-set"),
-    L(94, ["Axe", "Lina"], "Soundquake", density="medium", timer=20, role="Soundquake"),
-    L(95, ["Sniper", "Crystal_Maiden"], "Soundquake", density="medium", timer=20, role="Soundquake"),
-    L(96, ["Pudge", "Luna"], "Soundquake", "Hidden Marks", density="medium", timer=20, role="Soundquake + Hidden Marks"),
-    L(97, ["Riki", "Bounty_Hunter"], "Soundquake", density="medium", timer=22, role="Soundquake"),
-    L(98, ["Abaddon", "Huskar"], "Soundquake", density="medium", timer=20, role="Soundquake"),
-    L(99, ["Juggernaut", "Sven"], "The Hidden Hero", density="medium", role="teach The Hidden Hero"),
-    L(100, ["Wraith_King", "Tidehunter"], "The Hidden Hero", density="medium", role="Hidden Hero mini-set"),
-    L(101, ["Lion", "Witch_Doctor"], "The Hidden Hero", density="medium", role="Hidden Hero mini-set"),
-    L(102, [FILL, FILL, FILL], "Hidden Marks", density="light", role="drop to easy introduce"),
-    L(103, ["Axe", "Lina"], "The Hidden Hero", density="medium", role="Hidden Hero"),
-    L(104, ["Sniper", "Phantom_Assassin"], "The Hidden Hero", density="medium", role="Hidden Hero"),
-    L(105, ["Pudge", "Crystal_Maiden"], "The Hidden Hero", density="medium", role="Hidden Hero"),
-    # --- Slice 5: 106–120 peak teach ---
-    L(106, ["Juggernaut", "Sven"], "Among Heroes", density="medium", hidden="Sven", role="teach Among Heroes"),
-    L(107, ["Wraith_King", "Tidehunter"], "Among Heroes", density="medium", hidden="Tidehunter", role="Among Heroes mini-set"),
-    L(108, ["Lion", "Witch_Doctor"], "Among Heroes", density="medium", hidden="Witch_Doctor", role="Among Heroes mini-set"),
-    L(109, ["Axe", "Lina", "Sniper"], "Among Heroes", density="medium", hidden="Sniper", role="Among Heroes 3 Heroes"),
-    L(110, [FILL, FILL, "Crystal_Maiden"], "Hidden Marks", density="medium", role="rollercoaster 3 + easy"),
-    L(111, ["Juggernaut", "Sven"], "Blurred Vision 2", density="medium", blurred=("Juggernaut", "Sven"), role="teach Blurred Vision 2"),
-    L(112, ["Wraith_King", "Tidehunter"], "Blurred Vision 2", density="medium", blurred=("Tidehunter",), role="Blurred Vision 2 mini-set"),
-    L(113, ["Lion", "Witch_Doctor"], "Blurred Vision 2", density="medium", blurred=("Lion", "Witch_Doctor"), role="Blurred Vision 2 mini-set"),
-    L(114, ["Axe", "Lina"], "Blurred Vision 2", density="medium", blurred=("Lina",), role="Blurred Vision 2"),
-    L(115, ["Juggernaut", "Phantom_Assassin"], "Soundquake Aftershock", density="medium", timer=22, role="teach Aftershock"),
-    L(116, ["Sven", "Sand_King"], "Soundquake Aftershock", density="medium", timer=20, role="Aftershock mini-set"),
-    L(117, ["Zeus", "Kunkka"], "Soundquake Aftershock", density="heavy", timer=20, role="Aftershock"),
-    L(118, ["Crystal_Maiden", "Pudge"], "Mirror Mode", density="medium", role="teach Mirror Mode"),
-    L(119, ["Luna", "Dragon_Knight"], "Mirror Mode", density="medium", role="Mirror Mode mini-set"),
-    L(120, ["Shadow_Fiend", "Omniknight"], "Mirror Mode", density="heavy", max_sounds=16, role="Mirror Mode"),
-    # --- Slice 6: 121–150 remix ---
-    L(121, [FILL, FILL, FILL], density="light", role="remix introduce 3"),
-    L(122, [FILL, FILL, FILL], density="light", role="remix introduce 3"),
-    L(123, [FILL, FILL, FILL], density="medium", role="remix introduce 3"),
-    L(124, ["Juggernaut", "Sven"], "Soundquake Fracture", density="medium", timer=22, role="teach Fracture"),
-    L(125, ["Wraith_King", "Tidehunter"], "Soundquake Fracture", density="medium", timer=20, role="Fracture"),
-    L(126, ["Lion", "Witch_Doctor"], "Soundquake Cataclysm", density="medium", timer=22, role="teach Cataclysm"),
-    L(127, ["Axe", "Lina"], "Soundquake Cataclysm", density="medium", timer=20, role="Cataclysm"),
-    L(128, ["Ringmaster", FILL, "Abaddon"], density="light", role="high-volume Ringmaster"),
-    L(129, ["Kez", FILL, "Huskar"], density="medium", role="high-volume Kez"),
-    L(130, ["Invoker", "Omniknight"], density="medium", role="high-volume Invoker"),
-    L(131, ["Sniper", "Phantom_Assassin"], "Echo Limit", density="medium", echo=5, role="Echo Limit Medium"),
-    L(132, ["Crystal_Maiden", "Pudge"], "Echo Limit", density="medium", echo=5, role="Echo Limit Medium"),
-    L(133, ["Juggernaut", "Sven"], "Race Against Time", density="medium", timer=75, role="tight Race"),
-    L(134, [FILL, FILL, FILL], density="light", role="remix recover introduce"),
-    L(135, [FILL, FILL, FILL], density="light", role="remix introduce 3"),
-    L(136, ["Shadow_Fiend", "Omniknight", "Marci", "Sniper"], density="light", role="guest 4 Heroes"),
-    L(137, ["Luna", "Dragon_Knight"], "Hidden Marks", "Unknown Count", density="medium", role="Hidden Marks + Unknown Count"),
-    L(138, ["Zeus", "Kunkka"], "Echo Limit", "Hidden Marks", density="medium", echo=10, role="Echo Easy + Hidden Marks"),
-    L(139, ["Juggernaut", "Sven"], "Mirror Mode", "The Hidden Hero", density="medium", role="expert Mirror + Hidden Hero"),
-    L(140, ["Wraith_King", "Tidehunter"], "Mirror Mode", "Partial Veil", density="medium", masked=("Tidehunter",), role="expert Mirror + Partial Veil"),
-    L(141, [FILL, FILL, FILL], density="light", role="remix introduce 3"),
-    L(142, ["Lion", "Witch_Doctor"], "Among Heroes", "Hidden Marks", density="medium", hidden="Witch_Doctor", role="Among Heroes + Hidden Marks"),
-    L(143, ["Juggernaut", "Sven"], "Among Heroes", "Blurred Vision", density="medium", hidden="Sven", blurred=("Juggernaut",), role="Among Heroes + Blurred Vision"),
-    L(144, ["Axe", "Lina"], "Race Against Time", "Blurred Vision", density="medium", timer=70, blurred=("Lina",), role="tight Race + Blurred Vision"),
-    L(145, ["Sniper", "Crystal_Maiden"], "Soundquake", "Hidden Marks", density="medium", timer=20, role="Soundquake + Hidden Marks"),
-    L(146, ["Juggernaut", "Phantom_Assassin"], "Echo Limit", density="medium", echo=0, role="guest Echo Limit Hard"),
-    L(147, ["Crystal_Maiden", "Pudge", "Luna", "Dragon_Knight"], "Hidden Marks", density="light", role="guest 4 Heroes easy"),
-    L(148, [FILL, FILL, FILL], density="light", role="remix introduce 3"),
-    L(149, ["Crystal_Maiden", "Pudge"], "Mirror Mode", "The Hidden Hero", density="medium", role="expert Mirror + Hidden Hero"),
-    L(150, ["Wraith_King", "Tidehunter"], "Soundquake Cataclysm", "Hidden Marks", density="medium", timer=20, role="finale Cataclysm + Hidden Marks"),
+    L(1, ['Omniknight'], density='light', max_sounds=8, role='primer'),
+    L(2, ['Shadow_Fiend'], density='light', max_sounds=8, role='primer'),
+    L(3, ['Bloodseeker'], density='medium', max_sounds=12, role='primer'),
+    L(4, ['Bristleback'], density='medium', max_sounds=12, role='primer'),
+    L(5, ['Chen'], density='medium', max_sounds=12, role='primer'),
+    L(6, ['Crystal_Maiden'], density='medium', max_sounds=12, role='primer'),
+    L(7, ['Dragon_Knight'], density='medium', max_sounds=12, role='primer'),
+    L(8, ['Earthshaker'], density='medium', max_sounds=12, role='primer'),
+    L(9, ['Elder_Titan'], density='medium', max_sounds=12, role='guest decoys'),
+    L(10, ['Lifestealer'], density='medium', max_sounds=12, role='guest decoys'),
+    L(11, ['Luna', 'Lycan'], density='light', max_sounds=12, role='teach 2 Heroes'),
+    L(12, ['Marci', 'Necrophos'], density='light', max_sounds=12, role='plateau'),
+    L(13, ['Night_Stalker', 'Outworld_Destroyer'], density='medium', max_sounds=16, role='plateau'),
+    L(14, ['Pudge', 'Queen_of_Pain'], density='medium', max_sounds=16, role='plateau'),
+    L(15, ['Rubick', 'Slark'], density='medium', max_sounds=16, role='plateau'),
+    L(16, ['Troll_Warlord', 'Tusk'], density='medium', max_sounds=16, role='plateau'),
+    L(17, ['Underlord', 'Ursa'], density='medium', max_sounds=16, role='plateau'),
+    L(18, ['Vengeful_Spirit', 'Venomancer'], density='medium', max_sounds=16, role='plateau'),
+    L(19, ['Visage', 'Abaddon'], density='medium', max_sounds=16, role='fat decoys'),
+    L(20, ['Alchemist', 'Ancient_Apparition'], density='medium', max_sounds=20, role='fat decoys'),
+    L(21, ['Omniknight', 'Shadow_Fiend'], 'Hidden Marks', density='light', role='teach Hidden Marks'),
+    L(22, ['Bloodseeker', 'Bristleback'], 'Hidden Marks', density='light', role='Hidden Marks mini-set'),
+    L(23, ['Chen', 'Crystal_Maiden'], 'Hidden Marks', density='medium', role='Hidden Marks mini-set'),
+    L(24, ['Anti-Mage', 'Arc_Warden', 'Axe'], density='light', role='guest 3 Heroes'),
+    L(25, ['Bane', 'Batrider', 'Bounty_Hunter'], density='light', role='introduce 3'),
+    L(26, ['Brewmaster', 'Broodmother', 'Dragon_Knight'], 'Hidden Marks', density='light', role='Hidden Marks new+familiar'),
+    L(27, ['Centaur_Warrunner', 'Chaos_Knight', 'Dawnbreaker'], density='light', role='introduce 3'),
+    L(28, ['Earthshaker', 'Elder_Titan'], 'Hidden Marks', density='medium', role='Hidden Marks return'),
+    L(29, ['Lifestealer', 'Luna'], 'Blurred Vision', density='medium', blurred=('Lifestealer',), role='teach Blurred Vision'),
+    L(30, ['Lycan', 'Marci'], 'Blurred Vision', density='medium', blurred=('Lycan',), role='Blurred Vision mini-set'),
+    L(31, ['Necrophos', 'Night_Stalker'], 'Blurred Vision', density='medium', blurred=('Necrophos',), role='Blurred Vision mini-set'),
+    L(32, ['Outworld_Destroyer', 'Pudge'], 'Hidden Marks', 'Blurred Vision', density='medium', blurred=('Outworld_Destroyer',), role='first stack HM+Blur'),
+    L(33, ['Dazzle', 'Death_Prophet', 'Doom'], density='light', role='introduce 3'),
+    L(34, ['Queen_of_Pain', 'Rubick'], 'Blurred Vision', density='medium', blurred=('Queen_of_Pain',), role='Blurred Vision return'),
+    L(35, ['Enigma', 'Faceless_Void', 'Slark'], 'Hidden Marks', density='light', role='Hidden Marks new+familiar'),
+    L(36, ['Troll_Warlord'], 'Fragile Spirit', density='medium', max_sounds=12, role='teach Fragile Spirit'),
+    L(37, ['Tusk', 'Underlord'], 'Fragile Spirit', density='medium', role='Fragile Spirit mini-set'),
+    L(38, ['Ursa', 'Vengeful_Spirit'], 'Fragile Spirit', density='medium', role='Fragile Spirit mini-set'),
+    L(39, ['Venomancer', 'Visage'], 'Fragile Spirit', 'Blurred Vision', density='medium', blurred=('Venomancer',), role='Fragile+Blur'),
+    L(40, ['Abaddon', 'Alchemist'], 'Mirror Mode', density='heavy', max_sounds=16, role='teach Mirror Mode'),
+    L(41, ['Ancient_Apparition', 'Anti-Mage'], 'Mirror Mode', density='medium', role='Mirror Mode mini-set'),
+    L(42, ['Arc_Warden', 'Axe'], 'Mirror Mode', density='medium', role='Mirror Mode mini-set'),
+    L(43, ['Bane', 'Batrider'], 'Mirror Mode', 'Blurred Vision', density='medium', blurred=('Bane',), role='Mirror+Blur'),
+    L(44, ['Gyrocopter', 'Hoodwink', 'Huskar'], density='light', role='introduce 3'),
+    L(45, ['Io', 'Bounty_Hunter', 'Brewmaster'], 'Mirror Mode', 'Hidden Marks', density='light', role='Mirror+HM'),
+    L(46, ['Broodmother'], 'Sudden Death', density='medium', max_sounds=12, role='guest Sudden Death'),
+    L(47, ['Jakiro', 'Juggernaut', 'Legion_Commander'], density='light', role='recover introduce 3'),
+    L(48, ['Lina', 'Lion', 'Lone_Druid'], density='light', role='recover introduce 3'),
+    L(49, ['Centaur_Warrunner', 'Chaos_Knight'], 'Fragile Spirit', density='medium', role='Fragile return'),
+    L(50, ['Dawnbreaker', 'Dazzle'], 'Unknown Count', density='medium', role='teach Unknown Count'),
+    L(51, ['Death_Prophet', 'Doom'], 'Unknown Count', density='medium', role='Unknown Count mini-set'),
+    L(52, ['Enigma', 'Faceless_Void'], 'Unknown Count', density='medium', role='Unknown Count mini-set'),
+    L(53, ['Magnus', 'Gyrocopter', 'Hoodwink'], 'Unknown Count', density='light', role='Unknown Count new+familiar'),
+    L(54, ['Mars', 'Huskar', 'Io'], 'Unknown Count', 'Blurred Vision', density='light', blurred=('Mars',), role='UC+Blur'),
+    L(55, ['Medusa', 'Meepo', 'Mirana'], density='light', role='introduce 3'),
+    L(56, ['Jakiro', 'Juggernaut'], 'Echo Limit', density='medium', echo=10, role='teach Echo Limit Easy'),
+    L(57, ['Legion_Commander', 'Lina'], 'Echo Limit', density='medium', echo=10, role='Echo Limit Easy'),
+    L(58, ['Lion', 'Lone_Druid'], 'Echo Limit', density='medium', echo=10, role='Echo Limit Easy'),
+    L(59, ['Magnus', 'Mars'], 'Echo Limit', 'Blurred Vision', density='medium', blurred=('Magnus',), echo=10, role='Echo+Blur'),
+    L(60, ['Medusa', 'Meepo'], 'Echo Limit', 'Mirror Mode', density='medium', echo=10, role='Echo+Mirror'),
+    L(61, ['Morphling', 'Muerta', 'Naga_Siren'], density='light', role='introduce 3'),
+    L(62, ['Mirana', 'Morphling'], 'Race Against Time', density='medium', timer=120, role='teach Race'),
+    L(63, ['Muerta', 'Naga_Siren'], 'Race Against Time', density='medium', timer=110, role='Race'),
+    L(64, ['Omniknight', 'Shadow_Fiend'], 'Race Against Time', density='medium', timer=100, role='Race'),
+    L(65, ["Nature's_Prophet", 'Ogre_Magi', 'Phantom_Lancer'], density='light', role='no-timer introduce 3'),
+    L(66, ['Phoenix', "Nature's_Prophet", 'Ogre_Magi'], 'Race Against Time', 'Blurred Vision', density='light', blurred=('Phoenix',), timer=100, role='Race+Blur'),
+    L(67, ['Phantom_Lancer', 'Phoenix'], 'Race Against Time', 'Mirror Mode', density='medium', timer=95, role='Race+Mirror'),
+    L(68, ['Bloodseeker'], 'Fragile Spirit', density='medium', max_sounds=12, role='guest Fragile Spirit'),
+    L(69, ['Bristleback'], 'Sudden Death', density='medium', max_sounds=12, role='guest Sudden Death'),
+    L(70, ['Chen', 'Crystal_Maiden'], 'Partial Veil', density='medium', masked=('Crystal_Maiden',), role='teach Partial Veil'),
+    L(71, ['Dragon_Knight', 'Earthshaker'], 'Partial Veil', density='medium', masked=('Earthshaker',), role='Partial Veil mini-set'),
+    L(72, ['Elder_Titan', 'Lifestealer'], 'Partial Veil', density='medium', masked=('Lifestealer',), role='Partial Veil mini-set'),
+    L(73, ['Luna', 'Lycan', 'Marci'], 'Partial Veil', density='medium', masked=('Marci',), role='Partial Veil 3 Heroes'),
+    L(74, ['Necrophos', 'Night_Stalker'], 'Partial Veil', 'Blurred Vision', density='medium', masked=('Necrophos',), blurred=('Night_Stalker',), role='PV+Blur'),
+    L(75, ['Primal_Beast', 'Outworld_Destroyer', 'Pudge'], 'Partial Veil', density='light', masked=('Pudge',), role='Partial Veil'),
+    L(76, ['Primal_Beast', 'Queen_of_Pain'], 'Partial Veil', 'Echo Limit', density='medium', masked=('Queen_of_Pain',), echo=10, role='PV+Echo'),
+    L(77, ['Puck', 'Pugna', 'Razor'], density='light', role='introduce 3'),
+    L(78, ['Puck', 'Pugna'], 'Soundquake', density='medium', timer=25, role='teach Soundquake'),
+    L(79, ['Razor', 'Rubick'], 'Soundquake', density='medium', timer=22, role='Soundquake mini-set'),
+    L(80, ['Slark', 'Troll_Warlord'], 'Soundquake', density='medium', timer=20, role='Soundquake mini-set'),
+    L(81, ['Riki', 'Tusk', 'Underlord'], 'Soundquake', density='light', timer=22, role='Soundquake'),
+    L(82, ['Shadow_Demon', 'Riki', 'Ursa'], 'Soundquake', 'Blurred Vision', density='light', blurred=('Shadow_Demon',), timer=22, role='SQ+Blur'),
+    L(83, ['Shadow_Demon', 'Vengeful_Spirit'], 'Soundquake', 'Mirror Mode', density='medium', timer=25, role='SQ+Mirror'),
+    L(84, ['Shadow_Shaman', 'Silencer', 'Skywrath_Mage'], density='light', role='introduce 3'),
+    L(85, ['Shadow_Shaman', 'Silencer'], 'Soundquake Aftershock', density='medium', timer=70, role='teach Aftershock'),
+    L(86, ['Skywrath_Mage', 'Venomancer'], 'Soundquake Aftershock', density='medium', timer=65, role='Aftershock mini-set'),
+    L(87, ['Visage', 'Abaddon'], 'Soundquake Aftershock', density='medium', timer=65, role='Aftershock mini-set'),
+    L(88, ['Slardar', 'Alchemist', 'Ancient_Apparition'], 'Soundquake Aftershock', 'Blurred Vision', density='light', blurred=('Slardar',), timer=70, role='Aftershock+Blur'),
+    L(89, ['Slardar', 'Anti-Mage'], 'Soundquake Aftershock', 'Echo Limit', density='medium', timer=60, echo=10, role='Aftershock+Echo'),
+    L(90, ['Snapfire', 'Sniper', 'Spectre'], density='light', role='introduce 3'),
+    L(91, ['Snapfire', 'Sniper'], 'Mirror Mode', density='heavy', max_sounds=16, role='Mirror return'),
+    L(92, ['Spectre', 'Arc_Warden'], 'The Hidden Hero', density='medium', role='teach The Hidden Hero'),
+    L(93, ['Axe', 'Bane'], 'The Hidden Hero', density='medium', role='Hidden Hero mini-set'),
+    L(94, ['Batrider', 'Bounty_Hunter'], 'The Hidden Hero', density='medium', role='Hidden Hero mini-set'),
+    L(95, ['Spirit_Breaker', 'Storm_Spirit', 'Sven'], density='light', role='drop introduce 3'),
+    L(96, ['Spirit_Breaker', 'Storm_Spirit'], 'The Hidden Hero', 'Fragile Spirit', density='medium', role='HH+Fragile'),
+    L(97, ['Sven', 'Brewmaster'], 'The Hidden Hero', 'Echo Limit', density='medium', echo=10, role='HH+Echo'),
+    L(98, ['Broodmother', 'Centaur_Warrunner'], 'Among Heroes', density='medium', hidden='Centaur_Warrunner', role='teach Among Heroes'),
+    L(99, ['Chaos_Knight', 'Dawnbreaker'], 'Among Heroes', density='medium', hidden='Dawnbreaker', role='Among Heroes mini-set'),
+    L(100, ['Dazzle', 'Death_Prophet'], 'Partial Veil', density='medium', masked=('Death_Prophet',), role='Partial Veil return'),
+    L(101, ['Doom', 'Enigma', 'Faceless_Void'], 'Echo Limit', density='light', echo=10, role='Echo Limit Medium'),
+    L(102, ['Gyrocopter', 'Hoodwink'], 'Partial Veil', 'Blurred Vision', density='medium', masked=('Hoodwink',), blurred=('Gyrocopter',), role='PV+Blur'),
+    L(103, ['Huskar', 'Io'], 'The Hidden Hero', 'Echo Limit', density='medium', echo=10, role='HH+Echo'),
+    L(104, ['Jakiro', 'Juggernaut'], 'Blurred Vision 2', density='medium', blurred=('Jakiro', 'Juggernaut'), role='teach Blurred Vision 2'),
+    L(105, ['Legion_Commander', 'Lina'], 'Blurred Vision 2', density='medium', blurred=('Legion_Commander',), role='Blurred Vision 2 mini-set'),
+    L(106, ['Lion', 'Lone_Druid'], 'Blurred Vision 2', density='medium', blurred=('Lion', 'Lone_Druid'), role='Blurred Vision 2 mini-set'),
+    L(107, ['Tidehunter', 'Magnus', 'Mars'], 'Blurred Vision 2', 'Echo Limit', density='light', blurred=('Tidehunter',), echo=10, role='BV2+Echo'),
+    L(108, ['Tidehunter', 'Medusa'], 'Echo Limit', 'Mirror Mode', 'Blurred Vision', density='medium', blurred=('Tidehunter',), echo=10, role='3-stack Echo+Mirror+Blur'),
+    L(109, ['Meepo', 'Mirana'], 'Among Heroes', density='medium', hidden='Mirana', role='Among Heroes return'),
+    L(110, ['Timbersaw', 'Tinker', 'Tiny'], density='light', role='rollercoaster introduce 3'),
+    L(111, ['Timbersaw', 'Tinker'], 'Race Against Time', 'Blurred Vision', 'Echo Limit', density='medium', blurred=('Timbersaw',), timer=80, role='3-stack Race+Blur+Echo'),
+    L(112, ['Undying', 'Tiny', 'Morphling'], 'Echo Limit', density='light', role='Echo Limit Medium'),
+    L(113, ['Undying', 'Muerta'], 'Soundquake', 'Mirror Mode', density='medium', timer=28, role='SQ+Mirror'),
+    L(114, ['Viper', 'Naga_Siren', "Nature's_Prophet"], 'Race Against Time', density='light', timer=75, role='tight Race'),
+    L(115, ['Viper', 'Ogre_Magi'], 'Echo Limit', 'Blurred Vision', 'Fragile Spirit', density='medium', blurred=('Viper',), role='3-stack Echo+Blur+Fragile'),
+    L(116, ['Void_Spirit', 'Warlock', 'Weaver'], 'Hidden Marks', density='light', role='easy introduce 3'),
+    L(117, ['Winter_Wyvern', 'Void_Spirit', 'Warlock'], 'Partial Veil', 'Echo Limit', density='light', masked=('Warlock',), role='PV+Echo Med'),
+    L(118, ['Weaver', 'Winter_Wyvern', 'Phantom_Lancer'], density='light', role='guest 3 Heroes familiar'),
+    L(119, ['Phoenix', 'Primal_Beast'], 'Unknown Count', 'Blurred Vision', 'Echo Limit', density='medium', blurred=('Phoenix',), echo=10, role='3-stack UC+Blur+Echo'),
+    L(120, ['Witch_Doctor', 'Puck', 'Pugna'], 'Mirror Mode', 'Echo Limit', density='light', echo=10, role='Mirror+Echo'),
+    L(121, ['Witch_Doctor', 'Razor'], 'Soundquake Fracture', density='medium', timer=28, role='teach Fracture'),
+    L(122, ['Riki', 'Shadow_Demon'], 'Soundquake Fracture', 'Blurred Vision', density='medium', blurred=('Riki',), timer=26, role='Fracture+Blur'),
+    L(123, ['Wraith_King', 'Zeus', 'Beastmaster'], density='light', role='remix introduce 3'),
+    L(124, ['Dark_Seer', 'Wraith_King', 'Zeus'], 'Soundquake Fracture', 'Echo Limit', density='light', timer=26, role='Fracture+Echo'),
+    L(125, ['Beastmaster', 'Dark_Seer'], 'Soundquake Cataclysm', density='medium', timer=75, role='teach Cataclysm'),
+    L(126, ['Shadow_Shaman', 'Silencer'], 'Soundquake Cataclysm', density='medium', timer=70, role='Cataclysm mini-set'),
+    L(127, ['Ringmaster', 'Dark_Willow'], density='light', role='high-volume Ringmaster'),
+    L(128, ['Kez', 'Enchantress'], density='medium', role='high-volume Kez'),
+    L(129, ['Invoker', 'Drow_Ranger'], density='medium', role='high-volume Invoker'),
+    L(130, ['Grimstroke', 'Drow_Ranger', 'Ember_Spirit'], 'Echo Limit', density='light', echo=0, role='guest Echo Hard'),
+    L(131, ['Enchantress', 'Grimstroke'], 'Mirror Mode', 'The Hidden Hero', density='medium', role='expert Mirror+Hidden Hero'),
+    L(132, ['Skywrath_Mage', 'Slardar'], 'Mirror Mode', 'Partial Veil', density='medium', masked=('Slardar',), role='expert Mirror+Partial Veil'),
+    L(133, ['Keeper_of_the_Light', 'Kunkka', 'Largo'], density='light', role='remix introduce 3'),
+    L(134, ['Leshrac', 'Keeper_of_the_Light', 'Kunkka'], 'Unknown Count', 'Blurred Vision', 'Fragile Spirit', density='light', blurred=('Leshrac',), role='3-stack UC+Blur+Fragile'),
+    L(135, ['Largo', 'Leshrac'], 'Among Heroes', 'Blurred Vision', 'Echo Limit', density='medium', blurred=('Largo',), hidden='Leshrac', echo=5, role='Among+Blur+Echo'),
+    L(136, ['Lich', 'Nyx_Assassin', 'Oracle'], density='light', role='remix introduce 3'),
+    L(137, ['Lich', 'Nyx_Assassin'], 'Soundquake', 'Mirror Mode', 'Blurred Vision', density='medium', blurred=('Lich',), timer=22, role='3-stack SQ+Mirror+Blur'),
+    L(138, ['Pangolier', 'Oracle', 'Snapfire'], 'Race Against Time', 'Blurred Vision', 'Echo Limit', density='light', blurred=('Pangolier',), timer=70, role='3-stack tight Race+Blur+Echo'),
+    L(139, ['Phantom_Assassin', 'Sand_King', 'Techies'], density='light', role='remix introduce 3'),
+    L(140, ['Templar_Assassin', 'Terrorblade', 'Windranger'], density='light', role='remix introduce 3'),
+    L(141, ['Clinkz', 'Pangolier', 'Phantom_Assassin'], 'Soundquake', 'Echo Limit', 'Blurred Vision', density='light', blurred=('Clinkz',), timer=28, echo=5, role='3-stack SQ+Echo+Blur'),
+    L(142, ['Sand_King', 'Techies', 'Templar_Assassin', 'Terrorblade'], 'Fragile Spirit', density='light', role='guest 4 Heroes Fragile'),
+    L(143, ['Clockwerk', 'Disruptor', 'Earth_Spirit'], density='light', role='remix introduce 3'),
+    L(144, ['Windranger', 'Clinkz'], 'Mirror Mode', 'The Hidden Hero', density='medium', role='expert Mirror+Hidden Hero'),
+    L(145, ['Clockwerk', 'Disruptor', 'Earth_Spirit'], 'Partial Veil', 'Blurred Vision', 'Fragile Spirit', 'Echo Limit', density='medium', masked=('Earth_Spirit',), blurred=('Clockwerk',), echo=5, role='4-stack PV+Blur+Fragile+Echo'),
+    L(146, ['Sniper', 'Spectre'], 'Race Against Time', 'Mirror Mode', 'Blurred Vision', 'Echo Limit', density='medium', blurred=('Sniper',), timer=75, role='4-stack Race+Mirror+Blur+Echo'),
+    L(147, ['Treant_Protector', 'Spirit_Breaker', 'Storm_Spirit'], 'Soundquake Fracture', 'Blurred Vision', 'Echo Limit', density='light', blurred=('Treant_Protector',), timer=32, echo=5, role='3-stack Fracture+Blur+Echo'),
+    L(148, ['Monkey_King', 'Treant_Protector', 'Sven'], density='medium', role='remix introduce 3'),
+    L(149, ['Monkey_King', 'Tidehunter', 'Timbersaw'], 'Echo Limit', density='light', echo=0, role='guest Echo Hard'),
+    L(150, ['Tinker', 'Tiny'], 'Soundquake Cataclysm', 'Mirror Mode', 'Blurred Vision', 'Echo Limit', density='medium', blurred=('Tinker',), timer=75, role='finale 4-stack Cataclysm+Mirror+Blur+Echo'),
 ]
 
 
@@ -548,6 +546,14 @@ def validate(levels: list[Spec]) -> list[str]:
             errors.append(f"L{spec.level}: Race + Soundquake family")
         if sum(a in QUAKE for a in aff) > 1:
             errors.append(f"L{spec.level}: two Soundquake variants")
+        # Never debut a Hero behind full-mystery identity (all ? or omitted).
+        if "The Hidden Hero" in aff or "Among Heroes" in aff:
+            known = seen_before[spec.level]
+            new_on_board = [h for h in heroes if h not in known]
+            if new_on_board:
+                errors.append(
+                    f"L{spec.level}: new Hero on identity Affix (need prior normal portrait): {new_on_board}"
+                )
         if "Among Heroes" in aff:
             if spec.hidden is None or spec.hidden not in heroes:
                 errors.append(f"L{spec.level}: Among Heroes needs hidden_hero_id in roster")
@@ -593,7 +599,7 @@ def validate(levels: list[Spec]) -> list[str]:
             "Mirror Mode" in aff
             and ("The Hidden Hero" in aff or "Partial Veil" in aff)
         )
-        if expert and spec.level < 135:
+        if expert and spec.level < 120:
             errors.append(f"L{spec.level}: expert Mirror stack too early")
         if expert and len(heroes) == 4:
             errors.append(f"L{spec.level}: expert stack on 4 Heroes")
@@ -614,32 +620,18 @@ def validate(levels: list[Spec]) -> list[str]:
                 errors.append(f"L{spec.level}: Sudden Death teach is 1 Hero solo")
 
         mid_hard = [a for a in aff if a in MID or a in HARD]
-        if mid_hard and spec.level not in {lv for wins in TEACH_WINDOWS.values() for lv in wins}:
-            # After the teach window, still prefer familiar on mid/hard.
+        teach_levels = {lv for wins in TEACH_WINDOWS.values() for lv in wins}
+        if mid_hard and spec.level not in teach_levels:
+            # After teach window: all-familiar preferred; allow exactly one new
+            # on the first level after a family's window (new+familiar beat).
             if not set(heroes) <= prior and spec.level < 121:
-                # Slice 3 UC 65 is the designed new+familiar after the window.
-                if not (spec.level == 65 and "Unknown Count" in aff):
-                    if not any(h in prior for h in heroes):
-                        errors.append(f"L{spec.level}: mid/hard with zero familiar")
+                new_heroes = [h for h in heroes if h not in prior]
+                if len(new_heroes) > 1 or not any(h in prior for h in heroes):
+                    # Exception: easy+mid stacks may carry one new on easy-tier boards
+                    if not (len(new_heroes) == 1 and any(h in prior for h in heroes)):
+                        errors.append(f"L{spec.level}: mid/hard with too many new Heroes {new_heroes}")
 
-        solo_first = {
-            27: "Hidden Marks",
-            39: "Blurred Vision",
-            46: "Fragile Spirit",
-            52: "Sudden Death",
-            62: "Unknown Count",
-            66: "Echo Limit",
-            70: "Race Against Time",
-            82: "Partial Veil",
-            91: "Soundquake",
-            99: "The Hidden Hero",
-            106: "Among Heroes",
-            111: "Blurred Vision 2",
-            115: "Soundquake Aftershock",
-            118: "Mirror Mode",
-            124: "Soundquake Fracture",
-            126: "Soundquake Cataclysm",
-        }
+        solo_first = {wins[0]: family for family, wins in TEACH_WINDOWS.items()}
         if spec.level in solo_first:
             want = solo_first[spec.level]
             if aff != (want,):
@@ -661,6 +653,24 @@ def validate(levels: list[Spec]) -> list[str]:
     missing = [n for n in SOUND_COUNTS if n not in seen]
     if missing:
         errors.append(f"unused Heroes: {missing}")
+    overused = [f"{h}x{c}" for h, c in sorted(seen.items(), key=lambda x: -x[1]) if c > 16]
+    if overused:
+        errors.append(f"Hero overuse (>16 appearances): {', '.join(overused[:12])}")
+    from collections import defaultdict as _dd
+    _rosters = _dd(list)
+    _pairs = _dd(list)
+    for spec in levels:
+        hs = tuple(sorted(spec.names()))
+        _rosters[hs].append(spec.level)
+        for i in range(len(hs)):
+            for j in range(i + 1, len(hs)):
+                _pairs[(hs[i], hs[j])].append(spec.level)
+    for hs, lvls in _rosters.items():
+        if len(lvls) > 3:
+            errors.append(f"roster >3: {', '.join(hs)} @ {lvls}")
+    for pair, lvls in _pairs.items():
+        if len(lvls) > 3:
+            errors.append(f"pair >3: {pair[0]}+{pair[1]} @ {lvls}")
     return errors
 
 
@@ -800,8 +810,8 @@ def write_human_table(levels: list[Spec], path: Path) -> None:
         "",
         "Source: `catalog.py`. Do not edit this file by hand.",
         "",
-        "| Level | Heroes | Affixes | max_sounds | decoys | density | extras | role |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Level | #H | Heroes | Affixes | correct | decoys | total | density | extras | role | playtest |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for spec in levels:
         heroes = spec.names()
@@ -818,16 +828,32 @@ def write_human_table(levels: list[Spec], path: Path) -> None:
             extra_bits.append(f"t={spec.timer}")
         if "Echo Limit" in spec.affixes:
             extra_bits.append(f"echo {spec.echo:+d}")
+        aff = spec.affixes
+        playtest = ""
+        hard_hits = sum(1 for a in aff if a in HARD)
+        if len(aff) >= 4 or (len(aff) >= 3 and hard_hits >= 1) or hard_hits >= 2:
+            playtest = "hard"
+        elif "Sudden Death" in aff or "Mirror Mode" in aff or any(a in ("Soundquake Fracture", "Soundquake Cataclysm") for a in aff):
+            playtest = "tricky"
+        elif len(aff) >= 3 or ("Echo Limit" in aff and spec.echo <= 0) or (
+            "Race Against Time" in aff and spec.timer is not None and spec.timer <= 75
+        ):
+            playtest = "tricky"
+        elif "Among Heroes" in aff or "The Hidden Hero" in aff:
+            playtest = "check"
         lines.append(
-            "| {lvl} | {heroes} | {aff} | {ms} | {dec} | {den} | {ex} | {role} |".format(
+            "| {lvl} | {nh} | {heroes} | {aff} | {cor} | {dec} | {ms} | {den} | {ex} | {role} | {pt} |".format(
                 lvl=spec.level,
+                nh=len(heroes),
                 heroes=", ".join(heroes),
-                aff=", ".join(spec.affixes) or "—",
-                ms=ms,
+                aff=", ".join(aff) or "—",
+                cor=correct,
                 dec=ms - correct,
+                ms=ms,
                 den=spec.density,
                 ex="; ".join(extra_bits) or "—",
                 role=spec.role,
+                pt=playtest or "—",
             )
         )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

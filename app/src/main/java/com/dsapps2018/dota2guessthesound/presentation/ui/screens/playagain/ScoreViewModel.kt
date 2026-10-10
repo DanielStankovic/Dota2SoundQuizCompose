@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsapps2018.dota2guessthesound.R
+import com.dsapps2018.dota2guessthesound.data.journey.JourneyRound
 import com.dsapps2018.dota2guessthesound.data.model.PlayerProgress
 import com.dsapps2018.dota2guessthesound.data.model.initialPlayerProgress
 import com.dsapps2018.dota2guessthesound.data.progress.JourneyWinResult
@@ -30,6 +31,7 @@ class ScoreViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val modeResult: ModeResult,
     private val journeyWinSession: JourneyWinSession,
+    private val journeyRound: JourneyRound,
     playerProgressRepository: PlayerProgressRepository,
     private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ViewModel() {
@@ -88,6 +90,18 @@ class ScoreViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             _journeyWinResult.value = modeResult.submitJourneyLevel(level, clearTimeMs)
         }
+    }
+
+    /**
+     * True when [clearedLevel] is the final authored Journey level.
+     * Loads the catalog if needed (e.g. process death on the result screen).
+     */
+    suspend fun isJourneyCatalogComplete(clearedLevel: Int): Boolean {
+        if (journeyRound.highestCatalogLevel() == null) {
+            journeyRound.loadLevels()
+        }
+        val maxLevel = journeyRound.highestCatalogLevel() ?: return false
+        return clearedLevel >= maxLevel
     }
 
     fun calculateFastFingerScore(guessed: Int, total: Int): Double =

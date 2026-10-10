@@ -44,7 +44,7 @@
     <string name="hero_catalog_lbl">Hero Catalog</string>
     <string name="quiz_lbl">Quiz</string>
     <string name="fast_finger_lbl">Fast Finger</string>
-    <string name="hero_journey_lbl">Hero\'s Journey</string>
+    <string name="hero_journey_lbl">Hero Journey</string>
     <string name="invoker_lbl">Invoker</string>
     <string name="daily_joke_lbl">Daily Joke</string>
     <string name="permission_required_lbl">Permission Required</string>
@@ -175,6 +175,13 @@
     <string name="level_clear_time_new_best">New personal best!</string>
     <string name="journey_first_clear_coins">+%1$d coins — first clear</string>
     <string name="journey_first_clear_value">+%1$d</string>
+    <string name="journey_catalog_complete_title">Journey Complete!</string>
+    <string name="journey_catalog_complete_body">You\'ve cleared every Journey level we have right now.\n\nNew levels are coming soon — keep an eye out for updates. Until then, replay any level to climb its times leaderboard.</string>
+    <string name="journey_catalog_complete_btn">Back to Journey</string>
+    <string name="journey_progress_complete">All levels cleared</string>
+    <string name="journey_path_scrubber_cd">Journey path. Level %1$d of %2$d. Drag to jump.</string>
+    <string name="journey_continue_btn">Continue Journey</string>
+    <string name="journey_try_again_btn">Try Again</string>
     <string name="reading_locale_gate_title">Story language</string>
     <string name="reading_locale_gate_subtitle">Hero stories unlock chapter by chapter. Pick a language now — we\'ll show translations for that language as chapters unlock. You can change this later in Options. English is ready offline; other languages download when you confirm.</string>
     <string name="reading_locale_options_title">Story language</string>

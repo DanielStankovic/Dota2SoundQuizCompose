@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
@@ -60,12 +61,10 @@ fun JourneyLevelResultScreen(
     alreadySubmitted: Boolean = false,
     onPlayClicked: (Int) -> Unit,
     onBoardClicked: (Int) -> Unit,
+    onCatalogCompleteClicked: () -> Unit = {},
 ) {
-    val backgroundColor = if (isLevelCompleted) Color(0xFF101820) else Color(0xFF1A0000)
     val titleColor = if (isLevelCompleted) JourneyTimeAccent else Color(0xFFFF4C4C)
-    val buttonColor = if (isLevelCompleted) Color(0xFF4CAF50) else Color(0xFFD32F2F)
-    val titleText = if (isLevelCompleted) "Level $level Completed!" else "Level $level Failed!"
-    val buttonText = if (isLevelCompleted) "Continue Journey" else "Try Again"
+    var catalogComplete by remember { mutableStateOf(false) }
 
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val scale by infiniteTransition.animateFloat(
@@ -83,8 +82,23 @@ fun JourneyLevelResultScreen(
     LaunchedEffect(isLevelCompleted, level, clearTimeMs, alreadySubmitted) {
         if (isLevelCompleted) {
             scoreViewModel.submitJourneyLevel(level, clearTimeMs, alreadySubmitted)
+            catalogComplete = scoreViewModel.isJourneyCatalogComplete(level)
+        } else {
+            catalogComplete = false
         }
     }
+
+    val titleText = when {
+        catalogComplete -> stringResource(R.string.journey_catalog_complete_title)
+        isLevelCompleted -> "Level $level Completed!"
+        else -> "Level $level Failed!"
+    }
+    val buttonText = when {
+        catalogComplete -> stringResource(R.string.journey_catalog_complete_btn)
+        isLevelCompleted -> stringResource(R.string.journey_continue_btn)
+        else -> stringResource(R.string.journey_try_again_btn)
+    }
+
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom),
         content = { padding ->
@@ -124,6 +138,17 @@ fun JourneyLevelResultScreen(
                             .scale(scale)
                             .padding(16.dp)
                     )
+
+                    if (catalogComplete) {
+                        Text(
+                            text = stringResource(R.string.journey_catalog_complete_body),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White.copy(alpha = 0.92f),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 28.dp, vertical = 8.dp),
+                        )
+                    }
 
                     if (isLevelCompleted && clearTimeMs > 0L) {
                         Spacer(Modifier.height(8.dp))
@@ -168,7 +193,11 @@ fun JourneyLevelResultScreen(
                         text = buttonText, textColor = Color.White,
                         contentScale = ContentScale.Fit
                     ) {
-                        onPlayClicked(if (isLevelCompleted) level + 1 else level)
+                        when {
+                            catalogComplete -> onCatalogCompleteClicked()
+                            isLevelCompleted -> onPlayClicked(level + 1)
+                            else -> onPlayClicked(level)
+                        }
                     }
                     if (isLevelCompleted) {
                         Spacer(Modifier.height(12.dp))
@@ -184,22 +213,6 @@ fun JourneyLevelResultScreen(
                             onBoardClicked(level)
                         }
                     }
-//                    Button(
-//                        onClick = onContinueClicked,
-//                        shape = RoundedCornerShape(12.dp),
-//                        colors = ButtonDefaults.buttonColors(
-//                            containerColor = Color(0xFF4CAF50)
-//                        ),
-//                        modifier = Modifier
-//                            .padding(horizontal = 24.dp)
-//                            .fillMaxWidth(0.6f)
-//                    ) {
-//                        Text(
-//                            text = "Continue Journey",
-//                            fontSize = 18.sp,
-//                            fontWeight = FontWeight.Medium
-//                        )
-//                    }
                 }
             }
         }

@@ -2,6 +2,8 @@
 
 Source of truth: `catalog.py` (Hero names + Affix names, not numeric ids).
 
+**Assist-retuned + playtest pass (2026-10-10):** Mirror teach ~40; Among Heroes sparse (blocks Assists); Aftershock/Cataclysm wipe timers ~60–75s; HV Heroes (Invoker/Kez/Ringmaster) + one partner; pair/roster repeats ≤3. Band map: `.cursor/skills/journey-level-authoring/references/band-map.md`. Full table: `CATALOG.md`.
+
 ```bash
 python3 scripts/journey-catalog/catalog.py
 ```

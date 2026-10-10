@@ -6,4 +6,6 @@ Launch Hero Journey is a **150**-level catalog — one playable level per active
 
 **Why 150:** Chapter capacity is 150, so the level count is 150. The extra length (vs the earlier 120 plan) is spent on a longer no-Affix primer, later first Affix, and **familiar** boards — not on climbing difficulty through 150. Authoring: skill `journey-level-authoring`. Spine still ADR-0015 (no XP).
 
+**Assist retune:** After Journey Assists (ADR-0022), the launch seed densifies earlier Affix teaches and legal stacks (still solo-teach-first, rollercoaster guests). Seed: `scripts/journey-catalog/`.
+
 **Rejected:** first Affix in the opening teens; stacking Affixes before each is taught solo; mid/hard Affixes on brand-new Heroes; monotonic floor raises after each spike; using off-screen Dire as a hidden identity load before Dire portraits.

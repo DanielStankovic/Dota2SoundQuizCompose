@@ -1,6 +1,8 @@
 package com.dsapps2018.dota2guessthesound.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,6 +27,7 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.I
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.JourneyIssueGateScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.issue.ReadingLocaleScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.JourneyLevelScreen
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.JourneyLevelViewModel
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.LeaderboardScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.leaderboard.leaderboardhistory.LeaderboardHistoryScreen
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.options.AttributionScreen
@@ -223,12 +226,17 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
         composable<JourneyLevelResultDestination> { backStackEntry ->
             val journeyLevelResultDestination: JourneyLevelResultDestination =
                 backStackEntry.toRoute()
+            val journeyLevelEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(JourneyLevelDestination)
+            }
+            val journeyLevelViewModel: JourneyLevelViewModel = hiltViewModel(journeyLevelEntry)
             JourneyLevelResultScreen(
                 level = journeyLevelResultDestination.level,
                 isLevelCompleted = journeyLevelResultDestination.isLevelCompleted,
                 clearTimeMs = journeyLevelResultDestination.clearTimeMs,
                 alreadySubmitted = journeyLevelResultDestination.alreadySubmitted,
                 onPlayClicked = { levelNum ->
+                    journeyLevelViewModel.setPickerLevel(levelNum)
                     navController.navigate(
                         JourneyGameDestination(
                             levelNum = levelNum,
@@ -244,6 +252,10 @@ fun HomeNavGraph(navController: NavHostController = rememberNavController()) {
                 },
                 onBoardClicked = { level ->
                     navController.navigate(LevelClearTimeDestination(level))
+                },
+                onCatalogCompleteClicked = {
+                    journeyLevelViewModel.setPickerLevel(journeyLevelResultDestination.level)
+                    navController.popBackStack(route = JourneyLevelDestination, false)
                 },
             )
         }

@@ -1,7 +1,9 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dsapps2018.dota2guessthesound.R
 import com.dsapps2018.dota2guessthesound.data.auth.AuthSession
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyLevelsState
 import com.dsapps2018.dota2guessthesound.data.journey.JourneyRound
@@ -10,6 +12,7 @@ import com.dsapps2018.dota2guessthesound.data.progress.JourneyIssue
 import com.dsapps2018.dota2guessthesound.data.progress.LevelClearTime
 import com.dsapps2018.dota2guessthesound.data.repository.PlayerProgressRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JourneyLevelViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     playerProgressRepository: PlayerProgressRepository,
     private val journeyRound: JourneyRound,
     private val journeyIssue: JourneyIssue,
@@ -54,7 +58,13 @@ class JourneyLevelViewModel @Inject constructor(
     ) { state, level ->
         when (state) {
             is JourneyLevelsState.Success -> {
-                "Level $level of ${state.levels.size}"
+                val total = state.levels.size
+                val maxLevel = state.levels.maxOfOrNull { it.level } ?: 0
+                if (maxLevel > 0 && level >= maxLevel) {
+                    context.getString(R.string.journey_progress_complete)
+                } else {
+                    "Level $level of $total"
+                }
             }
             else -> ""
         }
@@ -69,6 +79,14 @@ class JourneyLevelViewModel @Inject constructor(
 
     private val _currentAffix: MutableStateFlow<AffixModel?> = MutableStateFlow(null)
     val currentAffix = _currentAffix.asStateFlow()
+
+    /**
+     * Picker card to restore after leaving (game / result / library).
+     * Null until the player opens a level, continues Journey, or the pager is disposed —
+     * so first entry can still follow the playable frontier as progress loads.
+     */
+    private val _pickerLevel = MutableStateFlow<Int?>(null)
+    val pickerLevel = _pickerLevel.asStateFlow()
 
     /** True when Active Issue or completed Issues exist (Library openable). */
     private val _libraryAvailable = MutableStateFlow(false)
@@ -116,5 +134,9 @@ class JourneyLevelViewModel @Inject constructor(
 
     fun setCurrentAffix(affix: AffixModel?) {
         _currentAffix.value = affix
+    }
+
+    fun setPickerLevel(level: Int) {
+        _pickerLevel.value = level
     }
 }

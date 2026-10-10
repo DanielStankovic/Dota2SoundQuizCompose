@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,8 +39,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -83,6 +86,8 @@ import com.dsapps2018.dota2guessthesound.presentation.ui.composables.ErrorOrEmpt
 import com.dsapps2018.dota2guessthesound.presentation.ui.composables.LoadingContent
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.board.formatLevelClearTime
 import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.composables.AffixInfoBottomSheet
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.composables.JourneyPathScrubber
+import com.dsapps2018.dota2guessthesound.presentation.ui.screens.journey.level.composables.JourneyPathScrubberReserve
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyButtonBackground
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.JourneyTimeAccent
 import com.dsapps2018.dota2guessthesound.presentation.ui.theme.PlayLevel
@@ -142,6 +147,7 @@ fun JourneyLevelScreen(
                             levelViewModel,
                             bannerHeight,
                             onLevelClicked = { level ->
+                                levelViewModel.setPickerLevel(level)
                                 onLevelClicked(level)
                             },
                             onBoardClicked = onBoardClicked,
@@ -238,29 +244,37 @@ private fun IssueLibraryChip(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(20.dp)
+    val borderAlpha = if (enabled) 0.55f else 0.40f
+    val contentAlpha = if (enabled) 1f else 0.7f
     Column(modifier = modifier) {
-        Row(
-            Modifier
-                .clip(shape)
-                .background(JourneyButtonBackground.copy(alpha = 0.88f))
-                .border(1.dp, JourneyTimeAccent.copy(alpha = if (enabled) 0.55f else 0.28f), shape)
-                .alpha(if (enabled) 1f else 0.55f)
-                .clickable(enabled = enabled, onClick = onClick)
-                .padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        // Surface keeps chip chrome (fill + border) stable on first composition /
+        // over the painted journey backdrop; only label/icon dim when locked.
+        Surface(
+            onClick = onClick,
+            enabled = enabled,
+            shape = shape,
+            color = JourneyButtonBackground.copy(alpha = 0.92f),
+            border = BorderStroke(1.dp, JourneyTimeAccent.copy(alpha = borderAlpha)),
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_issue_library_book),
-                contentDescription = stringResource(R.string.issue_library_cd_book),
-                modifier = Modifier.size(22.dp),
-            )
-            Spacer(Modifier.size(8.dp))
-            Text(
-                text = stringResource(R.string.issue_library_chip),
-                color = JourneyTimeAccent,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
+            Row(
+                Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_issue_library_book),
+                    contentDescription = stringResource(R.string.issue_library_cd_book),
+                    modifier = Modifier
+                        .size(22.dp)
+                        .alpha(contentAlpha),
+                )
+                Spacer(Modifier.size(8.dp))
+                Text(
+                    text = stringResource(R.string.issue_library_chip),
+                    color = JourneyTimeAccent.copy(alpha = contentAlpha),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
         }
         if (!enabled) {
             Text(
@@ -292,30 +306,76 @@ fun LevelData(
 ) {
     val scope = rememberCoroutineScope()
     val currentLevel by levelViewModel.journeyLevel.collectAsStateWithLifecycle()
+    val pickerLevel by levelViewModel.pickerLevel.collectAsStateWithLifecycle()
     val currentAffix by levelViewModel.currentAffix.collectAsStateWithLifecycle()
     val personalBests by levelViewModel.personalBests.collectAsStateWithLifecycle()
 
-    val pagerState = rememberPagerState(initialPage = currentLevel) {
+    // journeyLevel is the clear watermark; pager pages are 0..totalItems-1.
+    // When every level is cleared, watermark == totalItems — clamp to the last card.
+    val focusPage = remember(currentLevel, totalItems) {
+        if (totalItems <= 0) 0
+        else currentLevel.coerceIn(0, totalItems - 1)
+    }
+    val restorePage = remember(pickerLevel, focusPage, levels) {
+        pickerLevel
+            ?.let { level -> levels.indexOfFirst { it.level == level } }
+            ?.takeIf { it >= 0 }
+            ?: focusPage
+    }
+    val pagerState = rememberPagerState(initialPage = restorePage) {
         totalItems
     }
-    val isVisible by remember {
-        derivedStateOf { pagerState.currentPage != currentLevel }
+    val isVisible by remember(focusPage) {
+        derivedStateOf { pagerState.currentPage != focusPage }
     }
-    LaunchedEffect(pagerState.currentPage, currentLevel) {
+    // First visit: follow the playable frontier as progress loads. After the player
+    // pins a level (play / continue / leave picker), keep that card on return.
+    LaunchedEffect(focusPage, totalItems, pickerLevel) {
+        if (pickerLevel != null) return@LaunchedEffect
+        if (totalItems > 0 && pagerState.currentPage != focusPage) {
+            pagerState.scrollToPage(focusPage)
+        }
+    }
+    DisposableEffect(pagerState, levels) {
+        onDispose {
+            levels.getOrNull(pagerState.currentPage)?.let { row ->
+                levelViewModel.setPickerLevel(row.level)
+            }
+        }
+    }
+    // After a level is pinned, keep the pin in sync with swipe / path-button jumps.
+    LaunchedEffect(pagerState.settledPage, pickerLevel) {
+        if (pickerLevel == null) return@LaunchedEffect
+        levels.getOrNull(pagerState.settledPage)?.let { row ->
+            if (row.level != pickerLevel) {
+                levelViewModel.setPickerLevel(row.level)
+            }
+        }
+    }
+    LaunchedEffect(pagerState.currentPage, focusPage) {
         val viewed = levels.getOrNull(pagerState.currentPage) ?: return@LaunchedEffect
         if (viewed.affixSlots.none { it is AffixListSlot.Revealed }) {
             levelViewModel.setCurrentAffix(null)
         }
     }
+    val visualPage by remember {
+        derivedStateOf {
+            (pagerState.currentPage + pagerState.currentPageOffsetFraction)
+                .coerceIn(0f, (totalItems - 1).coerceAtLeast(0).toFloat())
+        }
+    }
+    val scrubberBottomPad = bannerHeight.dp + 12.dp
+    val cornerPad = scrubberBottomPad + JourneyPathScrubberReserve + 4.dp
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         HorizontalPager(
             state = pagerState, contentPadding = PaddingValues(50.dp)
-        ) {
+        ) { page ->
+            val levelRow = levels.getOrNull(page) ?: return@HorizontalPager
             LevelCardContent(
-                it,
-                levels[it],
+                page,
+                levelRow,
                 pagerState,
                 onItemClicked = onLevelClicked,
                 onAffixIconClicked = { affix ->
@@ -323,10 +383,9 @@ fun LevelData(
                 })
         }
 
-        val viewedLevel = levels[pagerState.currentPage]
-        val viewedCleared = viewedLevel.access == JourneyLevelAccess.Cleared
-        val viewedBestMs = personalBests[viewedLevel.level]
-        val cornerPad = (bannerHeight + 10).dp
+        val viewedLevel = levels.getOrNull(pagerState.currentPage)
+        val viewedCleared = viewedLevel?.access == JourneyLevelAccess.Cleared
+        val viewedBestMs = viewedLevel?.let { personalBests[it.level] }
         AnimatedVisibility(
             visible = viewedCleared,
             enter = fadeIn(),
@@ -335,31 +394,33 @@ fun LevelData(
                 .align(Alignment.BottomStart)
                 .padding(bottom = cornerPad, start = 10.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_level_clear_time),
-                    contentDescription = stringResource(R.string.level_clear_time_board_btn),
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clickable { onBoardClicked(viewedLevel.level) },
-                )
-                if (viewedBestMs != null) {
-                    Text(
-                        text = formatLevelClearTime(viewedBestMs),
-                        color = JourneyTimeAccent,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        style = TextStyle(
-                            shadow = Shadow(
-                                color = Color.Black.copy(alpha = 0.9f),
-                                offset = Offset(0f, 2f),
-                                blurRadius = 8f,
-                            )
-                        ),
+            if (viewedLevel != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_level_clear_time),
+                        contentDescription = stringResource(R.string.level_clear_time_board_btn),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clickable { onBoardClicked(viewedLevel.level) },
                     )
+                    if (viewedBestMs != null) {
+                        Text(
+                            text = formatLevelClearTime(viewedBestMs),
+                            color = JourneyTimeAccent,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            style = TextStyle(
+                                shadow = Shadow(
+                                    color = Color.Black.copy(alpha = 0.9f),
+                                    offset = Offset(0f, 2f),
+                                    blurRadius = 8f,
+                                )
+                            ),
+                        )
+                    }
                 }
             }
         }
@@ -370,17 +431,14 @@ fun LevelData(
             exit = fadeOut() + slideOutHorizontally { it / 2 },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(
-                    bottom = (bannerHeight + 10).dp,
-                    end = 10.dp
-                )
+                .padding(bottom = cornerPad, end = 10.dp)
         ) {
             Box(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(shape = RoundedCornerShape(15.dp))
                     .clickable {
-                        scope.launch { pagerState.animateScrollToPage(currentLevel) }
+                        scope.launch { pagerState.animateScrollToPage(focusPage) }
                     }) {
                 Image(
                     modifier = Modifier
@@ -390,6 +448,24 @@ fun LevelData(
                     contentDescription = null,
                 )
             }
+        }
+
+        if (totalItems > 1) {
+            JourneyPathScrubber(
+                pageCount = totalItems,
+                visualPage = visualPage,
+                frontierPage = focusPage,
+                pageToLevel = { page -> levels.getOrNull(page)?.level ?: (page + 1) },
+                onPageSelected = { page ->
+                    scope.launch {
+                        // Instant jump — animateScrollToPage is too slow across large gaps.
+                        pagerState.scrollToPage(page)
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(start = 16.dp, end = 16.dp, bottom = scrubberBottomPad),
+            )
         }
     }
 

@@ -45,11 +45,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Deep Data-layer module for a Journey Round (and shared level-list load).
  * See docs/adr/0003-journey-round.md.
  */
+@Singleton
 class JourneyRound @Inject constructor(
     @ApplicationContext private val context: Context,
     private val resources: Resources,
@@ -155,6 +157,15 @@ class JourneyRound @Inject constructor(
         }
     }
 
+    /**
+     * Highest authored Journey level in the loaded catalog, or null while loading / failed.
+     * Used to detect catalog completion after clearing the final level.
+     */
+    fun highestCatalogLevel(): Int? =
+        (_levelCatalog.value as? LevelCatalog.Loaded)
+            ?.levels
+            ?.maxOfOrNull { it.level }
+
     suspend fun startRound(
         levelNum: Int,
         scope: CoroutineScope,
@@ -174,6 +185,14 @@ class JourneyRound @Inject constructor(
         analyticsGateOffer = ProductAnalytics.GATE_NONE
         analyticsFailReason = null
         _roundState.value = JourneyRoundState.Loading
+
+        val catalogMax = highestCatalogLevel()
+        if (catalogMax != null && levelNum > catalogMax) {
+            _roundState.value = JourneyRoundState.Error(
+                context.getString(R.string.journey_catalog_complete_body)
+            )
+            return
+        }
 
         try {
             val levelData = fetchLevelData(levelNum)
