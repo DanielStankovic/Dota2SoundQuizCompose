@@ -26,6 +26,14 @@ This ticket is the **one** staging → prod copy of the Journey catalog: schema,
 
 After the catalog is rewritten on staging, reset staging testers (`game_data.journey_level` → 0, wipe `level_clear_time`, and Issue Progress when that table exists). Do not copy staging player rows as-is into prod. Do not run `reset-staging-testers.sql` on prod.
 
+## Rollout phases (Play review + force-update)
+
+Executable runbook: [`docs/agents/prod-journey-rollout.md`](prod-journey-rollout.md). SQL: [`scripts/prod-rollout/`](../../scripts/prod-rollout/).
+
+**Phase 2 — additive** (safe during review / while old clients are live): schema, Affixes, Journey `apply.sql`, Story catalog + `story_art`, Hero Journey `game_mode`, Largo + additive local sounds. Scripts: `phase2-schema.sql`, `phase2-seed-catalog.sql`, then journey/story seeds.
+
+**Phase 3 — cutover** (only after Play shows `versionCode` 17 installable at 100%): Beastmaster renames, deactivate Bad Juju / Recall / Sidekick, changelog `2.3.0`, `forced_version=17`. Script: `phase3-cutover.sql`. Never combine force-update with a staged rollout %.
+
 ## ID rule
 
 Never copy staging numeric ids into prod FK columns. Remap via natural keys (e.g. Affix `affix` name; hero/caster identity prod already uses), then write **prod** ids into Journey rows.

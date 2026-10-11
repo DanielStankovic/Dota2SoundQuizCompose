@@ -42,4 +42,4 @@ Default: **lint only** — do not build or run the app unless the user explicitl
 
 ### Staging → prod sync
 
-Journey/Affix schema or seed that must reach prod later: update the living Asana sync ticket (remap ids; no staging FK copy). See `docs/agents/staging-prod-sync.md`.
+Journey/Affix schema or seed that must reach prod later: update the living Asana sync ticket (remap ids; no staging FK copy). See `docs/agents/staging-prod-sync.md`. Go-live order (Play Managed publishing + force-update): `docs/agents/prod-journey-rollout.md`.

@@ -138,7 +138,7 @@ def sql_for(locale: str, slug: str | None) -> str:
                 "  body = EXCLUDED.body,",
                 "  modified_at = now();",
                 "",
-            }
+            ]
     lines += ["COMMIT;", ""]
     return "\n".join(lines)
 

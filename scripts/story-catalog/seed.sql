@@ -27,8 +27,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Nobody Will Hire Her$body$,
   $body$Lina had eleven coins, one bag, and a very bad reputation.
 
 It was not her fault. She was made of fire. When she worked in a library, the books went up like dry leaves. When she worked on a farm, the hay did too. The last town paid her to leave, and they paid her quickly.
@@ -46,8 +47,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Maggs$body$,
   $body$The bakery belonged to an ogre. A real one, two heads tall, with two heads.
 
 He was a magi — an ogre wizard — so when he opened the shop forty years ago he painted a proud sign: **OGRE MAGI — BREAD**. The children of Icewrack Valley could not read it properly. They read *Magi* out loud as "Maggs," and that was that. Nobody in town had called him anything else since.
@@ -65,8 +67,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Forty Loaves of Charcoal$body$,
   $body$Her first day did not go well.
 
 Lina put her hands under the baking tray and thought, *a little heat*. The tray turned white. Then orange. Then it stopped being a tray.
@@ -86,8 +89,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Low and Slow$body$,
   $body$Bread, it turned out, was harder than dragons.
 
 Dragons you hit with everything you have. Bread wants the opposite of everything you have. Bread wants patience.
@@ -107,8 +111,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Man with the Flour$body$,
   $body$The flour came every Tuesday, by dragon, which is a silly way to deliver flour.
 
 The rider was a knight named Davion. He had good armour, bad hair, and the confidence of a man who has never once been nervous — until he walked into the bakery, saw Lina, and walked straight into the door frame.
@@ -126,8 +131,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Lion Next Door$body$,
   $body$In summer, a shop opened across the narrow street.
 
 **LION'S FINE CAKES.** It was run by a thin, grinning man with glowing eyes who had never baked anything in his life. His cakes were made of pure magic — no flour, no oven, no firewood, nothing. They tasted like whatever you wanted most, for about ten seconds. Then they tasted like nothing, and you were hungry again, so you bought another.
@@ -145,8 +151,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$One Shop Stays$body$,
   $body$By autumn the town council had a problem: two bakeries, seven hundred people, one tiny street.
 
 So they announced a contest. The Golden Rolling Pin. One day, one bake, three judges. The winner would be the official baker of Icewrack Valley. The loser had to close.
@@ -164,8 +171,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Three Judges and a Captain$body$,
   $body$The judges were picked by lottery, which is how you end up with a panel like this.
 
 First: a very old woman who had eaten bread in Icewrack Valley for eighty-one years and disliked most of it.
@@ -185,8 +193,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Thursdays$body$,
   $body$They practised at night, after the shop closed.
 
 Davion was useless. He could not measure anything. He put salt in the sugar jar twice and lied about it both times. But he was good at the one thing Lina was terrible at, which was stopping.
@@ -204,8 +213,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Cheating$body$,
   $body$Two nights before the contest, somebody broke into the bakery.
 
 They did not take money. They took her recipe card and her good copper tray, and they left the door wide open, which let the rain in, which ruined the flour.
@@ -225,8 +235,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Rylai$body$,
   $body$The next morning, her sister arrived.
 
 Rylai had written six letters and got nothing back, so in the end she simply walked to Icewrack Valley herself to say sorry in person. She brought a gift, carefully wrapped: a piece of true glacier ice from home, the cold heart of the mountain where they were born.
@@ -246,8 +257,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Postponed Until Further Notice$body$,
   $body$The storm swallowed Icewrack Valley before lunch.
 
 Snow buried the street, the lake froze grey, and the cold put out every fire in every house in town. By evening the council nailed a notice to the hall door: **GOLDEN ROLLING PIN — POSTPONED UNTIL FURTHER NOTICE.** No new date. Both bakeries still had to close, one day, eventually. Nobody cared about any of it.
@@ -265,8 +277,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Firewood$body$,
   $body$Magic cakes cannot feed a frozen town. Lion learned this fast. His customers spat them out and went looking for real bread, and his shop had no oven, no chimney and no wood, because he had never needed any.
 
 By the second night his shop was an icebox and the bakery was the only warm room in Icewrack Valley. Lion was far too proud to ask. So he turned up with an armful of firewood instead, called it a *trade*, and set it down.
@@ -284,8 +297,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Longest Bake$body$,
   $body$By then Lina was fading. Fire burns fuel, and she was the fuel. Her hands had gone grey and the flame was dropping.
 
 Rylai sat down beside her and finally did the one thing she came to do. The storm was hers, so she took it back — hour after hour, pulling the cold out of the air and into herself, until the snow stopped and the sky cracked open blue.
@@ -303,8 +317,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$lina-golden-rolling-pin$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Tuesdays Forever$body$,
   $body$Lion sold his shop and left to sell something else to someone else. He wrote once, from the city. Lina wrote back, which surprised them both.
 
 Maggs finally retired. He cried about it for a week — his right head started it. The sign above the door says **LINA'S** now, but the old one hangs inside, because the town still calls the shop Maggs's out of habit, and probably always will.
@@ -344,8 +359,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Man Who Came Out of the Sea$body$,
   $body$The storm broke his boat on the rocks, and the whole village watched a man walk out of the water with a sword on his back.
 
 He wore a wooden mask. He did not take it off. He did not say one word, then or ever.
@@ -365,8 +381,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Stillwater Bay$body$,
   $body$Stillwater Bay is sixty-one houses on a cold island, with a mountain behind it and the Isle of Masks far across the water.
 
 The masked man had come at the worst time of year. Every summer a fever crawls through the village, and every summer it takes a few people with it. The old doctor had died two winters ago. Nobody had replaced him.
@@ -386,8 +403,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Nothing to Fight$body$,
   $body$He looked for the enemy for three days.
 
 He walked the cliffs. He searched the caves. He stood on the beach at night and waited for something to come out of the sea. He sharpened his sword twice a day, because that was what he knew how to do.
@@ -405,8 +423,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Little Wooden Thing$body$,
   $body$On his way to the boats he passed the hall, and a small girl inside was coughing so hard she could not lie down.
 
 He stopped. He took out a knife and a piece of driftwood, and he carved for a long time, and the villagers watched and did not understand.
@@ -428,8 +447,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$One a Day$body$,
   $body$The totem had rules, and the rules were cruel.
 
 It only healed inside its own little circle, about four steps across. It only hummed for a few hours. And he could only make one each day — one, no matter how long he carved, no matter how hard he tried. This was the law of his old order, and the law did not care who was sick.
@@ -447,8 +467,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$How He Talks$body$,
   $body$He never spoke, so he carved instead.
 
 Little wooden tokens, the size of a thumb. A fish meant *the boats go out today*. A cup meant *drink more water*. A sun meant *tomorrow*. A bowl meant *eat something, you look terrible*.
@@ -468,8 +489,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Doctor with the Laugh$body$,
   $body$In July a doctor arrived, though not the kind anyone expected.
 
 He came up the street shouting *Someone call de doctor?* — nobody had — and he was a troll, small and grinning, hung with feathers, beads and little bones, carrying a stick with a skull on it. Zharvakko was a witch doctor, and he said so proudly, twice.
@@ -489,8 +511,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Mask$body$,
   $body$There was one thing the masked man could not fix.
 
 The smallest children were frightened of him. One baby cried every time he came near, and would not stop, and the mother could only apologise.
@@ -510,8 +533,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Longest Night$body$,
   $body$On the worst night of the summer, two people were dying, and they lived at opposite ends of the village, and he had one totem.
 
 He did not choose.
@@ -531,8 +555,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Far Side of the Island$body$,
   $body$Then Zharvakko ran out of the grey root, and at last there was something the masked man was actually built for.
 
 He went alone, over the mountain, down to the rocks the village did not talk about.
@@ -552,8 +577,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The One He Cannot Heal$body$,
   $body$Three days later he got the fever himself.
 
 Here is the part he had never told anyone: the totem will not heal the one who made it. That is also the law of his order. He had healed sixty-one houses and could not heal himself, and he had always known it, and he had carved one every day anyway.
@@ -573,8 +599,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Sixty-One People$body$,
   $body$They carried him into the hall and put him in the best bed — Marci took one end, because she is half his size and four times as strong as she looks — and then the village did for him exactly what he had been doing for them.
 
 They took turns. Two people awake at all times, day and night, for nine days. Zharvakko fed him the medicine and laughed at him constantly, which, it turned out, is what a witch doctor does when he is worried.
@@ -592,8 +619,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Masks$body$,
   $body$He got better. And then he was strange about it.
 
 He kept his face turned away. He would not be looked at. The mask was cracked, he was weak, and in his old order that was a shame you carried alone.
@@ -613,8 +641,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The End of Fever Season$body$,
   $body$The fever broke in August. Nobody else died.
 
 They held a festival in the square, because there was nothing else to do with so much relief. Somebody cooked too much fish. Zharvakko laughed for four hours. Sixty-one people danced very badly in homemade wooden masks, which from the cliffs must have looked deeply alarming.
@@ -632,8 +661,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$juggernaut-sixty-one-carvings$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Every Summer$body$,
   $body$His old order called him back in the autumn, the way it always does, and he went, because that is what he is.
 
 He left in the dark, so there would be no goodbyes. But in the morning there was a carving on every single doorstep in Stillwater Bay — sixty-one of them, finished in one night, which means he had not slept at all.
@@ -673,8 +703,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Story They Tell$body$,
   $body$Every school has a scary story. At Greywall, the story is about the Butcher of Blackwater.
 
 The older students tell it at night, in the big room at the end of the hallway, to the new ones. A man as big as a door. A smell that reaches you before he does. A hook on a chain that comes out of the fog and takes whatever it hits. Getting hit is not the worst part.
@@ -696,8 +727,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Gardener$body$,
   $body$His name is Pudge, and he waves at everybody.
 
 That is the part nobody can deal with. He waves at students who suddenly need to read something on the wall. He waves at teachers who suddenly need to be somewhere else. He waves with his whole arm, every time. The hallway empties, and he keeps waving at the empty hallway.
@@ -717,8 +749,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Club$body$,
   $body$By the second week there was a club.
 
 Four members, no permission, and a board hidden behind the boiler room. Hoodwink runs it. She is small, very fast, and has never been caught doing anything in her life. That is how you end up running a club like this.
@@ -738,8 +771,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Alchemist$body$,
   $body$Razzil Darkbrew is in the year below. Everyone calls him the Alchemist, because he makes money out of nothing.
 
 He does not make it out of nothing. He makes it by betting. He will bet on anything: the weather, a test score, how long a lesson runs over. He keeps a notebook. He almost never loses.
@@ -761,8 +795,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$What Is In The Shed$body$,
   $body$There are no bones.
 
 There is a bed with the end cut off, because he does not fit. A pot on a small stove. Forty jars of something orange, and someone has written a label on each one, slowly and carefully. One chair. A radio that only finds one station.
@@ -784,8 +819,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$He Knew$body$,
   $body$They went out through the window and broke it.
 
 He knew. He was standing fifty steps away in the dark the whole time. He had heard them cross the field, because they crossed it like a herd of cows, and he decided to let them finish.
@@ -807,8 +843,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Invoker Is Never Wrong$body$,
   $body$Invoker teaches at Greywall, and he will tell you that.
 
 He talks in very long sentences. He finishes other people's sentences for them. He was right about one thing in a staff meeting two years ago and has brought it up eleven times since. Older students copy the way he talks.
@@ -828,8 +865,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Woods$body$,
   $body$It started with animals.
 
 A fox on the path, with very little left of it. Then the school chickens. All of them, in one night. The wire was not cut. It was pulled open from the inside, and the door was still locked.
@@ -851,8 +889,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Temporary$body$,
   $body$The club's board stopped being funny.
 
 The bet came down. The map stayed up, and somebody drew a new red line on it, from the woods to the shed. Parents wrote letters. People from the town came up the hill in the daytime, which they had not done for years.
@@ -872,8 +911,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Tuesday$body$,
   $body$He left on a Tuesday, with one bag, and the bag was not full.
 
 He gave the jam away first. All forty jars, to the kitchen, with a note about how long it keeps. He gave back the shed key. He stood at the gate for a while and looked up at the building. Then he waved at it.
@@ -895,8 +935,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Blackwater$body$,
   $body$Blackwater was not a town. It was a prison built to hold N'aix.
 
 They kept it in a pit, and somebody had to feed it. For nineteen years that was Pudge. He carried the meat down the stairs twice a day, and he shouted the same two words first so the thing would come to its chain.
@@ -918,8 +959,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Ten Past One$body$,
   $body$The lights went out at ten past one, and they did not come back on.
 
 Two hundred students. One building. Nobody awake.
@@ -939,8 +981,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Fresh Meat$body$,
   $body$Pudge was six miles down the road when he looked back.
 
 Greywall stands on a hill. You can see it from the road, and there are always lights in the windows. That night there were none.
@@ -962,8 +1005,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Hook$body$,
   $body$N'aix came. It always comes when it hears that.
 
 Pudge fought it in the hallway, alone, between N'aix and the stairs, for three hours.
@@ -987,8 +1031,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$pudge-butcher-of-blackwater$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The List$body$,
   $body$Invoker's answer from the city arrived that same morning. It said the Butcher of Blackwater is only a story, and not a real man. Invoker read it twice, then said: *oh, fuck off.*
 
 Later somebody finally asked about the marks on the list.
@@ -1030,8 +1075,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Fired Demon$body$,
   $body$Akasha was fired again. She worked as an office secretary, but her loud, aggressive voice always scared her boss. She walked out into the cold Amsterdam streets. She had no money for rent or food, and the electric bill was past due. She looked at her reflection in a shop window. She was beautiful, with sharp features and piercing eyes, but her good looks didn't pay the bills. "Damn this city," she muttered. She needed a new job fast, or she would be sleeping on the streets. The normal world was just not for her.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1043,8 +1089,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Failing Hard$body$,
   $body$She tried everything over the next few weeks. Akasha worked at a bakery, but she burned the bread. She worked as a waitress, but she dropped plates when a customer was rude to her. She even tried selling clothes, but she told customers they looked fat. That got her fired in two hours. Her mailbox was full of angry letters from her landlord. "Pay up or get out," the final letter said. Akasha felt hopeless. She had exactly ten euros left. Her stomach growled. She needed a miracle, or at least a very stupid boss.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1056,8 +1103,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Glass Gyms$body$,
   $body$Akasha walked home past the luxury gyms every night. Behind the bright glass, trainers with perfect teeth smiled at rich men and told them they were doing great. She hated it. The whole street disgusted her. "I would never do that," she always told herself. "Lying to people for money is pathetic." But tonight, even lying looked like a job. She was desperate. She saw a sign on a dark, hidden door in an alley. It belonged to a hardcore boot camp gym called 'The Pit'. The sign read: "Cleaning lady needed. High pay." Beggars couldn't be choosers.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1069,8 +1117,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Pit Cleaner$body$,
   $body$The gym owner was a scheming, business-like man named Chen. He was a hypocrite who talked about holy discipline and clean living while eating fried food and counting his money in the back room. Chen hired her immediately because she was cheap. Akasha became the new cleaning lady. The pay was decent, but the job was a nightmare. She cleaned up chalk dust, broken glass, and sticky things she didn't want to name. "These people are sick," she thought, vigorously scrubbing the floor. The gym felt strange and terrible to her, but her first paycheck stopped her landlord's threats.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1082,8 +1131,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Wrong Studio$body$,
   $body$On a busy Friday night, Chen gave her a quick order. "Clean studio four, now! Time is money!" Akasha grabbed her mop and bucket. She opened the door, expecting an empty room. Instead, she found a huge muscular man holding a deep squat against the wall, waiting in the dark. He was shaking with effort. Akasha froze. She stepped back, but accidentally tripped over a heavy skipping rope on the floor. She picked it up, frustrated and angry. "What the hell is this mess?" she snapped. The man looked at her with excited eyes. "Yes, Coach," he whispered. "Destroy me."$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1095,8 +1145,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The First Round$body$,
   $body$Akasha was confused. She just wanted to clean the stupid room! In a moment of pure annoyance, she cracked the skipping rope against the floor. Smack! The man dropped and started doing push-ups. "Yes! More!" he gasped. Akasha blinked in shock. "Are you crazy?" she asked. She shouted at him to go faster, purely out of frustration. The man worked even harder. When his session time ended, he gave her two hundred euros in cash. "Thank you, Coach. My name is Davion," he bowed respectfully. Akasha stood alone with the mop in one hand and cash in the other.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1108,8 +1159,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Easy Money$body$,
   $body$Akasha walked home with a fat wallet. Davion thought she was a real trainer, but she was wearing dirty cleaning clothes! It was hilarious. The next morning, she paid her rent. She paid her electric bill. She even bought an expensive coffee. "Two hundred euros just to shout at an idiot doing push-ups," she thought, sipping her drink. It felt like a cheat code for life. She didn't have to be nice to anyone, she just had to be mean. Still, she planned to stay quiet and stick to her mop. One crazy guy was enough.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1121,8 +1173,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$A New Mess$body$,
   $body$A few days passed normally. Akasha kept cleaning the dark, sticky floors of the gym. Then, on Tuesday, she opened the door to studio seven. A tall man was inside, throwing weights down and spilling his drink all over the expensive rubber floor. He was a rich, arrogant businessman paying for a tough love session, but Akasha didn't know that. She only saw her clean floor being ruined. Her blood boiled. She dropped her bucket. All her anger from losing her past jobs, the unpaid bills, and this disgusting gym rushed into her chest. She took a deep breath.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1134,8 +1187,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Scream of Pain$body$,
   $body$"What do you think you are doing?!" Akasha screamed at the top of her lungs. Her loud voice echoed like a sonic wave in the small room. It was literally a scream of pain that physically hurt his ears. "You stupid, pathetic little pig! I just cleaned this floor!" She yelled terrible insults at him. The businessman fell to his knees. He started crying, but he had a huge smile on his face. "Yes, I am a pig! I am so sorry!" he begged. He handed her a giant tip. Akasha stopped yelling. This was getting absolutely ridiculous.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1147,8 +1201,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Reputation Grows$body$,
   $body$Word travels fast in a small gym. The website got two new five-star reviews. One read: "Davion highly recommends the angry woman with the rope." The other read: "Kunkka loved the terrifying sonic screams." Chen, the scheming owner, called Akasha into his office. "Who is paying you?" he asked, counting his coins. "Nobody!" Akasha defended herself. "I shouted at one guy and screamed at another!" Chen laughed loudly. "They loved it! You have a natural talent for this. My clients are begging for you. I want to offer you a highly profitable position."$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1160,8 +1215,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Offer$body$,
   $body$Chen pushed a contract across his messy desk. The salary was ten times higher than her cleaning job. Akasha stared at the paper. For days, she thought about it. She hated the whole fitness business. She always promised herself she would never lie to people for money like the smiling trainers behind the glass. But this was different. These men did not want to be told they were great. They wanted to be broken. She already hated people anyway, so why not get paid for it? She went back to Chen's office with some strict demands.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1173,8 +1229,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Setting the Rules$body$,
   $body$"I will take the job," Akasha told Chen, pointing a warning finger at him. "But I have rules. I will never lie to a client. I will never say well done. No fake smiling, ever." Chen nodded eagerly, rubbing his hands together. "What exactly will you do then?" he asked. Akasha smiled, a wicked look in her beautiful eyes. "I will scream at them. I will break them. I will make them cry. And they will thank me for it." Chen clapped. "Perfect! Clients will pay top euro for a real monster." Akasha was finally in charge.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1186,8 +1243,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Costume$body$,
   $body$A professional worker needs a good outfit. The gym bought Akasha a custom costume. It was tight black training gear with silver spikes on the shoulders. To make it special and theatrical, they added a pair of fake, dark bat wings on the back and a thin, pointed devil tail. When Akasha looked in the mirror, she looked like a stunning demon. Her natural beauty combined with the terrifying outfit made her look dangerous. She grabbed a fresh, heavy skipping rope and snapped it in the air. The loud crack echoed through the changing room. She was ready.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1199,8 +1257,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Queen is Born$body$,
   $body$Her first official night was a massive success. Men lined up outside 'The Pit' just to see her. Akasha worked them until they cried. She used her incredibly loud voice to scream insults, breaking their pride into tiny pieces with her famous scream of pain. And the crazy part? They paid her huge amounts of cash for it. The same men who walked into those glass gyms like proud lions now crawled at her feet like bugs. She wasn't disgusted by the gym anymore. She was the boss of it. She didn't clean the floors; she made men lick them clean.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1212,8 +1271,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$queen-of-pain-coach-by-mistake$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$A Legend in Amsterdam$body$,
   $body$Months later, Akasha never worried about unpaid bills again. She lived in a luxury apartment and drank expensive wine. She never once told a client they were doing great, but she became the most famous trainer in the city. The men didn't even know her real name anymore. Because of her leather bat wings, her cruel rope, and her terrifying screams, they gave her a new title. Whenever men whispered about the hardest coach in Amsterdam, they called her the Queen of Pain. Akasha smiled as she counted her cash. Sometimes, failing at normal jobs was the best thing ever.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1245,8 +1305,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Boy With No Spark$body$,
   $body$In the high realm of Ultimyr, everyone was a master of magic. Everyone except young Kael. Despite coming from the greatest family of wizards, Kael had no power. He read every spellbook and mixed endless potions, but not a single spark left his fingers. The other children laughed at him. Kael felt broken and useless. He spent his days hiding behind giant piles of books, wishing he could cast just one simple spell to make his family proud.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1258,8 +1319,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Fog$body$,
   $body$One morning, a dark, magic-eating fog covered Ultimyr. The elder wizards lost their powers. The realm was dying. The High Council called for Kael. "Our magic is gone," the Headmaster coughed weakly. "You know the ancient maps. You must bring back the Sunstone to restore our light." Kael's knees shook. He was terrified. He was just a magicless boy sent into mortal danger. Still, his people were counting on him. He packed his bag.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1271,8 +1333,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Whispering Woods$body$,
   $body$Kael left the safe walls of Ultimyr. The outside world was loud and scary. He entered the Whispering Woods, jumping at every broken branch. "I cannot do this," he whispered, hugging his heavy book. Suddenly, a giant, angry shadow wolf jumped onto the path. It growled, showing long, sharp teeth. Kael fell backward, covering his face. He prepared for the worst. He had no sword, no spells, and absolutely no courage to fight back.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1284,8 +1347,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Exort$body$,
   $body$Just as the wolf leaped, a glowing red orb shot out of the bushes. "Burn, you ugly dog!" a squeaky voice yelled. The red wisp slammed into the wolf's nose, exploding in hot sparks. The wolf yelped and ran away. Kael opened his eyes. The wisp hovered, burning with fierce energy. "I am Exort!" the wisp declared proudly. "Did you see that? I roasted him! Why were you just sitting there, book-boy?"$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1297,8 +1361,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Broken Bridge$body$,
   $body$Exort sat on Kael's shoulder, buzzing with heat. Kael explained his dangerous quest to find the Sunstone. Exort sparked brightly. "I love danger! I will protect you." They walked until they reached a rushing river. The bridge was completely destroyed. The dark water moved way too fast to swim. Kael sighed in defeat. "We are stuck," Kael said. Exort groaned. "Don't quit now! I can try to evaporate the whole river. Just give me a week."$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1310,8 +1375,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Wex$body$,
   $body$Before Exort could try, a streak of purple light zipped across the water. "Too slow, hothead!" a fast, mocking voice echoed. It was Wex, an arcane wisp sparking with electricity. "I could cross this a hundred times before you boil a single drop, Exort." Wex flew back and forth, leaving a glowing purple trail that hardened into a magical bridge. "Hurry up, slowpokes!" Wex chirped, bouncing excitedly in the air.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1323,8 +1389,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Scorched Desert$body$,
   $body$Kael was amazed. Wex and Exort were brothers, separated by a wild magic storm. With Wex joining them, the journey moved much faster. But as they entered the Scorched Desert, the sun was brutal. "Keep up, Exort, your flames are dragging!" Wex teased. "Shut up, sparky, or I will melt you!" Exort yelled back. Kael's boots sank heavily into the sand. He was exhausted and dropped to his knees. "It is too far," he panted.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1336,8 +1403,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Quas$body$,
   $body$A heavy, cold shadow fell over Kael. A glowing blue wisp drifted down from the sky, chilling the hot desert air. "Silence," a deep, slow voice rumbled. It was Quas. He dropped a freezing mist that cooled Kael's face. "You two give me a headache," Quas told his brothers. Exort huffed, and Wex zipped in a quick circle. "Took you long enough, ice-cube," Wex muttered. The three triplet brothers were finally together again.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1349,8 +1417,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Anchor$body$,
   $body$With the triplets together, something amazing happened. Kael felt a strange energy connecting him to the wisps. They were powerful but chaotic. Kael realized he was meant to be their anchor. He gently raised his hands. The brothers spun around his fingers. Exort's fire, Wex's speed, and Quas's cold flowed into Kael's mind. He was not creating the magic, but his mind could guide it. For the first time, Kael felt truly powerful.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1362,8 +1431,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Goblins$body$,
   $body$They finally reached the deep canyon holding the Sunstone. However, a gang of nasty goblins blocked the path. The goblins raised rusty swords and charged. Kael's old fear returned, but he looked at his three glowing friends. "Let's fry them!" Exort shouted. "No, let's dizzy them!" Wex spun. "Hold steady," Quas rumbled. Kael took a deep breath. "Help me," he said softly. He pulled Quas and Exort together into his hands.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1375,8 +1445,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Ice Wall$body$,
   $body$Kael pointed at the goblins. "Ice Wall!" he shouted. Quas poured out heavy frost, while Exort added a thin layer of heat. "Why do I have to be the puddle?" Exort complained, as his heat melted the ice just enough to stick the goblins' feet to the ground. "Just do your job, hothead," Quas rumbled slowly. A massive block of ice erupted, freezing the goblins in place. Kael stared at his hands. He had actually cast a spell.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1388,8 +1459,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Stone Golem$body$,
   $body$Kael bravely walked into the dark cave. At the center, the golden Sunstone glowed. But sleeping beside it was a giant Stone Golem. As Kael reached out, the golem woke up. It roared, shaking the cave. Kael trembled. This was a monster from his nightmares. "Don't freeze up now, book-boy!" Wex zipped around his head. "We can take this overgrown rock!" Exort yelled. Kael nodded. He could not be a coward now.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1401,8 +1473,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Chaos Meteor$body$,
   $body$The golem raised a massive stone fist. Kael quickly called on Exort twice and Wex once. "Chaos Meteor!" Kael commanded. Exort formed a giant ball of raging fire. "Push me, purple boy!" Exort yelled. "With pleasure!" Wex laughed, using his speed to launch the fireball down from the cave ceiling. The flaming rock rolled directly over the golem, crushing its thick armor. The golem staggered backwards, heavily damaged but still furiously charging at Kael.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1414,8 +1487,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Deafening Blast$body$,
   $body$Kael needed to finish this right now. He called upon all three brothers at once. "Let's show him our best trick!" Wex cheered. "Maximum heat!" Exort roared. "Absolute cold," Quas hummed. The three wisps spun into a perfect, blinding sphere of magic in Kael's palms. "Deafening Blast!" Kael thrust his hands forward. A massive wave of sonic energy, fire, and cold slammed into the golem. The monster shattered into a thousand harmless pebbles.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1427,8 +1501,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$invoker-three-wisps$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Sunstone$body$,
   $body$The cave went perfectly silent. Kael safely picked up the warm Sunstone. He had done it. When Kael returned to Ultimyr, the Sunstone cleared the dark fog instantly. Pure magic returned to the realm. The elder wizards bowed to the young boy in deep respect. Kael was no longer the useless child. He was a brave hero. Exort, Wex, and Quas teased each other happily around his head. Together, they were a perfect team.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -1460,8 +1535,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Eleven$body$,
   $body$Among the Keen Folk, a marksman is remembered for exactly one shot. Not his best hundred. One.
 
 Kardel Sharpeye was forty-one years old and did not have his yet. Eleven thousand good shots in his life, and not one song about any of them.
@@ -1483,8 +1559,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Wall by the Gate$body$,
   $body$A boy called Pim chalked **ELEVEN** on the stone beside the gate. Nobody asked him to.
 
 It stayed there the whole siege, and people checked it the way you check the weather.
@@ -1504,8 +1581,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Snapfire and the Bell$body$,
   $body$The village elder was a very old woman called Beatrix Snapfire. She is four feet tall. She has been shooting things for seventy years, and she was famous for it long before Sharpeye was born.
 
 She was the only person in Knollen who did not look at him with hope, so naturally he could not stop trying to impress her.
@@ -1525,8 +1603,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Bullet One$body$,
   $body$He told her his plan that evening. Ten bullets for the army, and the eleventh saved for the warlord himself — through the eye, in front of everybody. A song, basically, standing there waiting to happen.
 
 Snapfire said the only shot anyone remembers is the last one, and went to bed.
@@ -1548,8 +1627,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Rattletrap$body$,
   $body$The village had a machinist. His name is Rattletrap, although outside these mountains everybody calls him Clockwerk, and Rattletrap very much prefers Clockwerk.
 
 He announced that he would simply manufacture more bullets.
@@ -1571,8 +1651,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Bullet Two$body$,
   $body$An army that big marches to a drum, so that every man steps at the same time. This one had a drum the size of a door, carried at the front of the column where everybody could hear it.
 
 The wall expected him to shoot the drummer.
@@ -1594,8 +1675,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Bullets Three and Four$body$,
   $body$They came back at night with sappers, digging under the gate by lantern light, which was sensible, because a man cannot shoot what he cannot see.
 
 He shot the lantern.
@@ -1617,8 +1699,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Bullets Five, Six and Seven$body$,
   $body$The ninth night was the bad one.
 
 Three bullets in nine minutes. All three on men who were already over the outer wall and twenty feet from the gate. All three necessary. None of them clever, none of them long, none of them anything anybody would ever write down.
@@ -1638,8 +1721,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Bullet Eight$body$,
   $body$On the eleventh day Rattletrap crept out into the pass in the dark, to bury one of his machines near the enemy camp.
 
 He was too slow. The sun came up while he was still out there in the open.
@@ -1661,8 +1745,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Bullet Nine$body$,
   $body$Then they brought the ram.
 
 It came up the pass under a roof of shields, forty men inside it, and there was nothing to shoot at. No faces, no rope, no lantern. Just a slow wooden house walking at the gate.
@@ -1684,8 +1769,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Bullet Ten$body$,
   $body$On the fourteenth morning the warlord came to the gate himself, under a white flag, to offer terms.
 
 Mars stood three hundred yards out, in the open, not moving, talking.
@@ -1707,8 +1793,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$One$body$,
   $body$Nobody slept.
 
 Two hundred people, nine thousand men, one bullet, and dawn coming whether anyone was ready or not. He sat up on the wall all night with the rifle across his knees and did not brag to anybody about anything.
@@ -1732,8 +1819,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Last Shot$body$,
   $body$At dawn the army came into the pass. All of it. Nine thousand men packed between two walls of rock, shields up, waiting on the horn.
 
 Sharpeye climbed onto the roof of the village hall, in full view of everybody, and lay down flat on the slates.
@@ -1757,8 +1845,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Mountain$body$,
   $body$The wind dropped.
 
 He fired — and for one second nobody on that wall understood what he had done. Then the sound came back down to them, because nineteen hundred yards away, up in the rocks, the bullet had hit the bell.
@@ -1788,8 +1877,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$sniper-eleven-bullets$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Song$body$,
   $body$There is a song about it now.
 
 It gets the range wrong by about two miles. It says he fired at the warlord's heart and missed on purpose, which is backwards. It does not mention Rattletrap, or the drum, or the ram, or Snapfire, and there is no verse anywhere in it for a boy with a piece of chalk.
@@ -1833,8 +1923,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Room 12$body$,
   $body$Ironcliff is a school on a hill. There are 121 students in the top year. Three of them meet in
 Room 12.
 
@@ -1857,8 +1948,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Tinker$body$,
   $body$Tinker is the smallest student at Ironcliff and the best in the school with machines. Only one of
 those facts gets noticed.
 
@@ -1880,8 +1972,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Meepo$body$,
   $body$Meepo is the second member. There are five of him.
 
 He splits into copies. All five of them are him, which means all five do the homework, get five
@@ -1905,8 +1998,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Rubick$body$,
   $body$Rubick is the third member. He can do two things.
 
 He can lift something without touching it. He uses this on other people's lunch, from across the
@@ -1929,8 +2023,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The List$body$,
   $body$Her name is Tresdin. Nobody uses it. She was captain of one team in her first year and six by this
 one, always in front of a crowd, telling it where to go. So people called her the legion
 commander. That became Lecom, and then Legion.
@@ -1954,8 +2049,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Nine Seconds$body$,
   $body$Lyralei is the fastest person at Ironcliff. She runs the hill road in the dark for fun. When she
 really runs, the air moves with her and the papers come off the noticeboard.
 
@@ -1979,8 +2075,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Lift$body$,
   $body$The Old Hall sits at the top of the hill. The only way up is the hill lift: two carts hanging from
 one steel cable, built 40 years ago, back when the hill had a mine in it.
 
@@ -2001,8 +2098,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Roof$body$,
   $body$In May somebody took Tinker's machine apart and put the pieces on the roof of the sports hall.
 
 It was not a dangerous machine. It was a small walking thing with six legs that carried his bag to
@@ -2025,8 +2123,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Joke$body$,
   $body$The next morning, Legion added three names to the list.
 
 Everybody understood it straight away. The cupboard kids were invited because three nerds standing
@@ -2050,8 +2149,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Dance$body$,
   $body$The Old Hall is big and warm and loud, and they stood next to the food for two hours.
 
 That is not a joke about them. The food table is the only place in a room like that where standing
@@ -2074,8 +2174,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Storm$body$,
   $body$The storm came over the hill all at once, the way they do there.
 
 The dance was stopped early. The whole top year had to get down, and the lift takes twelve people
@@ -2100,8 +2201,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Lift House$body$,
   $body$Inside the lift house there is a hand brake. It is the thing that stops the cable running free. It
 was built for two grown men to pull.
 
@@ -2125,8 +2227,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Brake$body$,
   $body$Meepo took the brake. All five of him, hands over hands, feet against the wall.
 
 Five of him is not five strong people. It is one worried boy, five times. They held it anyway, and
@@ -2147,8 +2250,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Nineteen Times$body$,
   $body$Tinker rebuilt that motor nineteen times.
 
 Each time the pieces came back together, the cable moved the cart a few metres, and then something
@@ -2169,8 +2273,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$tinker-the-cupboard-kids$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Fourth Chair$body$,
   $body$On Monday, Room 12 was full.
 
 They get invited to everything now. Meepo gets five of every invitation, and nobody can stop it.
@@ -2216,8 +2321,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Puppet in the Window$body$,
   $body$In a small, quiet town, an old toy maker built a special puppet. He used dark wood and thick strings. He wanted the puppet to look like a young boy. The puppet sat in the window for months. It could not move or speak. It was just an object. People passed by the shop, looking at its blank wooden face. The old man was sad because he had no children. He often talked to the puppet as if it were a real boy. "One day, you will walk," he whispered. But the puppet remained still, waiting in the dark.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2229,8 +2335,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Green Lightning$body$,
   $body$One night, a strange storm covered the town. The sky turned bright green instead of dark black. Thunder shook the small toy shop. A wild flash of green lightning struck the roof. The energy traveled down the chimney and hit the wooden puppet in the window. The puppet shook violently. The thick strings burned away, but the wood did not catch fire. A soft green light glowed inside its wooden chest. Slowly, the wooden eyes opened. The puppet looked around the room. The strange storm outside stopped, but a new life had just started inside the shop.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2242,8 +2349,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Forever a Puppet$body$,
   $body$The puppet tried to stand, but his body was clumsy. He was made of hard wood and loose joints. When he took a step, his legs moved in sharp, stiff motions. He fell flat on the floor with a loud wooden sound. He did not feel pain, only confusion. He looked at his hands and tried to bend his fingers. It was hard. He realized he would never have the smooth, natural motion of real people. He had to swing his arms and click his joints to move forward. He was a living boy, but forever a puppet.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2255,8 +2363,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Rubick$body$,
   $body$The puppet wandered out of the shop into the morning market. He did not know what he was. He did not even have a name. He hid behind a cart and listened to two builders fixing a wall. One yelled, "Rub the brick! Rub the brick clean!" The puppet did not know what the words meant. He only liked the sound. He practiced them with his stiff mouth. "Rub... brick. Rub... ick." Said slowly, rub and brick sounded like a name: Rubick. When a woman later asked who he was, he smiled and said, "Rubick."$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2268,8 +2377,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Copying$body$,
   $body$Rubick stayed in the town and lived like a young boy. He was different from normal kids, and everyone could see it. His wooden face and jerky movements made him stand out. Because his mind was fresh, he did not know anything about the world. To survive, he began to copy other people. If he saw a baker knead dough, Rubick copied the exact hand movements. If a boy waved, Rubick waved the exact same way. Copying became his way of learning. He watched closely, turning every new sight into a lesson for his wooden body.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2281,8 +2391,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Floating Tree$body$,
   $body$One day, Rubick was walking near the woods. A group of men were cutting down a very large tree. Suddenly, the thick ropes broke. The heavy tree started falling right toward Rubick. He was too slow to run away with his stiff legs. In a panic, he put his wooden hands up and closed his eyes. But the crash never came. Rubick opened his eyes and saw the giant tree floating in the air. He was holding it up with his mind! He gently moved his hands, and the tree landed safely. This strange power frightened him.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2294,8 +2405,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Pango$body$,
   $body$Rubick loved to visit the town square to watch travelers. One afternoon, a French musketeer named Pango came to visit. Pango was famous for his amazing sword skills. Rubick watched closely as Pango performed a show. Pango used a very quick strike with his pointy sword. Then, he did a fast, spinning roll on the ground to move away. Rubick stared without blinking, not even once. He memorized the exact angle of Pango's arm and the speed of his roll. Rubick did not have a sword, but he picked up a stick to practice those moves.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2307,8 +2419,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Better Than Pango$body$,
   $body$Later that day, Rubick saw a heavy apple cart rolling down a steep hill. It was going to crash into a brick wall. Rubick remembered Pango's movements. He used his stick to execute a quick strike to block the wheel. Then, he did a fast roll over the cart to push it to a safe stop. As he finished the roll, Rubick noticed something amazing. His roll was faster and smoother than Pango's roll. Even though he was a stiff wooden puppet, the movements he copied became even sharper and better than the original person.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2320,8 +2433,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Windranger$body$,
   $body$Next, a famous traveler came to town. She was a top-class archer, the best anyone in town had seen. Her real name was a secret, but everyone called her Windranger. She was known for her powerful longshot bow technique. Rubick watched her practice in the fields. She pulled the heavy bowstring back, lined up her body perfectly, and released the arrow with tremendous force. The arrow flew straight through three thick wooden targets at once. Rubick's wooden eyes watched her feet, her hands, and her posture. He memorized every detail of her longshot technique, eager to try it himself.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2333,8 +2447,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Better Than the Teacher$body$,
   $body$The next morning, Rubick carved a simple wooden bow and arrow. He wanted to practice what he saw. He stood in Windranger's exact stance in the open field. Rubick pulled the bowstring back, adjusting his elbows, shoulders, and posture just like she did. When he released the arrow, it flew through the air with incredible speed and power. The arrow flew far beyond Windranger's original distance, striking a small target on a distant tree. Rubick smiled. He realized that whenever he copied a person's technique, his wooden body somehow performed the movement even better than the original teacher.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2346,8 +2461,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Meepos$body$,
   $body$Rubick liked to explore the edges of the town. One morning, he passed by the local prison yard. He saw a very strange sight. There were five prisoners working in the dirt. The most interesting thing was that all five prisoners looked exactly the same. No one could tell them apart. Because of this, the guards just called them the Meepos. The Meepos were using shovels to dig a deep trench. They moved with incredible speed and rhythm, digging into the earth in perfect harmony. Rubick watched from behind the fence, his mind recording their every move.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2359,8 +2475,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Underground$body$,
   $body$Rubick wanted to learn the Meepos' digging technique. The Meepos did not just dig with shovels; they used quick body turns and coordinated hand sweeps to clear dirt instantly. Rubick stood in the woods and practiced the exact same movements. He rotated his stiff wooden body and scooped the dirt with his hands. To his surprise, his technique worked perfectly. It was even faster than the Meepos. He could clear dirt so fast that he sank down into the ground in seconds. He covered his head with loose dirt, completely hidden, before popping back up with a grin.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2372,8 +2489,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Hide and Seek$body$,
   $body$That afternoon, Rubick played hide and seek with the other village children. They usually found him quickly because of his loud, wooden footsteps. But this time was different. When it was time to hide, Rubick ran to the garden and used the Meepos' fast digging technique. He moved his hands rapidly, burrowed underground, and covered himself with dirt. The children searched everywhere. They looked in the trees and behind the houses. Hours passed, and the sun went down. The other kids finally went home. Rubick stayed underground for a whole day, perfectly hidden and victorious.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2385,8 +2503,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Any Skill$body$,
   $body$As the years passed, Rubick showed more of his copied techniques. If he saw a builder work fast, Rubick built faster. If he saw a worker chop heavy wood, Rubick chopped with flawless precision. He used Pango's quick strike to trim high branches and Windranger's longshot bow technique to knock down apples from distant trees. The townspeople were amazed. They saw a wooden puppet who could master any physical skill instantly. No ordinary person could do so many different things so well. People watched him work and wondered how a wooden boy could be so talented.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2398,8 +2517,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$rubick-the-wooden-puppet$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Grand Magus$body$,
   $body$The stories about the puppet boy spread to neighboring lands. People stopped calling him just a wooden boy. Because he mastered every physical movement he saw and performed it even better than his teachers, the townsfolk were in awe. "No normal human can learn all of this," the town elder said one day. "His skill feels like magic. He is a grand magus!" The name stuck. Rubick, the wooden puppet, became known to everyone as the Grand Magus. He still walked with stiff, jerky steps. But inside his wooden body, he held the power and secrets of the whole world, always ready to learn more.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2431,8 +2551,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Cheap Beer$body$,
   $body$Riki was just a regular satyr, enjoying a quiet night with his friends. They sat in their favorite local pub, drinking cheap beer and sharing simple stories. Riki took a long gulp from his wooden mug, feeling completely relaxed. Then, the room suddenly vanished. A blinding flash of pure white light swallowed the pub, the tables, and his friends. Before he could even scream, the satyr felt his feet lift off the ground completely.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2444,8 +2565,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Fountain$body$,
   $body$When Riki opened his eyes, he was nowhere near the pub. He stood on stone blocks in a lush, magical clearing. Behind him stood a giant, glowing fountain. It poured crystal-clear water and emitted a warm, positive energy that instantly cured his headache. Riki rubbed his eyes, totally confused. Everything felt too real to be a dream, but far too weird to be reality. He wondered if his friends had spiked his dark beer.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2457,8 +2579,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Looking to Buy$body$,
   $body$To his right, Riki noticed a small wooden stall. A shady, hooded merchant leaned over the counter, smiling greedily. The man opened his cloak to reveal shiny swords, magical potions, and heavy armor. "Looking to buy, little friend?" the merchant whispered. Riki checked his pockets and found a small pouch of unfamiliar gold coins. He stared at the fancy, glowing weapons, quickly realizing his tiny handful of gold was not nearly enough for them.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2470,8 +2593,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Not Satyrs$body$,
   $body$Riki stepped back and noticed four other people standing nearby. They were definitely not satyrs. One was a muscular purple creature holding a giant, heavy mace. Strangely, the creature had no eyes or mouth at all. He introduced himself as Faceless Void. Beside him stood a very tall man holding a twisted wooden staff. The man called himself Furion, the Nature's Prophet, and claimed he could actually speak directly to the surrounding forest trees.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2483,8 +2607,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Paper$body$,
   $body$The other two teammates were just as strange. One was an old man walking beside a massive, terrifying brown bear. The last guy looked wild and had two fierce wolves pacing at his feet. Riki felt his head spin. Was there something in that pub beer? Suddenly, a small piece of paper floated down into his hands. It was a set of instructions. He was chosen to defend the giant, glowing tree behind the fountain.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2496,8 +2621,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$A Stick$body$,
   $body$The paper told Riki to go to the south front with Furion. To end this nightmare, they had to break through to the enemy's Ancient building and destroy it permanently. Riki looked at his small pouch of starter gold. Since he could not afford the shady guy's fancy swords, he just bought a simple wooden branch. It was practically a stick, but it would have to do as a weapon for his journey now.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2509,8 +2635,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Creeps$body$,
   $body$Riki and Furion walked down to the southern front. When they arrived, small groups of strange people were already fighting. There were five on each side. Four fought closely with tiny swords, while one stood in the back throwing magical rocks. Riki watched them move. They crept around so strangely that he and Furion agreed to just call them "creeps." Furion seemed very calm and experienced, so Riki stayed close to ask him for advice.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2522,8 +2649,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Killing Blow$body$,
   $body$When a friendly creep severely wounded an enemy creep, the enemy turned and attacked Riki. Panicking, Riki swung his small wooden branch and struck a killing blow. The enemy fell dead. Riki felt sick, sad, and confused. He had never killed anyone before. He picked up the dead creep's short dagger, realizing his branch was useless. He reminded himself of the paper: he had to push through to their Ancient to finally go home.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2535,8 +2663,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Twin Sisters$body$,
   $body$As Riki got used to the dagger, two taller figures stepped out of the dark woods. They were twin sisters, and both were incredibly beautiful. The first one had a smoking hot body with great cleavage, and her hands literally burned with bright red fire. The second sister had an awesome booty and, ironically, looked even hotter than the first. However, everywhere she walked, the ground froze into a solid layer of white snow.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2548,8 +2677,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$First Blood$body$,
   $body$Riki thought about saying hello and throwing a friendly joke. But before he could even smile, he was trapped inside a freezing block of ice. A second later, the ground beneath him erupted in scorching fire. Riki panicked, broke free, and ran away in terror. Furion yelled from the trees, "What the hell are you doing? They are the enemies! Do you want them to get First Blood on you?" Riki just kept running.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2561,8 +2691,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Buy a Weapon$body$,
   $body$Riki slowly learned how to fight. He avoided the fire and ice moves the sisters kept throwing at him. He was getting exhausted, and the short dagger was terrible. However, he noticed dropped gold coins near the defeated creeps. He picked them up, remembering the beautiful swords in the shop. Furion sighed loudly. "Why are you holding all that money? Buy a weapon!" Riki explained the shop was much too far away to run back.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2574,8 +2705,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Yasha$body$,
   $body$Furion looked at Riki in total disbelief. "Just whistle and get your courier to bring it. Why walk?" Riki was incredibly confused but whistled anyway. A few moments later, a small, flying donkey arrived carrying a beautifully crafted katana. Riki took the sword. It felt incredibly light but very strong in his hands. He read the shiny inscription carved into the handle. It simply said "Yasha." It felt absolutely perfect for a fast satyr.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2587,8 +2719,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Fire and Ice$body$,
   $body$With his new sword, Riki tried to fight the twin sisters again. Furion used his magic to grow circles of trees, trapping the girls inside. Riki tried to sneak up and strike them from the back. But every single time, the fire sister burned the trees down, or the ice sister froze them and escaped. It was a very hard match against the joined forces of fire and ice. They desperately needed a new strategy.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2600,8 +2733,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Smoke Bombs$body$,
   $body$Furion thought long and hard. He noticed Riki carried small, strange pouches on his belt. Riki explained he bought them from a traveling merchant years ago just to play pranks on his friends back home. They were heavy smoke bombs. Furion smiled. He suggested trapping the sisters in the trees again, but this time Riki would throw a smoke bomb inside. The thick smoke would disorient them and stop them from using their magic.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2613,8 +2747,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$One Slice$body$,
   $body$The plan worked perfectly. Furion trapped the sisters in a sudden ring of tall trees. Riki instantly threw his smoke bomb. The thick purple cloud filled the trap. The sisters started coughing violently, completely blinded and unable to cast their spells. Riki leaped into the smoke and delivered two fast, fatal blows with a single slice of Yasha. He wasn't proud of killing them, but he was very happy to be the one surviving.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2626,8 +2761,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Ticket Home$body$,
   $body$With the sisters defeated, the path was clear. Riki and his companions pushed deep into enemy territory. Finally, they reached the enemy Ancient. It was a massive, terrifying structure. The fiery building crackled with dark, evil energy and cast twisted shadows on the ground. Riki knew that destroying this scary building was his only ticket back to his local pub. The group stepped forward, ready to strike the dark stone and end the battle.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2639,8 +2775,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Reborn$body$,
   $body$Suddenly, five enemies stepped in front of the dark building to defend it. Riki gasped. The twin sisters of fire and ice were standing right there, fully healed. It was like they were magically reborn. Riki was completely baffled, but he had no time to think. All five enemies charged forward together. Riki quickly looked around and realized Faceless Void was nowhere to be seen. The Radiant team was heavily outnumbered and in trouble.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2652,8 +2789,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Purple Bubble$body$,
   $body$Just as the enemy team prepared to strike, Void leaped out from the dark woods. He raised his giant mace and cast a massive, glowing purple bubble over the five enemies. The moment the bubble formed, the enemies completely froze. They stopped moving, stopped attacking, and even stopped breathing. They were entirely stuck in time and space. Riki stood still, totally amazed by the unbelievable power his faceless friend had just fully displayed.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2665,8 +2803,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$While They Can't Move$body$,
   $body$"Come on, Riki! What are you waiting for? Slice them while they can't move!" Furion's familiar nagging voice broke the silence. Riki snapped out of it. He jumped right into the time bubble. He moved incredibly fast, circling behind every single frozen enemy. He inflicted heavy, precise blows into their backs with Yasha. The exact moment he finished his final strike, the purple bubble disappeared. All five enemies collapsed to the ground, completely dead.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2678,8 +2817,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Rampage$body$,
   $body$Suddenly, a deep, rumbling voice echoed from the sky. "Rampage," it roared. Riki thought it was just distant thunder, but the magical word made him feel incredibly powerful. With the defenders gone, the five teammates attacked the dark, fiery Ancient. They hit it with everything they had. The dark structure shook violently, cracked down the middle, and finally exploded into a pile of glowing rubble. The terrifying battle was finally over. They had won.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2691,8 +2831,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Just the Beer$body$,
   $body$Instantly, another blinding flash of white light swallowed Riki. When he opened his eyes, he was back at his wooden table in the dim local bar. His friends were still laughing and drinking. Riki grabbed his head, groaning loudly. It had to be a crazy hallucination in his mind. "Are you okay, Riki? You look like you've seen a ghost," his closest friend asked, laughing. Riki sighed, convinced the dark beer had finally ruined his brain.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2704,8 +2845,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$riki-the-satyrs-strange-dota-match$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Package$body$,
   $body$Riki took another long gulp of his beer, desperately trying to forget the wild, terrifying trip. He finally started to calm down. Then, the heavy pub door slowly creaked open. A regular town courier walked straight to their table, dropped a wrapped package right next to Riki's mug, and quickly left. Riki froze, his heart pounding. Through a small tear in the brown paper, shiny steel reflected the pub lights. Carved into the handle was one word: Yasha.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2737,8 +2879,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$storm-spirit-handsome-devil$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Mirror$body$,
   $body$Storm Spirit stood in front of the large mirror, fixing his bright blue armor. He was Raijin Thunderkeg, a powerful storm elemental trapped in a jolly man's body. But today, he was just a man getting ready for a date. He struck a pose, flexing his arms. He smiled widely at his reflection. "Ooh, who's that handsome devil?" he asked himself, laughing. He loved his own confidence. He put on his favorite hat and grabbed a fresh flower. He was ready to bless some lucky lady with his perfect presence. There was no way this date could go wrong.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2750,8 +2893,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$storm-spirit-handsome-devil$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Name Is Spirit$body$,
   $body$He arrived at the fancy restaurant like a burst of lightning. At the corner table, a woman was waiting. She wore dark clothes and had a very pale, ghostly face. Storm Spirit walked over with a big, cheesy grin. He leaned against the table, trying to look cool. "The name is Spirit," he said, lowering his voice. "Storm Spirit." He gave her his best mysterious smile. The woman blinked, surprised by his sudden energy. "I am Muerta," she said softly. At first, she found his extreme confidence a little charming. She pointed to the empty chair.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2763,8 +2907,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$storm-spirit-handsome-devil$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$A Fancy Corpse$body$,
   $body$Storm Spirit sat down and looked Muerta up and down. "Well, Muerta, you look interesting," he said. He leaned in closer. "Are you feeling okay? You look a bit... dead. Like a fancy corpse!" He laughed loudly at his own joke. Muerta did not laugh. Her eyes narrowed slightly. "I am connected to the dead," she replied coldly. Storm Spirit waved his hand. "Don't worry, my bright personality will bring you back to life!" He did not notice her annoyed sigh. He was too busy looking at his own perfect reflection in a silver spoon on the table.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2776,8 +2921,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$storm-spirit-handsome-devil$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$The Lady in Red$body$,
   $body$The date went from bad to worse. When the waiter brought their drinks, Storm Spirit snapped his fingers loudly. "Hey, slowpoke! Bring me a bigger glass. I am a thirsty storm!" he ordered rudely. Muerta frowned, feeling embarrassed. Then, a pretty lady in a red dress walked past their table. Storm Spirit stopped talking mid-sentence and watched the lady walk away. "Looking good!" he shouted after her, winking. He turned back to Muerta, smiling. "Did you see her dress? You should wear bright colors like that. It would help your pale skin." Muerta's hands curled into tight fists.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2789,8 +2935,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$storm-spirit-handsome-devil$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Don't Feel Bad About Yourself$body$,
   $body$Storm Spirit finally noticed that Muerta was not talking. She was just staring at him with cold, glowing eyes. "What is wrong?" he asked, acting innocent. "You are very quiet." He decided it was time to lighten the mood. "Listen, I know I am a lot to handle. It is hard sitting next to perfection. But don't feel bad about yourself!" He gave her a playful punch on the arm. "We can't all be the handsome Storm Spirit!" Instead of smiling, Muerta looked furious. The air around her grew completely cold. His attempt to fix things failed completely.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2802,8 +2949,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$storm-spirit-handsome-devil$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Her Loss$body$,
   $body$Muerta stood up. Her chair scraped loudly against the floor. "You are the most self-centered, obnoxious man I have ever met," she said. Her voice was calm but full of pure anger. "You only care about yourself." Without another word, she turned around and walked out of the restaurant. Storm Spirit sat frozen in his chair. He was completely confused. He blinked his eyes and looked around. Why did she leave? He had been charming, funny, and he looked amazing. He picked up his glass of water and took a sip, shaking his head. "Her loss," he muttered.$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2815,8 +2963,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$storm-spirit-handsome-devil$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Hello There$body$,
   $body$He sat alone for only a minute. Being sad was simply not his style. He brushed some imaginary dust off his shoulder and sat up straight. He noticed a beautiful woman sitting alone at the next table. She was quietly reading a menu. Storm Spirit slid his chair back and smoothly walked over to her table. He leaned in, resting his arm on the back of her chair. He put on that exact same cheesy grin. "Hello there," he said smoothly. "The name is Spirit. Storm Spirit."$body$
 FROM public.story_chapter ch
 JOIN public.story_issue i ON i.id = ch.issue_id
@@ -2848,8 +2997,9 @@ SELECT i.id,
 FROM public.story_issue i
 WHERE i.slug = $body$marci-battle-speech$body$;
 
-INSERT INTO public.story_chapter_i18n (chapter_id, locale, body)
+INSERT INTO public.story_chapter_i18n (chapter_id, locale, title, body)
 SELECT ch.id, 'en',
+  $body$Before the Battle$body$,
   $body$Tweet. Tweet tweet. Fweeeet.
 
 Tweet tweet tweet, tweet tweet, tweet tweet tweet tweet. Fweet. Tweet tweet tweet, tweet, tweet tweet. Fweeeet, tweet tweet tweet. Twe twe tweet. Tweet tweet, fweet tweet tweet, tweet tweet tweet tweet. Tweet tweet tweet. Fweet tweet. Tweet.
