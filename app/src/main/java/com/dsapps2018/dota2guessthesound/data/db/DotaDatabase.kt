@@ -55,9 +55,24 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
 
 val MIGRATION_7_8 = object : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
+        // Rebuild instead of ALTER…DEFAULT so the SQLite schema matches the entity
+        // (no SQL DEFAULT). ALTER…DEFAULT '' fails Room's post-migration TableInfo check.
         db.execSQL(
-            "ALTER TABLE `StoryChapterI18n` ADD COLUMN `title` TEXT NOT NULL DEFAULT ''"
+            "CREATE TABLE IF NOT EXISTS `StoryChapterI18n_new` (" +
+                "`chapterId` INTEGER NOT NULL, " +
+                "`locale` TEXT NOT NULL, " +
+                "`title` TEXT NOT NULL, " +
+                "`body` TEXT NOT NULL, " +
+                "`modifiedAt` TEXT NOT NULL, " +
+                "PRIMARY KEY(`chapterId`, `locale`))"
         )
+        db.execSQL(
+            "INSERT INTO `StoryChapterI18n_new` (" +
+                "`chapterId`, `locale`, `title`, `body`, `modifiedAt`) " +
+                "SELECT `chapterId`, `locale`, '', `body`, `modifiedAt` FROM `StoryChapterI18n`"
+        )
+        db.execSQL("DROP TABLE `StoryChapterI18n`")
+        db.execSQL("ALTER TABLE `StoryChapterI18n_new` RENAME TO `StoryChapterI18n`")
     }
 }
 
@@ -68,7 +83,7 @@ val MIGRATION_10_11 = object : Migration(10, 11) {
             "CREATE TABLE IF NOT EXISTS `JourneyAssistUnlock` (" +
                 "`level` INTEGER NOT NULL, " +
                 "`countUnlocked` INTEGER NOT NULL, " +
-                "`soundSamplerUnlocked` INTEGER NOT NULL, " +
+                "`primerUnlocked` INTEGER NOT NULL, " +
                 "`isSent` INTEGER NOT NULL, " +
                 "PRIMARY KEY(`level`))"
         )
@@ -78,12 +93,35 @@ val MIGRATION_10_11 = object : Migration(10, 11) {
 /** Issue Score columns on StoryIssue + local Issue Rating outbox. */
 val MIGRATION_9_10 = object : Migration(9, 10) {
     override fun migrate(db: SupportSQLiteDatabase) {
+        // Rebuild instead of ALTER…DEFAULT so rating columns match the entity
+        // (NOT NULL, no SQL DEFAULT). ALTER…DEFAULT 0 fails Room validation on upgrade.
         db.execSQL(
-            "ALTER TABLE `StoryIssue` ADD COLUMN `ratingSum` INTEGER NOT NULL DEFAULT 0"
+            "CREATE TABLE IF NOT EXISTS `StoryIssue_new` (" +
+                "`id` INTEGER NOT NULL, " +
+                "`slug` TEXT NOT NULL, " +
+                "`protagonistCasterId` INTEGER NOT NULL, " +
+                "`sort` INTEGER NOT NULL, " +
+                "`coverPath` TEXT NOT NULL, " +
+                "`backdropPath` TEXT NOT NULL, " +
+                "`coverFileLink` TEXT NOT NULL, " +
+                "`backdropFileLink` TEXT NOT NULL, " +
+                "`modifiedAt` TEXT NOT NULL, " +
+                "`isActive` INTEGER NOT NULL, " +
+                "`ratingSum` INTEGER NOT NULL, " +
+                "`ratingCount` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`id`))"
         )
         db.execSQL(
-            "ALTER TABLE `StoryIssue` ADD COLUMN `ratingCount` INTEGER NOT NULL DEFAULT 0"
+            "INSERT INTO `StoryIssue_new` (" +
+                "`id`, `slug`, `protagonistCasterId`, `sort`, `coverPath`, `backdropPath`, " +
+                "`coverFileLink`, `backdropFileLink`, `modifiedAt`, `isActive`, " +
+                "`ratingSum`, `ratingCount`) " +
+                "SELECT `id`, `slug`, `protagonistCasterId`, `sort`, `coverPath`, `backdropPath`, " +
+                "`coverFileLink`, `backdropFileLink`, `modifiedAt`, `isActive`, " +
+                "0, 0 FROM `StoryIssue`"
         )
+        db.execSQL("DROP TABLE `StoryIssue`")
+        db.execSQL("ALTER TABLE `StoryIssue_new` RENAME TO `StoryIssue`")
         db.execSQL(
             "CREATE TABLE IF NOT EXISTS `StoryIssueRating` (" +
                 "`issueId` INTEGER NOT NULL, " +
