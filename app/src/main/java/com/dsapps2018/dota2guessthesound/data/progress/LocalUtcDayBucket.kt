@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.os.SystemClock
 import com.dsapps2018.dota2guessthesound.data.util.Constants
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneOffset
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -116,7 +115,8 @@ class LocalUtcDayBucket @Inject constructor(
     }
 
     private fun utcDayKey(wallMs: Long): String =
-        LocalDate.ofInstant(Instant.ofEpochMilli(wallMs), ZoneOffset.UTC).toString()
+        // LocalDate.ofInstant is API 34+; atZone works from minSdk 29.
+        Instant.ofEpochMilli(wallMs).atZone(ZoneOffset.UTC).toLocalDate().toString()
 
     private companion object {
         const val ROLLBACK_SLACK_MS = 5 * 60 * 1000L

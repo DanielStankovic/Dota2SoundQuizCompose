@@ -36,6 +36,10 @@ Retell Issues into Reading Locales (one Issue × one locale): skill `issue-catal
 
 Journey and app-wide progression, difficulty pacing, economy friction, leaderboards: Stanestane skills `game-design-core-loop-extractor`, `game-design-design-pillars-extractor`, `game-design-goal-density-and-immediacy-audit`, `game-design-flow-audit`, `game-design-failure-loop-audit`, `game-design-friction-journey-audit`, `game-design-leaderboard-audit`, `game-design-leaderboard-builder`, `game-design-feature-prioritization`. Prefer existing `CONTEXT.md` terms (coins, journey level, Mode Result) over inventing parallel XP/economy language.
 
+### Android API floor
+
+`minSdk` 29; no core library desugaring. When writing app Kotlin that uses platform APIs, `java.time`, or date/time helpers: see `docs/agents/android-api-floor.md` (avoid API 34+ `java.time` methods such as `LocalDate.ofInstant`).
+
 ### Verification
 
 Default: **lint only** — do not build or run the app unless the user explicitly asks. **Never** add or expand automated unit or instrumented tests. See `docs/agents/verification.md`.

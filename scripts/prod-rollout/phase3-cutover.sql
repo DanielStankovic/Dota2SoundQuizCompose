@@ -1,6 +1,6 @@
--- Phase 3 CUTOVER — run ONLY after Play shows 2.3.0 (versionCode 17) installable.
--- Order with the runbook: publish APK 100% → confirm installable → this file → done.
--- Do NOT run during Google review. Do NOT combine with staged rollout %.
+-- Phase 3 CUTOVER — run ONLY after Play shows 2.3.1 (versionCode 19) installable.
+-- Store release skipped a 2.3.0 changelog row; the staging 2.3.0 text ships as 2.3.1.
+-- Do NOT combine with a staged rollout %.
 
 -- 7.41f Classic-visible mutations
 UPDATE public.sounds
@@ -21,22 +21,22 @@ SET active = false,
 WHERE spell_name IN ('Bad Juju', 'Recall', 'Sidekick')
   AND active = true;
 
--- Changelog 2.3.0 (clients show every synced row — never insert before publish)
+-- Changelog 2.3.1 (staging 2.3.0 text). Do not insert a 2.3.0 row.
 INSERT INTO public.changelog (version, log, modified_at)
 SELECT
-  '2.3.0',
+  '2.3.1',
   '["Hero Journey mode added","Stories added — unlock Issues and Chapters by clearing Journey levels","New sounds added ( total sound count: 529 )","Largo sounds added"]'::jsonb,
   now()
 WHERE NOT EXISTS (
-  SELECT 1 FROM public.changelog WHERE version = '2.3.0'
+  SELECT 1 FROM public.changelog WHERE version = '2.3.1'
 );
 
--- Force update to versionCode 17 (app/build.gradle.kts). Revert forced_version to 16 if aborting.
+-- Force update to versionCode 19 (app/build.gradle.kts). Revert forced_version to 16 if aborting.
 UPDATE public.config
 SET data = jsonb_set(
   COALESCE(data, '{}'::jsonb),
   '{forced_version}',
-  '17'::jsonb,
+  '19'::jsonb,
   true
 )
 WHERE id = 1;
