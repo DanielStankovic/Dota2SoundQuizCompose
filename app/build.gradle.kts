@@ -36,8 +36,8 @@ android {
         applicationId = "com.dsapps2018.dota2guessthesound"
         minSdk = 29
         targetSdk = 37
-        versionCode = 20
-        versionName = "2.3.2"
+        versionCode = 21
+        versionName = "2.3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
