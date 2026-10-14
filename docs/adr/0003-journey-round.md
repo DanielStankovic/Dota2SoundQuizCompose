@@ -1,6 +1,6 @@
 # Deepen Journey Round into one data-layer module
 
-A **Journey Round** (one playable level attempt: load through submit / continue / game-over) lives in one concrete Data-layer module: `JourneyRound`. Level list loading and affix→presentation mapping share that module (unlock at `journey level + 1`, Affix fog as revealed vs mystery slots — catalog identity never leaves the module on fogged cards). `AffixEngine` + strategies stay an **internal** seam (harden hooks as affixes grow; Mirror Mode validation gets the full sound-id set). Shallow `JourneyRepository` / `JourneyLevelRepository` are removed. Playback of a `SoundModel` goes through concrete `SoundPlayback` (Journey is the first caller; other modes retarget later). Player Progress advancement on win stays outside this module. Domain Use Cases and ports are deferred.
+A **Journey Round** (one playable level attempt: load through submit / continue / game-over) lives in one concrete Data-layer module: `JourneyRound`. Level list loading and affix→presentation mapping share that module (unlock at `journey level + 1`; Affix identity always revealed on list cards). `AffixEngine` + strategies stay an **internal** seam (harden hooks as affixes grow; Mirror Mode validation gets the full sound-id set). Shallow `JourneyRepository` / `JourneyLevelRepository` are removed. Playback of a `SoundModel` goes through concrete `SoundPlayback` (Journey is the first caller; other modes retarget later). Player Progress advancement on win stays outside this module. Domain Use Cases and ports are deferred.
 
 ## Revert
 
@@ -16,6 +16,6 @@ To undo this deepen without rediscovering the old shape:
 
 - Glossary: `CONTEXT.md` (**Journey Round**, **Sound Playback**, **Player Progress**)
 - AffixEngine remains internal; harden hooks via AffixLevelContext (Echo Limit budget, timer duration); Soundquake / Race resolve through AffixEngine.resolveTimer; Mirror Mode resolves HUD required-mark count from decoys on the board; Soundquake interval behaviour is an internal seam inside Journey Round
-- Level-list presentation includes Affix fog and unlock (`journey level + 1`); Screen paints `JourneyLevelListRow`
+- Level-list presentation includes unlock (`journey level + 1`) and always-revealed Affix slots; Screen paints `JourneyLevelListRow`
 - Among Heroes: Affix enables omit-from-portraits; mystery membership is Journey `hidden_hero_id`
 - Hero Portrait Policy: [ADR-0011](0011-hero-portrait-policy.md)

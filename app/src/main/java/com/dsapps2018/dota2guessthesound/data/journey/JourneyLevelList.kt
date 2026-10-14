@@ -9,16 +9,13 @@ enum class JourneyLevelAccess {
     Locked,
 }
 
-/** Affix identity on a list card: revealed or one mystery token (Affix fog). */
+/** Affix identity on a list card (always revealed). */
 sealed interface AffixListSlot {
     data class Revealed(val affix: AffixModel) : AffixListSlot
     data object Mystery : AffixListSlot
 }
 
-/**
- * Journey level list row after Affix→presentation mapping (unlock + Affix fog).
- * Fogged cards never carry catalog Affix identity.
- */
+/** Journey level list row after unlock + Affix→presentation mapping. */
 data class JourneyLevelListRow(
     val id: Int,
     val level: Int,

@@ -29,7 +29,7 @@ One Invoker mode run: pool load, orb queue, spell recipes, hearts, dual timers, 
 _Avoid_: Invoker session, Invoker game (as the domain name for the module)
 
 **Journey Round**:
-One playable Journey level attempt: loading the level, optional Journey Round briefing, affix rules, marks, sound plays, submit, hearts, timer, and the extra-life continue gate. Also owns Journey level list load and Affix fog / unlock presentation. Distinct from the Journey level list UI and from Player Progress journey level.
+One playable Journey level attempt: loading the level, optional Journey Round briefing, affix rules, marks, sound plays, submit, hearts, timer, and the extra-life continue gate. Also owns Journey level list load and unlock presentation (Affix identity always revealed on list cards). Distinct from the Journey level list UI and from Player Progress journey level.
 _Avoid_: Journey session, Journey game (as the domain name for the module)
 
 **Affix**:
@@ -37,12 +37,8 @@ A named rule from the remote `affixes` catalog that modifies a Journey Round (UI
 _Avoid_: modifier, perk, challenge rule (when you mean the catalog Affix)
 
 **Affix tray**:
-On-demand list of the Affixes on the current Journey Round, opened from the play surface. Distinct from Journey HUD Chrome, Affix fog, and Affix icons on the Journey level list.
+On-demand list of the Affixes on the current Journey Round, opened from the play surface. Distinct from Journey HUD Chrome and Affix icons on the Journey level list.
 _Avoid_: affix drawer, side menu, modifier panel
-
-**Affix fog**:
-Journey level list rule that hides Affix identity beyond a look-ahead from journey level. Cleared levels, the next playable level (`journey level + 1`), and the next 3 locked levels show Affix icons; farther cards show one mystery token per Affix and no Affix info sheet. Distinct from Affix tray, Journey Round briefing, and Partial Veil.
-_Avoid_: spoiler, lock, veil (when you mean this list rule)
 
 **Journey Round briefing**:
 The hold at the start of a Journey Round after Continue Journey when that level has Affixes: the Affix tray is open and clocks have not started. Distinct from Extra Life Gate pause and from mid-round Affix tray lookup.
@@ -178,7 +174,7 @@ Journey is the primary engagement path. Quiz, Fast Finger, and Invoker are side 
 - Affix / Hero difficulty: introduce **one** new cognitive load per band (more Heroes, or a new Affix family, or a stack — not all at once). Mix those axes inside the current set, including **Decoy** density (`max_sounds` minus the roster’s correct-sound count). A hard level is a **guest**, not a new floor (later levels may drop that Affix and raise Hero count or Decoy density).
 - **Familiar** roster: a mid or hard Affix (identity puzzles, inverted submit, timer/quake families, Sudden Death, stacks) only lands on Heroes the player has already heard on an earlier Journey level — the in-catalog spell set, not the Dota kit. Easy Affix teach still includes at least one familiar Hero. Teach each Affix **solo** before it appears in a stack.
 - Launch catalog length and remix peak: [ADR-0020](docs/adr/0020-journey-level-catalog.md).
-- **Affix fog** on the Journey level list: Affix identity is visible through the next 3 locked levels after the playable one; farther cards show mystery tokens only (count, not names). The Journey Round still reveals Affixes at play time.
+- Journey level list Affix icons are always revealed (every level card); players can open Affix info from any card. Unlock still gates play at `journey level + 1`.
 - Do **not** add a second currency or XP system for Journey progress. **Issue Progress** is a checklist of Chapters, not XP.
 - An Issue's Protagonist and Chapters are catalog. They are **not** authored on the Journey level row (board Heroes / Affixes do not pick the Issue).
 - Invoker entry costs **40** coins (one Coin Ad Grant). Broke players use the shared **Coin Ad Grant** on Home Invoker / Assist tray — not a matching Invoker-only ad payout.

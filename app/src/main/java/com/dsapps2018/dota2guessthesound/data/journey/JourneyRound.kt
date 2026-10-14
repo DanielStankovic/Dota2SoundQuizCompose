@@ -72,10 +72,7 @@ class JourneyRound @Inject constructor(
     private val _levelCatalog =
         MutableStateFlow<LevelCatalog>(LevelCatalog.Loading)
 
-    /**
-     * Journey level list with unlock + Affix fog applied. Catalog Affix identity
-     * never leaves this module on fogged cards.
-     */
+    /** Journey level list with unlock applied; Affix identity is always revealed. */
     fun presentedLevels(journeyLevel: Flow<Int>): Flow<JourneyLevelsState> =
         combine(_levelCatalog, journeyLevel) { catalog, cleared ->
             when (catalog) {
@@ -865,17 +862,11 @@ class JourneyRound @Inject constructor(
             catalog.level == journeyLevel + 1 -> JourneyLevelAccess.Playable
             else -> JourneyLevelAccess.Locked
         }
-        val revealsIdentity = catalog.level <= journeyLevel + 1 + LOOKAHEAD_LOCKED_LEVELS
-        val affixSlots = if (revealsIdentity) {
-            catalog.affixes.map { AffixListSlot.Revealed(it) }
-        } else {
-            List(catalog.affixes.size) { AffixListSlot.Mystery }
-        }
         return JourneyLevelListRow(
             id = catalog.id,
             level = catalog.level,
             access = access,
-            affixSlots = affixSlots,
+            affixSlots = catalog.affixes.map { AffixListSlot.Revealed(it) },
         )
     }
 
@@ -914,6 +905,5 @@ class JourneyRound @Inject constructor(
 
     companion object {
         private const val DEFAULT_HEARTS = 2
-        private const val LOOKAHEAD_LOCKED_LEVELS = 3
     }
 }
