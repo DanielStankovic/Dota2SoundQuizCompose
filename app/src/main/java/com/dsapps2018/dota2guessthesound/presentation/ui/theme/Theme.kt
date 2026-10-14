@@ -1,6 +1,7 @@
 package com.dsapps2018.dota2guessthesound.presentation.ui.theme
 
 import android.app.Activity
+import android.content.res.Resources
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +49,12 @@ fun Dota2SoundQuizComposeTheme(
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            // OEM builds can omit Material You framework colors (e.g. 0x106006c).
+            try {
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            } catch (_: Resources.NotFoundException) {
+                if (darkTheme) DarkColorScheme else LightColorScheme
+            }
         }
 
         darkTheme -> DarkColorScheme
