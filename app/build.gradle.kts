@@ -175,7 +175,7 @@ dependencies {
 
     //Ktor
     implementation(platform(libs.ktor.bom))
-    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.logging)
 
     //Firebase

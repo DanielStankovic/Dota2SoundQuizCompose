@@ -13,6 +13,7 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
+import io.ktor.client.engine.okhttp.OkHttp
 import javax.inject.Singleton
 
 @Module
@@ -26,6 +27,8 @@ object SupabaseModule {
             supabaseUrl = BuildConfig.BASE_URL,
             supabaseKey = BuildConfig.ANON_KEY
         ) {
+            // Avoid Android engine cancel race (platform okhttp Unbalanced enter/exit).
+            httpEngine = OkHttp.create()
             install(Postgrest)
             install(Storage)
             install(Auth)

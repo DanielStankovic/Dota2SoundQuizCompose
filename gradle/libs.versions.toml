@@ -13,7 +13,7 @@ hilt = "2.60.1"
 hilt-compose = "1.4.0"
 room = "2.8.4"
 kotlinx-serialization = "1.11.0"
-ktorBom = "3.5.2"
+ktorBom = "3.6.0"
 supabaseBom = "3.8.0"
 play-services_ads = "25.4.0"
 # Transitive from play-services-ads-api is 2.0.1; 2.2.0 fixes HsdpShimActivity NPE (Crashlytics).
@@ -56,7 +56,7 @@ room-paging  = {module = "androidx.room:room-paging", version.ref = "room"}
 kotlinx-serialization  = {module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
 kotlinx-metadata-jvm = {module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin"}
 ktor-bom  = {group = "io.ktor", name = "ktor-bom", version.ref = "ktorBom"}
-ktor-client-android = {group = "io.ktor", name = "ktor-client-android"}
+ktor-client-okhttp = {group = "io.ktor", name = "ktor-client-okhttp"}
 ktor-client-logging = {group = "io.ktor", name = "ktor-client-logging"}
 supabase-bom = {group = "io.github.jan-tennert.supabase", name = "bom", version.ref = "supabaseBom"}
 supabase-postgrest = {group = "io.github.jan-tennert.supabase", name = "postgrest-kt"}
