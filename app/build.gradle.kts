@@ -195,6 +195,8 @@ dependencies {
 
     //Admob
     implementation(libs.play.services.ads)
+    // Override Ads' transitive hsdp:2.0.1 — crashes in HsdpShimActivity (targetPackageName null).
+    implementation(libs.play.hsdp)
 
     //Permissions
     implementation(libs.accompanist.permissions)
